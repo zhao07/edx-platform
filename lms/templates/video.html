@@ -80,14 +80,16 @@
 % if sources.get('main'):
     <div class="video-sources">
         <form method="get" action="${_(sources.get('main'))}">
-        <button>${_('Download video')}</button>
+            <button>${_('Download video')}</button>
         </form>
     </div>
 % endif
 
 % if track:
     <div class="video-tracks">
-        <p>${('<a href="%s">' + _('Download timed transcript') + '</a>') % track}</p>
+        <form method="get" action="${_(track)}">
+            <button>${_('Download timed transcript')}</button>
+        </form>
     </div>
 % endif
 
