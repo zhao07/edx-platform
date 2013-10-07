@@ -43,7 +43,8 @@ div.video {
       text-shadow: none;
       color: $darkGrey;
 
-      &:hover {
+      &:hover,
+      &:focus {
         box-shadow: none;
         background-color: $blue;
         color: $white;
