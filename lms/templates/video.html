@@ -79,7 +79,9 @@
 
 % if sources.get('main'):
     <div class="video-sources">
-        <p>${('<a href="%s">' + _('Download video') + '</a>') % sources.get('main')}</p>
+        <form method="get" action="${_(sources.get('main'))}">
+        <button>${_('Download video')}</button>
+        </form>
     </div>
 % endif
 
