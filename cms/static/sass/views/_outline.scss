@@ -255,6 +255,10 @@
 
       a {
         color: $gray-l2;
+
+        &:hover {
+          color: $blue;
+        }
       }
     }
 
@@ -325,10 +329,6 @@
       margin-bottom: 0;
       padding: 0;
 
-      .item-details,
-      .section-published-date {
-      }
-
       .item-details {
         @include clearfix();
         display: inline-block;
@@ -337,9 +337,8 @@
         .section-name {
           @include font-size(19);
           float: left;
+          width: 400px;
           margin-right: 10px;
-          width: 350px;
-          font-weight: bold;
         }
 
         .section-name-span {
@@ -538,12 +537,6 @@
         }
       }
 
-    }
-
-    h3 {
-      @include font-size(19);
-      font-weight: 700;
-      color: $blue;
     }
 
     .section-name-span {
