@@ -80,7 +80,7 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
           </form>
         </div>
         <div class="item-actions">
-          <a href="#" data-tooltip="${_('Delete this section')}" class="delete-button delete-section-button"><span class="delete-icon"></span></a>
+          <a href="#" data-tooltip="${_('Delete this section')}" class="delete-button delete-section-button"><i class="icon-trash"></i></a>
           <span data-tooltip="${_('Drag to re-order')}" class="drag-handle"></span>
         </div>
       </header>
@@ -145,6 +145,550 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
 
       <div class="wrapper-dnd">
         <article class="courseware-overview" data-id="${context_course.location.url()}">
+
+<!-- example code - DO NOT USE/MERGE -->
+
+          <section class="courseware-section branch is-draggable released" data-id="i4x://FU/432/chapter/653df83a82d1468a973acf0dfdf37029" data-parent-id="i4x://FU/432/course/Russion_History">
+
+            <span class="draggable-drop-indicator draggable-drop-indicator-before"><i class="icon-caret-right"></i></span>
+
+
+            <header>
+            <a href="#" data-tooltip="Expand/collapse this section" class="expand-collapse-icon collapse"></a>
+
+              <div class="item-details" data-id="i4x://FU/432/chapter/653df83a82d1468a973acf0dfdf37029">
+                <h3 class="section-name" data-name="Climate Change and Health - Part 1: Evidence of a Changing Climate"></h3>
+
+              </div>
+
+              <div class="item-actions">
+
+                      <ul class="actions-list">
+
+                        <li class="actions-item pubdate">
+                          <div class="section-published-date">
+
+                              <span class="published-status"><strong>Released:</strong>
+                              Jun 06, 2013 at 00:00 UTC</span>
+                              <a href="#" class="edit-release-date" data-date="06/06/2013"
+                                data-time="00:00" data-id="i4x://FU/432/chapter/653df83a82d1468a973acf0dfdf37029"><i class="icon-time"></i> <span class="sr">Edit section release date</span></a>
+                          </div>
+                        </li>
+
+                        <li class="actions-item privacy">
+                          <a href="#" data-tooltip="Make this section public" class="action public-button public-section-button"><i class="icon-adjust"></i> <span class="sr">Make this section public</span></a>
+                        </li>
+                        <li class="actions-item delete">
+                          <a href="#" data-tooltip="Delete this section" class="action delete-section-button"><i class="icon-trash"></i> <span class="sr">Delete section</span></a>
+                        </li>
+                      </ul>
+
+                <span data-tooltip="${_('Drag to reorder')}" class="drag-handle section-drag-handle"><i class="icon-ellipsis-vertical"></i><span class="sr">${_("Drag to reorder section")}</span></span>
+              </div>
+            </header>
+            <div class="subsection-list">
+
+              <ol class="sortable-subsection-list" data-id="i4x://FU/432/chapter/653df83a82d1468a973acf0dfdf37029">
+                <li class="courseware-subsection branch collapsed id-holder is-draggable" data-id="i4x://FU/432/sequential/0b3710aa636048c5bcf070da76374cd3" data-parent-id="i4x://FU/432/chapter/653df83a82d1468a973acf0dfdf37029">
+
+                  <span class="draggable-drop-indicator draggable-drop-indicator-before"><i class="icon-caret-right"></i></span>
+
+
+                  <div class="section-item visible">
+                    <div class="status">This section is visible to students</div>
+                    <div class="details">
+                      <a href="#" data-tooltip="Expand/collapse this subsection" class="expand-collapse-icon expand"></a>
+                      <a href="/subsection/i4x://FU/432/sequential/0b3710aa636048c5bcf070da76374cd3">
+                        <span class="subsection-name"><span class="subsection-name-value">The Stick</span></span>
+                      </a>
+                    </div>
+
+
+
+                    <div class="item-actions">
+
+                    <div class="gradable-status" data-initial-status="Not Graded">
+                    </div>
+
+                      <ul class="actions-list">
+                        <li class="actions-item">
+                          <a class="action pubdate" href="#" data-tooltip="Edit publish date on this subsection" class="public-button public-subsection-button"><i class="icon-time"></i> <span class="sr">Edit publish date on this subsection</span></a>
+                        </li>
+                        <li class="actions-item privacy">
+                          <a class="action" href="#" data-tooltip="Make this subsection private" class="private-button private-subsection-button"><i class="icon-circle"></i> <span class="sr">Make this subsection private</span></a>
+                        </li>
+                        <li class="actions-item delete">
+                          <a class="action delete-subsection-button" href="#" data-tooltip="Delete this subsection" class="delete-button delete-subsection-button"><i class="icon-trash"></i> <span class="sr">Delete subsection</span></a>
+                        </li>
+                      </ul>
+
+                      <span data-tooltip="Drag to reorder" class="drag-handle subsection-drag-handle"><i class="icon-ellipsis-vertical"></i><span class="sr">Drag to reorder</span></span>
+                    </div>
+                  </div>
+
+<ol class="sortable-unit-list">
+
+  <li class="courseware-unit leaf unit is-draggable" data-id="i4x://FU/432/vertical/c7efe2776e2c4e48aa43509cc4e9b6ce" data-parent-id="i4x://FU/432/sequential/0b3710aa636048c5bcf070da76374cd3">
+
+    <span class="draggable-drop-indicator draggable-drop-indicator-before"><i class="icon-caret-right"></i></span>
+
+
+
+    <div class="section-item ">
+      <a href="/edit/i4x://FU/432/vertical/c7efe2776e2c4e48aa43509cc4e9b6ce" class="public-item">
+        <span class="unit-name">Maple versus Composite</span>
+      </a>
+      <div class="item-actions">
+  <a href="#" data-tooltip="Delete this unit" class="delete-button" data-id="i4x://FU/432/vertical/c7efe2776e2c4e48aa43509cc4e9b6ce"><i class="icon-trash"></i></a>
+  <span data-tooltip="Drag to sort" class="drag-handle unit-drag-handle"><i class="icon-ellipsis-vertical"></i><span class="sr">Drag to reorder</span></span>
+      </div>
+    </div>
+
+    <span class="draggable-drop-indicator draggable-drop-indicator-after"><i class="icon-caret-right"></i></span>
+
+  </li>
+  <li class="courseware-unit leaf unit is-draggable" data-id="i4x://FU/432/vertical/ed1582c5afcb4cf3b739f81e5574bc3b" data-parent-id="i4x://FU/432/sequential/0b3710aa636048c5bcf070da76374cd3">
+
+    <span class="draggable-drop-indicator draggable-drop-indicator-before"><i class="icon-caret-right"></i></span>
+
+
+
+    <div class="section-item ">
+      <a href="/edit/i4x://FU/432/vertical/ed1582c5afcb4cf3b739f81e5574bc3b" class="public-item">
+        <span class="unit-name">Getting the right curve</span>
+      </a>
+      <div class="item-actions">
+  <a href="#" data-tooltip="Delete this unit" class="delete-button" data-id="i4x://FU/432/vertical/ed1582c5afcb4cf3b739f81e5574bc3b"><i class="icon-trash"></i></a>
+  <span data-tooltip="Drag to sort" class="drag-handle unit-drag-handle"><i class="icon-ellipsis-vertical"></i><span class="sr">Drag to reorder</span></span>
+      </div>
+    </div>
+
+    <span class="draggable-drop-indicator draggable-drop-indicator-after"><i class="icon-caret-right"></i></span>
+
+  </li>
+  <li class="courseware-unit-new">
+    <span class="draggable-drop-indicator draggable-drop-indicator-initial"><i class="icon-caret-right"></i></span>
+
+
+    <a href="#" class="new-unit-item" data-category="vertical" data-parent="i4x://FU/432/sequential/0b3710aa636048c5bcf070da76374cd3">
+      <i class="icon-plus"></i> New Unit
+    </a>
+  </li>
+</ol>
+
+
+                  <span class="draggable-drop-indicator draggable-drop-indicator-after"><i class="icon-caret-right"></i></span>
+
+                </li>
+                <li class="courseware-subsection branch collapsed id-holder is-draggable" data-id="i4x://FU/432/sequential/89fecf1b56c84af2964350968b1ed148" data-parent-id="i4x://FU/432/chapter/653df83a82d1468a973acf0dfdf37029">
+
+                  <span class="draggable-drop-indicator draggable-drop-indicator-before"><i class="icon-caret-right"></i></span>
+
+
+                  <div class="section-item not-visible">
+                    <div class="status">This section is not visible to students</div>
+                    <div class="details">
+                      <a href="#" data-tooltip="Expand/collapse this subsection" class="expand-collapse-icon expand"></a>
+                      <a href="/subsection/i4x://FU/432/sequential/89fecf1b56c84af2964350968b1ed148">
+                        <span class="subsection-name"><span class="subsection-name-value">The Puck</span></span>
+                      </a>
+                    </div>
+
+
+
+                    <div class="item-actions">
+
+                    <div class="gradable-status" data-initial-status="Not Graded">
+                    </div>
+
+                      <ul class="actions-list">
+                        <li class="actions-item">
+                          <a class="action pubdate" href="#" data-tooltip="Edit publish date on this subsection" class="public-button public-subsection-button"><i class="icon-time"></i> <span class="sr">Edit publish date on this subsection</span></a>
+                        </li>
+                        <li class="actions-item privacy">
+                          <a class="action" href="#" data-tooltip="Make this subsection public" class="public-button public-subsection-button"><i class="icon-circle-blank"></i> <span class="sr">Make this subsection public</span></a>
+                        </li>
+                        <li class="actions-item delete">
+                          <a class="action delete-subsection-button" href="#" data-tooltip="Delete this subsection" class="delete-button delete-subsection-button"><i class="icon-trash"></i> <span class="sr">Delete subsection</span></a>
+                        </li>
+                      </ul>
+
+                      <span data-tooltip="Drag to reorder" class="drag-handle subsection-drag-handle"><i class="icon-ellipsis-vertical"></i><span class="sr">Drag to reorder</span></span>
+                    </div>
+                  </div>
+
+<ol class="sortable-unit-list">
+
+  <li class="courseware-unit leaf unit is-draggable" data-id="i4x://FU/432/vertical/19ff5766c510424fbab22588d07ce022" data-parent-id="i4x://FU/432/sequential/89fecf1b56c84af2964350968b1ed148">
+
+    <span class="draggable-drop-indicator draggable-drop-indicator-before"><i class="icon-caret-right"></i></span>
+
+
+
+    <div class="section-item ">
+      <a href="/edit/i4x://FU/432/vertical/19ff5766c510424fbab22588d07ce022" class="private-item">
+        <span class="unit-name">Learning about round rubber</span>
+      </a>
+      <div class="item-actions">
+  <a href="#" data-tooltip="Delete this unit" class="delete-button" data-id="i4x://FU/432/vertical/19ff5766c510424fbab22588d07ce022"><i class="icon-trash"></i></a>
+  <span data-tooltip="Drag to sort" class="drag-handle unit-drag-handle"><i class="icon-ellipsis-vertical"></i><span class="sr">Drag to reorder</span></span>
+      </div>
+    </div>
+
+    <span class="draggable-drop-indicator draggable-drop-indicator-after"><i class="icon-caret-right"></i></span>
+
+  </li>
+  <li class="courseware-unit-new">
+    <span class="draggable-drop-indicator draggable-drop-indicator-initial"><i class="icon-caret-right"></i></span>
+
+
+    <a href="#" class="new-unit-item" data-category="vertical" data-parent="i4x://FU/432/sequential/89fecf1b56c84af2964350968b1ed148">
+      <i class="icon-plus"></i> New Unit
+    </a>
+  </li>
+</ol>
+
+
+                  <span class="draggable-drop-indicator draggable-drop-indicator-after"><i class="icon-caret-right"></i></span>
+
+                </li>
+                <li class="courseware-subsection branch collapsed id-holder is-draggable" data-id="i4x://FU/432/sequential/e72fb2c5393f483f9b94daaece43974f" data-parent-id="i4x://FU/432/chapter/653df83a82d1468a973acf0dfdf37029">
+
+                  <span class="draggable-drop-indicator draggable-drop-indicator-before"><i class="icon-caret-right"></i></span>
+
+
+                  <div class="section-item mixed">
+                    <div class="status">This section has mixed visibility to students</div>
+                    <div class="details">
+                      <a href="#" data-tooltip="Expand/collapse this subsection" class="expand-collapse-icon expand"></a>
+                      <a href="/subsection/i4x://FU/432/sequential/e72fb2c5393f483f9b94daaece43974f">
+                        <span class="subsection-name"><span class="subsection-name-value">The Ice</span></span>
+                      </a>
+                    </div>
+
+
+
+                    <div class="item-actions">
+
+                    <div class="gradable-status" data-initial-status="Homework">
+                    </div>
+
+                      <ul class="actions-list">
+                        <li class="actions-item">
+                          <a class="action pubdate" href="#" data-tooltip="Edit publish date on this subsection" class="public-button public-subsection-button"><i class="icon-time"></i> <span class="sr">Edit publish date on this subsection</span></a>
+                        </li>
+                        <li class="actions-item privacy">
+                          <a class="action" href="#" data-tooltip="Make this subsection public" class="public-button public-subsection-button"><i class="icon-adjust"></i> <span class="sr">Make this subsection public</span></a>
+                        </li>
+                        <li class="actions-item delete">
+                          <a class="action delete-subsection-button" href="#" data-tooltip="Delete this subsection" class="delete-button delete-subsection-button"><i class="icon-trash"></i> <span class="sr">Delete subsection</span></a>
+                        </li>
+                      </ul>
+
+                      <span data-tooltip="Drag to reorder" class="drag-handle subsection-drag-handle"><i class="icon-ellipsis-vertical"></i><span class="sr">Drag to reorder</span></span>
+                    </div>
+                  </div>
+
+<ol class="sortable-unit-list">
+
+  <li class="courseware-unit leaf unit is-draggable" data-id="i4x://FU/432/vertical/1199d0b1c4904a0eb1ee500b50393729" data-parent-id="i4x://FU/432/sequential/e72fb2c5393f483f9b94daaece43974f">
+
+    <span class="draggable-drop-indicator draggable-drop-indicator-before"><i class="icon-caret-right"></i></span>
+
+
+
+    <div class="section-item ">
+      <a href="/edit/i4x://FU/432/vertical/1199d0b1c4904a0eb1ee500b50393729" class="draft-item">
+        <span class="unit-name">Properties of Ice and Water</span>
+      </a>
+      <div class="item-actions">
+  <a href="#" data-tooltip="Delete this unit" class="delete-button" data-id="i4x://FU/432/vertical/1199d0b1c4904a0eb1ee500b50393729"><i class="icon-trash"></i></a>
+  <span data-tooltip="Drag to sort" class="drag-handle unit-drag-handle"><i class="icon-ellipsis-vertical"></i><span class="sr">Drag to reorder</span></span>
+      </div>
+    </div>
+
+    <span class="draggable-drop-indicator draggable-drop-indicator-after"><i class="icon-caret-right"></i></span>
+
+  </li>
+
+  <li class="courseware-unit leaf unit is-draggable" data-id="i4x://SomethingX/123/vertical/vertical_ebf906ca2f84" data-parent-id="i4x://SomethingX/123/sequential/37ec630eef374e5ba85128de121e0210">
+
+    <span class="draggable-drop-indicator draggable-drop-indicator-before"><i class="icon-caret-right"></i></span>
+
+
+
+    <div class="section-item ">
+      <a href="/edit/i4x://SomethingX/123/vertical/vertical_ebf906ca2f84" class="public-item">
+        <span class="unit-name">Boxplots</span>
+      </a>
+      <div class="item-actions">
+  <a href="#" data-tooltip="Delete this unit" class="delete-button" data-id="i4x://SomethingX/123/vertical/vertical_ebf906ca2f84"><i class="icon-trash"></i></a>
+  <span data-tooltip="Drag to sort" class="drag-handle unit-drag-handle"><i class="icon-ellipsis-vertical"></i><span class="sr">Drag to reorder</span></span>
+      </div>
+    </div>
+
+    <span class="draggable-drop-indicator draggable-drop-indicator-after"><i class="icon-caret-right"></i></span>
+
+  </li>
+<li class="courseware-unit leaf unit is-draggable" data-id="i4x://SomethingX/123/vertical/vertical_a11676b6190c" data-parent-id="i4x://SomethingX/123/sequential/37ec630eef374e5ba85128de121e0210">
+
+    <span class="draggable-drop-indicator draggable-drop-indicator-before"><i class="icon-caret-right"></i></span>
+
+
+
+    <div class="section-item ">
+      <a href="/edit/i4x://SomethingX/123/vertical/vertical_a11676b6190c" class="public-item">
+        <span class="unit-name">Superimposed Frequency Polygons</span>
+      </a>
+      <div class="item-actions">
+  <a href="#" data-tooltip="Delete this unit" class="delete-button" data-id="i4x://SomethingX/123/vertical/vertical_a11676b6190c"><i class="icon-trash"></i></a>
+  <span data-tooltip="Drag to sort" class="drag-handle unit-drag-handle"><i class="icon-ellipsis-vertical"></i><span class="sr">Drag to reorder</span></span>
+      </div>
+    </div>
+
+    <span class="draggable-drop-indicator draggable-drop-indicator-after"><i class="icon-caret-right"></i></span>
+
+  </li>
+  <li class="courseware-unit leaf unit is-draggable" data-id="i4x://SomethingX/123/vertical/vertical_a6ed4d73aa6b" data-parent-id="i4x://SomethingX/123/sequential/37ec630eef374e5ba85128de121e0210">
+
+    <span class="draggable-drop-indicator draggable-drop-indicator-before"><i class="icon-caret-right"></i></span>
+
+
+
+    <div class="section-item ">
+      <a href="/edit/i4x://SomethingX/123/vertical/vertical_a6ed4d73aa6b" class="public-item">
+        <span class="unit-name">Cumulative Distributions and Survival Curves</span>
+      </a>
+      <div class="item-actions">
+  <a href="#" data-tooltip="Delete this unit" class="delete-button" data-id="i4x://SomethingX/123/vertical/vertical_a6ed4d73aa6b"><i class="icon-trash"></i></a>
+  <span data-tooltip="Drag to sort" class="drag-handle unit-drag-handle"><i class="icon-ellipsis-vertical"></i><span class="sr">Drag to reorder</span></span>
+      </div>
+    </div>
+
+    <span class="draggable-drop-indicator draggable-drop-indicator-after"><i class="icon-caret-right"></i></span>
+
+  </li>
+  <li class="courseware-unit leaf unit is-draggable" data-id="i4x://SomethingX/123/vertical/vertical_d75b9abed09d" data-parent-id="i4x://SomethingX/123/sequential/37ec630eef374e5ba85128de121e0210">
+
+    <span class="draggable-drop-indicator draggable-drop-indicator-before"><i class="icon-caret-right"></i></span>
+
+
+
+    <div class="section-item ">
+      <a href="/edit/i4x://SomethingX/123/vertical/vertical_d75b9abed09d" class="public-item">
+        <span class="unit-name">Scatter and Line Plots</span>
+      </a>
+      <div class="item-actions">
+  <a href="#" data-tooltip="Delete this unit" class="delete-button" data-id="i4x://SomethingX/123/vertical/vertical_d75b9abed09d"><i class="icon-trash"></i></a>
+  <span data-tooltip="Drag to sort" class="drag-handle unit-drag-handle"><i class="icon-ellipsis-vertical"></i><span class="sr">Drag to reorder</span></span>
+      </div>
+    </div>
+
+    <span class="draggable-drop-indicator draggable-drop-indicator-after"><i class="icon-caret-right"></i></span>
+
+  </li>
+  <li class="courseware-unit leaf unit is-draggable" data-id="i4x://SomethingX/123/vertical/vertical_dfd326878f26" data-parent-id="i4x://SomethingX/123/sequential/37ec630eef374e5ba85128de121e0210">
+
+    <span class="draggable-drop-indicator draggable-drop-indicator-before"><i class="icon-caret-right"></i></span>
+
+
+
+    <div class="section-item ">
+      <a href="/edit/i4x://SomethingX/123/vertical/vertical_dfd326878f26" class="public-item">
+        <span class="unit-name">Types of Plots</span>
+      </a>
+      <div class="item-actions">
+  <a href="#" data-tooltip="Delete this unit" class="delete-button" data-id="i4x://SomethingX/123/vertical/vertical_dfd326878f26"><i class="icon-trash"></i></a>
+  <span data-tooltip="Drag to sort" class="drag-handle unit-drag-handle"><i class="icon-ellipsis-vertical"></i><span class="sr">Drag to reorder</span></span>
+      </div>
+    </div>
+
+    <span class="draggable-drop-indicator draggable-drop-indicator-after"><i class="icon-caret-right"></i></span>
+
+  </li>
+
+  <li class="courseware-unit-new">
+    <span class="draggable-drop-indicator draggable-drop-indicator-initial"><i class="icon-caret-right"></i></span>
+
+
+    <a href="#" class="new-unit-item" data-category="vertical" data-parent="i4x://FU/432/sequential/e72fb2c5393f483f9b94daaece43974f">
+      <i class="icon-plus"></i> New Unit
+    </a>
+  </li>
+</ol>
+
+
+                  <span class="draggable-drop-indicator draggable-drop-indicator-after"><i class="icon-caret-right"></i></span>
+
+                </li>
+                <li class="courseware-subsection branch collapsed id-holder is-draggable" data-id="i4x://FU/432/sequential/c5094434fab74322b7a758f8062e3810" data-parent-id="i4x://FU/432/chapter/653df83a82d1468a973acf0dfdf37029">
+
+                  <span class="draggable-drop-indicator draggable-drop-indicator-before"><i class="icon-caret-right"></i></span>
+
+
+                  <div class="section-item mixed">
+                    <div class="status">This section has mixed visibility to students</div>
+                    <div class="details">
+                      <a href="#" data-tooltip="Expand/collapse this subsection" class="expand-collapse-icon expand"></a>
+                      <a href="/subsection/i4x://FU/432/sequential/c5094434fab74322b7a758f8062e3810">
+                        <span class="subsection-name"><span class="subsection-name-value">Final Section Quiz</span></span>
+                      </a>
+                    </div>
+
+
+
+                    <div class="item-actions">
+
+                    <div class="gradable-status" data-initial-status="Quiz">
+                    </div>
+
+                      <ul class="actions-list">
+                        <li class="actions-item">
+                          <a class="action pubdate isset" href="#" data-tooltip="Edit publish date on this subsection" class="public-button public-subsection-button"><i class="icon-time"></i> <span class="sr">Edit publish date on this subsection</span></a>
+                        </li>
+                        <li class="actions-item privacy">
+                          <a class="action" href="#" data-tooltip="Make this subsection private" class="private-button public-subsection-button"><i class="icon-circle"></i> <span class="sr">Make this subsection private</span></a>
+                        </li>
+                        <li class="actions-item delete">
+                          <a class="action delete-subsection-button" href="#" data-tooltip="Delete this subsection" class="delete-button delete-subsection-button"><i class="icon-trash"></i> <span class="sr">Delete subsection</span></a>
+                        </li>
+                      </ul>
+
+                      <span data-tooltip="Drag to reorder" class="drag-handle subsection-drag-handle"><i class="icon-ellipsis-vertical"></i><span class="sr">Drag to reorder</span></span>
+                    </div>
+                  </div>
+
+<ol class="sortable-unit-list">
+
+  <li class="courseware-unit leaf unit is-draggable" data-id="i4x://FU/432/vertical/fe982eb702914b4080222e224f2eeb87" data-parent-id="i4x://FU/432/sequential/c5094434fab74322b7a758f8062e3810">
+
+    <span class="draggable-drop-indicator draggable-drop-indicator-before"><i class="icon-caret-right"></i></span>
+
+
+
+    <div class="section-item ">
+      <a href="/edit/i4x://FU/432/vertical/fe982eb702914b4080222e224f2eeb87" class="public-item">
+        <span class="unit-name">Test your hockey knowledge </span>
+      </a>
+      <div class="item-actions">
+  <a href="#" data-tooltip="Delete this unit" class="delete-button" data-id="i4x://FU/432/vertical/fe982eb702914b4080222e224f2eeb87"><i class="icon-trash"></i></a>
+  <span data-tooltip="Drag to sort" class="drag-handle unit-drag-handle"><i class="icon-ellipsis-vertical"></i><span class="sr">Drag to reorder</span></span>
+      </div>
+    </div>
+
+    <span class="draggable-drop-indicator draggable-drop-indicator-after"><i class="icon-caret-right"></i></span>
+
+  </li>
+  <li class="courseware-unit-new">
+    <span class="draggable-drop-indicator draggable-drop-indicator-initial"><i class="icon-caret-right"></i></span>
+
+
+    <a href="#" class="new-unit-item" data-category="vertical" data-parent="i4x://FU/432/sequential/c5094434fab74322b7a758f8062e3810">
+      <i class="icon-plus"></i> New Unit
+    </a>
+  </li>
+</ol>
+
+
+                  <span class="draggable-drop-indicator draggable-drop-indicator-after"><i class="icon-caret-right"></i></span>
+
+                </li>
+                <li class="courseware-subsection branch collapsed id-holder is-draggable" data-id="i4x://FU/432/sequential/155c37b90b6f42eabc10f09218df1b2e" data-parent-id="i4x://FU/432/chapter/653df83a82d1468a973acf0dfdf37029">
+
+                  <span class="draggable-drop-indicator draggable-drop-indicator-before"><i class="icon-caret-right"></i></span>
+
+
+                  <div class="section-item">
+                    <div class="status">This section is visible to students</div>
+                    <div class="details">
+                      <a href="#" data-tooltip="Expand/collapse this subsection" class="expand-collapse-icon expand"></a>
+                      <a href="/subsection/i4x://FU/432/sequential/155c37b90b6f42eabc10f09218df1b2e">
+                        <span class="subsection-name"><span class="subsection-name-value">Just for admins</span></span>
+                      </a>
+                    </div>
+
+
+
+                    <div class="item-actions">
+
+                    <div class="gradable-status" data-initial-status="Not Graded">
+                    </div>
+
+                      <ul class="actions-list">
+                        <li class="actions-item">
+                          <a class="action pubdate" href="#" data-tooltip="Edit publish date on this subsection" class="public-button public-subsection-button"><i class="icon-time"></i> <span class="sr">Edit publish date on this subsection</span></a>
+                        </li>
+                        <li class="actions-item privacy">
+                          <a class="action" href="#" data-tooltip="Make this subsection public" class="public-button public-subsection-button"><i class="icon-circle-blank"></i> <span class="sr">Make this subsection public</span></a>
+                        </li>
+                        <li class="actions-item delete">
+                          <a class="action delete-subsection-button" href="#" data-tooltip="Delete this subsection" class="delete-button delete-subsection-button"><i class="icon-trash"></i> <span class="sr">Delete subsection</span></a>
+                        </li>
+                      </ul>
+
+                      <span data-tooltip="Drag to reorder" class="drag-handle subsection-drag-handle"><i class="icon-ellipsis-vertical"></i><span class="sr">Drag to reorder</span></span>
+                    </div>
+                  </div>
+
+<ol class="sortable-unit-list">
+
+  <li class="courseware-unit leaf unit is-draggable" data-id="i4x://FU/432/vertical/4f937b3408684e96adec9ff3b8cf42ea" data-parent-id="i4x://FU/432/sequential/155c37b90b6f42eabc10f09218df1b2e">
+
+    <span class="draggable-drop-indicator draggable-drop-indicator-before"><i class="icon-caret-right"></i></span>
+
+
+
+    <div class="section-item ">
+      <a href="/edit/i4x://FU/432/vertical/4f937b3408684e96adec9ff3b8cf42ea" class="private-item">
+        <span class="unit-name">New Problems</span>
+      </a>
+      <div class="item-actions">
+  <a href="#" data-tooltip="Delete this unit" class="delete-button" data-id="i4x://FU/432/vertical/4f937b3408684e96adec9ff3b8cf42ea"><i class="icon-trash"></i></a>
+  <span data-tooltip="Drag to sort" class="drag-handle unit-drag-handle"><i class="icon-ellipsis-vertical"></i><span class="sr">Drag to reorder</span></span>
+      </div>
+    </div>
+
+    <span class="draggable-drop-indicator draggable-drop-indicator-after"><i class="icon-caret-right"></i></span>
+
+  </li>
+  <li class="courseware-unit-new">
+    <span class="draggable-drop-indicator draggable-drop-indicator-initial"><i class="icon-caret-right"></i></span>
+
+
+    <a href="#" class="new-unit-item" data-category="vertical" data-parent="i4x://FU/432/sequential/155c37b90b6f42eabc10f09218df1b2e">
+      <i class="icon-plus"></i> New Unit
+    </a>
+  </li>
+</ol>
+
+
+                  <span class="draggable-drop-indicator draggable-drop-indicator-after"><i class="icon-caret-right"></i></span>
+
+                </li>
+                <li class="ui-splint ui-splint-indicator">
+                  <span class="draggable-drop-indicator draggable-drop-indicator-initial"><i class="icon-caret-right"></i></span>
+
+                </li>
+              </ol>
+
+              <div class="list-header">
+                <a href="#" class="new-subsection-item" data-category="sequential">
+                  <i class="icon-plus"></i> New Subsection
+                </a>
+              </div>
+
+            </div>
+
+            <span class="draggable-drop-indicator draggable-drop-indicator-after"><i class="icon-caret-right"></i></span>
+
+          </section>
+
+<!-- end example code -->
+
+
+
+
+
           % for section in sections:
           <section class="courseware-section branch is-draggable" data-id="${section.location}" data-parent-id="${context_course.location.url()}">
 
@@ -155,38 +699,48 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
 
               <div class="item-details" data-id="${section.location}">
                 <h3 class="section-name" data-name="${section.display_name_with_default | h}"></h3>
-                <div class="section-published-date">
-                  <%
-                    if section.start is not None:
-                        start_date_str = section.start.strftime('%m/%d/%Y')
-                        start_time_str = section.start.strftime('%H:%M')
-                    else:
-                        start_date_str = ''
-                        start_time_str = ''
-                  %>
-                  %if section.start is None:
-                    <span class="published-status">${_("This section has not been released.")}</span>
-                    <a href="#" class="schedule-button" data-date="" data-time="" data-id="${section.location}">${_("Schedule")}</a>
-                  %else:
-                    <span class="published-status"><strong>${_("Will Release:")}</strong>
-                    ${date_utils.get_default_time_display(section.start)}</span>
-                    <a href="#" class="edit" data-date="${start_date_str}"
-                      data-time="${start_time_str}" data-id="${section.location}"><i class="icon-time"></i> <span class="sr">${_("Edit section release date")}</span></a>
-                  %endif
-                </div>
+
               </div>
 
               <div class="item-actions">
-                <a href="#" data-tooltip="${_('Delete this section')}" class="delete-button delete-section-button"><i class="icon-trash"></i> <span class="sr">${_("Delete section")}</span></a>
-                <span data-tooltip="${_('Drag to reorder')}" class="drag-handle section-drag-handle"><span class="sr">${_("Delete section")}</span></span>
+
+                      <ul class="actions-list">
+
+                        <li class="actions-item">
+                          <div class="section-published-date">
+                            <%
+                              if section.start is not None:
+                                  start_date_str = section.start.strftime('%m/%d/%Y')
+                                  start_time_str = section.start.strftime('%H:%M')
+                              else:
+                                  start_date_str = ''
+                                  start_time_str = ''
+                            %>
+                            %if section.start is None:
+                              <span class="published-status">${_("This section has not been released.")}</span>
+                              <a href="#" class="schedule-button" data-date="" data-time="" data-id="${section.location}">${_("Schedule")}</a>
+                            %else:
+                              <span class="published-status"><strong>${_("Will Release:")}</strong>
+                              ${date_utils.get_default_time_display(section.start)}</span>
+                              <a href="#" class="edit-release-date" data-date="${start_date_str}"
+                                data-time="${start_time_str}" data-id="${section.location}"><i class="icon-time"></i> <span class="sr">${_("Edit section release date")}</span></a>
+                            %endif
+                          </div>
+                        </li>
+
+                        <li class="actions-item privacy">
+                          <a href="#" data-tooltip="${_('Make this subsection public')}" class="action public-button public-subsection-button"><i class="icon-circle-blank"></i> <span class="sr">${_("Make this subsection public")}</span></a>
+                        </li>
+                        <li class="actions-item delete">
+                          <a href="#" data-tooltip="${_('Delete this section')}" class="action delete-section-button"><i class="icon-trash"></i> <span class="sr">${_("Delete section")}</span></a>
+                        </li>
+                      </ul>
+
+                <span data-tooltip="${_('Drag to reorder')}" class="drag-handle section-drag-handle"><i class="icon-ellipsis-vertical"></i><span class="sr">${_("Drag to reorder section")}</span></span>
               </div>
             </header>
             <div class="subsection-list">
-              <div class="list-header">
-                <a href="#" class="new-subsection-item" data-category="${new_subsection_category}">
-                  <i class="icon-plus"></i> ${_("New Subsection")}
-                </a>
-              </div>
+
               <ol class="sortable-subsection-list" data-id="${section.location.url()}">
                 % for subsection in section.get_children():
                 <li class="courseware-subsection branch collapsed id-holder is-draggable" data-id="${subsection.location}" data-parent-id="${section.location.url()}">
@@ -194,6 +748,7 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                   <%include file="widgets/_ui-dnd-indicator-before.html" />
 
                   <div class="section-item">
+                    <div class="status">This section is visible to students</div>
                     <div class="details">
                       <a href="#" data-tooltip="${_('Expand/collapse this subsection')}" class="expand-collapse-icon expand"></a>
                       <a href="${reverse('edit_subsection', args=[subsection.location])}">
@@ -201,11 +756,25 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                       </a>
                     </div>
 
+
+
+                    <div class="item-actions">
+
                     <div class="gradable-status" data-initial-status="${subsection.format if subsection.format is not None else _('Not Graded')}">
                     </div>
 
-                    <div class="item-actions">
-                      <a href="#" data-tooltip="${_('Delete this subsection')}" class="delete-button delete-subsection-button"><i class="icon-trash"></i> <span class="sr">${_("Delete subsection")}</span></a>
+                      <ul class="actions-list">
+                        <li class="actions-item">
+                          <a class="action pubdate" href="#" data-tooltip="${_('Edit publish date on this subsection')}" class="public-button public-subsection-button"><i class="icon-time"></i> <span class="sr">${_("Edit publish date on this subsection")}</span></a>
+                        </li>
+                        <li class="actions-item privacy">
+                          <a class="action" href="#" data-tooltip="${_('Make this subsection public')}" class="public-button public-subsection-button"><i class="icon-circle-blank"></i> <span class="sr">${_("Make this subsection public")}</span></a>
+                        </li>
+                        <li class="actions-item delete">
+                          <a class="action delete-subsection-button" href="#" data-tooltip="${_('Delete this subsection')}" class="delete-button delete-subsection-button"><i class="icon-trash"></i> <span class="sr">${_("Delete subsection")}</span></a>
+                        </li>
+                      </ul>
+
                       <span data-tooltip="${_('Drag to reorder')}" class="drag-handle subsection-drag-handle"><span class="sr">${_("Drag to reorder")}</span></span>
                     </div>
                   </div>
@@ -218,6 +787,13 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                   <%include file="widgets/_ui-dnd-indicator-initial.html" />
                 </li>
               </ol>
+
+              <div class="list-header">
+                <a href="#" class="new-subsection-item" data-category="${new_subsection_category}">
+                  <i class="icon-plus"></i> ${_("New Subsection")}
+                </a>
+              </div>
+
             </div>
 
             <%include file="widgets/_ui-dnd-indicator-after.html" />
@@ -236,7 +812,7 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
         </div>
         <div class="bit">
           <h3 class="title-3">${_("What do all the symbols mean?")}</h3>
-          <p>${_("The ")}</p>
+          <p>${_("Here is a list of symbols you may see on this page and what they mean: ")}</p>
         </div>
       </aside>
     </section>

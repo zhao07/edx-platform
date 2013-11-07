@@ -38,133 +38,192 @@
 
 
   input.courseware-unit-search-input {
-      float: left;
-      width: 260px;
-      background-color: #fff;
+    float: left;
+    width: 260px;
+    background-color: #fff;
   }
+
+  .courseware-section {
+
+        .actions-list {
+          display: inline-block;
+          margin-bottom: 0;
+        }
+
+        .actions-item {
+          @include font-size(13);
+          display: inline-block;
+          padding: 0 8px;
+
+          &.pubdate {
+            padding-right: 0;
+          }
+
+          .action {
+            min-width: ($baseline*.75);
+            color: $gray-l2;
+
+            &.pubdate {
+              visibility: hidden;
+            }
+
+            &:hover,
+            &.isset {
+              color: $blue;
+              visibility: visible;
+            }
+          }
+
+          .section-published-date {
+            position: relative;
+            top: 0;
+            right: 0;
+          }
+        }
+
+  }
+
+
 
   .branch {
 
     .section-item {
       @include clearfix();
+      border-left: 5px solid $gray-l2;
+
+        &.visible {
+          border-left: 5px solid $green;
+        }
+
+        &.mixed {
+          border-left: 5px solid $yellow-s1;
+        }
+
+      .status {
+        @extend %cont-text-sr;
+      }
 
       .details {
         display: block;
         float: left;
         margin-bottom: 0;
-        width: 650px;
+        width: 600px;
       }
 
-      .gradable-status {
-        float: right;
+      .item-actions {
         position: relative;
-        top: -4px;
-        right: 50px;
-        width: 100px;
+        float: right;
+        top: 0;
+        right: 0;
 
-        .status-label {
-          @include font-size(12);
-          position: absolute;
-          top: 2px;
-          right: -5px;
-          display: none;
-          width: 110px;
-          padding: 5px 40px 5px 10px;
-          border-radius: 3px;
-          color: $lightGrey;
-          text-align: right;
-          font-weight: bold;
-          line-height: 16px;
-        }
-
-        .menu-toggle {
-          z-index: 10;
-          position: absolute;
-          top: 0;
-          right: 5px;
-          padding: 5px;
-          color: $mediumGrey;
-
-          &:hover, &.is-active {
-            color: $blue;
-          }
-        }
-
-        [class^="icon-"] {
-          vertical-align: middle;
-          margin-top: -5px;
+        .gradable-status {
           display: inline-block;
-        }
+          position: relative;
 
-        .menu {
-          @include font-size(12);
-          @include transition(opacity $tmg-f2 linear 0s);
-          border-radius: 4px;
-          box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
-          z-index: 1;
-          display: none;
-          opacity: 0.0;
-          position: absolute;
-          top: -1px;
-          right: 0;
-          margin: 0;
-          padding: 8px 12px;
-          background: $white;
-          border: 1px solid $mediumGrey;
+          .status-label {
+            @include font-size(12);
+            width: 110px;
+            padding: 5px 40px 5px 10px;
+            border-radius: 3px;
+            color: $lightGrey;
+            text-align: right;
+            font-weight: bold;
+            line-height: 16px;
+          }
+
+          .menu-toggle {
+            z-index: 10;
+            position: absolute;
+            top: 0;
+            right: 5px;
+            padding: 2px 5px;
+            color: $mediumGrey;
+
+            &:hover, &.is-active {
+              color: $blue;
+            }
+          }
+
+          [class^="icon-"] {
+            vertical-align: middle;
+            margin-top: -5px;
+            display: inline-block;
+          }
+
+          .menu {
+            @include font-size(12);
+            @include transition(opacity $tmg-f2 linear 0s);
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+            z-index: 1;
+            display: none;
+            opacity: 0.0;
+            position: absolute;
+            top: -1px;
+            right: 0;
+            margin: 0;
+            padding: 8px 12px;
+            background: $white;
+            border: 1px solid $mediumGrey;
 
 
-          li {
-            width: 115px;
-            margin-bottom: 3px;
-            padding-bottom: 3px;
-            border-bottom: 1px solid $lightGrey;
+            li {
+              width: 115px;
+              margin-bottom: 3px;
+              padding-bottom: 3px;
+              border-bottom: 1px solid $lightGrey;
 
-            &:last-child {
-              margin-bottom: 0;
-              padding-bottom: 0;
-              border: none;
+              &:last-child {
+                margin-bottom: 0;
+                padding-bottom: 0;
+                border: none;
 
-              a {
-                color: $darkGrey;
+                a {
+                  color: $darkGrey;
+                }
+              }
+            }
+
+            a {
+              color: $blue;
+
+              &.is-selected {
+                font-weight: bold;
               }
             }
           }
 
-          a {
-            color: $blue;
+          // dropdown state
+          &.is-active {
 
-            &.is-selected {
-              font-weight: bold;
+            .menu {
+              z-index: 1000;
+              display: block;
+              opacity: 1.0;
+            }
+
+            .menu-toggle {
+              z-index: 10000;
+            }
+          }
+
+          // set state
+          &.is-set {
+
+            .menu-toggle {
+              color: $blue;
+            }
+
+            .status-label {
+              display: block;
+              color: $blue;
             }
           }
         }
 
-        // dropdown state
-        &.is-active {
 
-          .menu {
-            z-index: 1000;
-            display: block;
-            opacity: 1.0;
-          }
 
-          .menu-toggle {
-            z-index: 10000;
-          }
-        }
 
-        // set state
-        &.is-set {
-
-          .menu-toggle {
-            color: $blue;
-          }
-
-          .status-label {
-            display: block;
-            color: $blue;
-          }
-        }
       }
     }
   }
@@ -174,7 +233,7 @@
     @extend %ui-window;
     @include transition(background $tmg-avg ease-in-out 0);
     position: relative;
-    padding-bottom: ($baseline/2);
+    padding: $baseline;
 
     &.collapsed {
       padding-bottom: 0;
@@ -188,6 +247,15 @@
     .datepair {
       float: left;
       margin-left: 10px;
+    }
+
+    &.released .section-published-date {
+      background-color: transparent;
+      color: $gray-l1;
+
+      a {
+        color: $gray-l2;
+      }
     }
 
     .section-published-date {
@@ -251,17 +319,20 @@
     }
 
     header {
-      min-height: 75px;
       @include clearfix();
+      min-height: 75px;
+      border: 0;
+      margin-bottom: 0;
+      padding: 0;
 
       .item-details,
       .section-published-date {
       }
 
       .item-details {
-        display: inline-block;
-        padding: 20px 0 10px 0;
         @include clearfix();
+        display: inline-block;
+        padding: 0 0 ($baseline/2) 0;
 
         .section-name {
           @include font-size(19);
@@ -269,7 +340,6 @@
           margin-right: 10px;
           width: 350px;
           font-weight: bold;
-          color: $blue;
         }
 
         .section-name-span {
@@ -277,7 +347,7 @@
           cursor: pointer;
 
           &:hover {
-            color: $orange;
+          color: $blue;
           }
         }
 
@@ -437,19 +507,16 @@
             }
           }
         }
+
       }
 
       .item-actions {
-        margin-top: 21px;
-        margin-right: 12px;
-
-        .actions-list {
-          margin: 0;
-        }
-
-        .actions-item {
-          display: inline-block;
-        }
+        position: relative;
+        float: right;
+        top: auto;
+        right: auto;
+        margin-top: 0;
+        margin-right: 8px;
 
         .edit-button,
         .delete-button {
@@ -460,7 +527,7 @@
       .expand-collapse-icon {
         @include transition(none);
         float: left;
-        margin: 25px 6px 16px 16px;
+        margin: ($baseline/4) ($baseline/2) ($baseline*.75) 0;
 
         &.expand {
             background-position: 0 0;
@@ -471,9 +538,6 @@
         }
       }
 
-      .drag-handle {
-        margin-left: 11px;
-      }
     }
 
     h3 {
@@ -526,21 +590,86 @@
     }
 
     .subsection-list {
-      margin: 0 12px;
+      margin: 0;
 
       > ol {
         @include tree-view;
-        border-top-width: 0;
+      }
+
+      .courseware-subsection {
+
+        .section-item {
+          position: relative;
+          margin: 5px 0;
+          border-top: 0 !important;
+          padding: 6px 8px 8px 16px;
+          background-color: $gray-l6;
+        }
+
+        .courseware-unit,
+        .courseware-unit-new {
+          position: relative;
+          display: block;
+          margin: ($baseline/4) 0 ($baseline/4) ($baseline*.75);
+          padding-left: ($baseline);
+        }
+
+        .courseware-unit .section-item {
+          @include font-size(13);
+          background-color: $white;
+          border: 0 none;
+
+          &:hover {
+            background-color: $blue-l5;
+          }
+
+          .item-actions a {
+            color: $gray-l2;
+            margin: 0;
+            padding: 0 8px;
+
+            &:hover {
+              color: $blue;
+            }
+          }
+        }
+
+
+        .courseware-unit-new {
+          margin-right: ($baseline*1.5);
+          }
+
+        .new-unit-item {
+          @extend %ui-btn-flat-outline;
+          width: 100%;
+          margin: 0 0 ($baseline/2) 0;
+          border: 1px solid $gray-l3;
+          padding: ($baseline/2) 0;
+          color: $gray-l2;
+
+
+          &:hover {
+            box-shadow: none;
+            background-image: none;
+          }
+        }
       }
 
       .new-subsection-item {
         @extend %ui-btn-flat-outline;
         @include font-size(16);
+        border: 1px solid $gray-l3;
         display: block;
         width: 100%;
         margin: 0;
         padding: ($baseline/2) 0;
-        font-weight: 600;
+        font-weight: 400;
+        color: $gray-l2;
+
+        &:hover {
+          box-shadow: none;
+          background-image: none;
+        }
       }
     }
 
@@ -716,6 +845,16 @@
 
   // UI: DnD - specific elems/cases - section
   .courseware-section {
+
+      .drag-handle {
+        @include font-size(16);
+        float: none;
+        height: auto;
+        margin-left: 11px;
+        background: none;
+        color: $gray-l3;
+        vertical-align: middle;
+      }
 
     .draggable-drop-indicator-before {
       top: -($baseline/2);
