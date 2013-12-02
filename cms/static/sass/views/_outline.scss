@@ -4,7 +4,9 @@
 .view-outline {
 
 
-  .content-primary, .content-supplementary {
+// page structure
+  .content-primary,
+  .content-supplementary {
     @include box-sizing(border-box);
     float: left;
   }
@@ -13,7 +15,7 @@
     width: flex-grid(9, 12);
     margin-right: flex-gutter();
 
-    .no-textbook-content {
+    .no-outline-content {
       @extend %ui-well;
       padding: ($baseline*2);
       background-color: $gray-l4;
@@ -26,205 +28,209 @@
 
         [class^="icon-"] {
           margin-right: ($baseline/2);
+
         }
       }
     }
   }
 
+
   .content-supplementary {
     width: flex-grid(3, 12);
   }
 
-
-
-  input.courseware-unit-search-input {
-    float: left;
-    width: 260px;
-    background-color: #fff;
-  }
-
   .courseware-section {
 
-        .actions-list {
-          display: inline-block;
-          margin-bottom: 0;
+
+    // section only styles
+    .section {
+
+      .expand-collapse {
+        display: inline-block;
+        vertical-align: top;
+        margin: ($baseline/4);
+        padding: $baseline;
+      }
+    }
+
+
+
+
+
+    .actions-list {
+      display: inline-block;
+      margin-bottom: 0;
+    }
+
+    .actions-item {
+      @include font-size(13);
+      display: inline-block;
+      padding: 0 8px;
+
+      &.pubdate {
+        padding-right: 0;
+      }
+
+      .action {
+        min-width: ($baseline*.75);
+        color: $gray-l2;
+
+        &.pubdate {
+          visibility: hidden;
         }
 
-        .actions-item {
-          @include font-size(13);
-          display: inline-block;
-          padding: 0 8px;
-
-          &.pubdate {
-            padding-right: 0;
-          }
-
-          .action {
-            min-width: ($baseline*.75);
-            color: $gray-l2;
-
-            &.pubdate {
-              visibility: hidden;
-            }
-
-            &:hover,
-            &.isset {
-              color: $blue;
-              visibility: visible;
-            }
-          }
-
-          .section-published-date {
-            position: relative;
-            top: 0;
-            right: 0;
-          }
+        &:hover,
+        &.isset {
+          color: $blue;
+          visibility: visible;
         }
+      }
+
+      .section-published-date {
+        position: relative;
+        top: 0;
+        right: 0;
+      }
+    }
+  }
+
+
+
+
+
+
+
+
+  // subsection styles
+  .section-item {
+    @include clearfix();
+
+    .details {
+      display: block;
+      float: left;
+      margin-bottom: 0;
+      width: 650px;
+    }
+
+
 
   }
 
 
 
-  .branch {
+  // gradable drop down
+  .gradable-status {
+    float: right;
+    position: relative;
 
-    .section-item {
-      @include clearfix();
-      border-left: 5px solid $gray-l2;
+    top: -4px;
+    right: 50px;
+    width: 100px;
 
-        &.visible {
-          border-left: 5px solid $green;
+    .status-label {
+      @include font-size(12);
+      position: absolute;
+      top: 2px;
+      right: -5px;
+      display: none;
+      width: 110px;
+      padding: 5px 40px 5px 10px;
+      border-radius: 3px;
+      color: $lightGrey;
+      text-align: right;
+      font-weight: bold;
+      line-height: 16px;
+    }
+
+
+    [class^="icon-"] {
+      vertical-align: middle;
+      margin-top: -5px;
+      display: inline-block;
+    }
+
+    .menu-toggle {
+      z-index: 10;
+      position: absolute;
+      top: 0;
+      right: 5px;
+      padding: 5px;
+      color: $mediumGrey;
+
+      &:hover, &.is-active {
+        color: $blue;
+      }
+    }
+
+    // gradable dropdown menu default
+    .menu {
+      @include font-size(12);
+      @include transition(opacity $tmg-f2 linear 0s);
+      border-radius: 4px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+      z-index: 1;
+      display: none;
+      opacity: 0.0;
+      position: absolute;
+      top: -1px;
+      right: 0;
+      margin: 0;
+      padding: 8px 12px;
+      background: $white;
+      border: 1px solid $mediumGrey;
+
+      li {
+        width: 115px;
+        margin-bottom: 3px;
+        padding-bottom: 3px;
+        border-bottom: 1px solid $lightGrey;
+
+        &:last-child {
+          margin-bottom: 0;
+          padding-bottom: 0;
+          border: none;
+
+          a {
+            color: $darkGrey;
+          }
         }
-
-        &.mixed {
-          border-left: 5px solid $yellow-s1;
-        }
-
-      .status {
-        @extend %cont-text-sr;
       }
 
-      .details {
+      a {
+        color: $blue;
+
+        &.is-selected {
+          font-weight: bold;
+        }
+      }
+    }
+
+    // gradable dropdown state
+    &.is-active {
+
+      .menu {
+        z-index: 1000;
         display: block;
-        float: left;
-        margin-bottom: 0;
-        width: 600px;
+        opacity: 1.0;
       }
 
-      .item-actions {
-        position: relative;
-        float: right;
-        top: 0;
-        right: 0;
-
-        .gradable-status {
-          display: inline-block;
-          position: relative;
-
-          .status-label {
-            @include font-size(12);
-            width: 110px;
-            padding: 5px 40px 5px 10px;
-            border-radius: 3px;
-            color: $lightGrey;
-            text-align: right;
-            font-weight: bold;
-            line-height: 16px;
-          }
-
-          .menu-toggle {
-            z-index: 10;
-            position: absolute;
-            top: 0;
-            right: 5px;
-            padding: 2px 5px;
-            color: $mediumGrey;
-
-            &:hover, &.is-active {
-              color: $blue;
-            }
-          }
-
-          [class^="icon-"] {
-            vertical-align: middle;
-            margin-top: -5px;
-            display: inline-block;
-          }
-
-          .menu {
-            @include font-size(12);
-            @include transition(opacity $tmg-f2 linear 0s);
-            border-radius: 4px;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
-            z-index: 1;
-            display: none;
-            opacity: 0.0;
-            position: absolute;
-            top: -1px;
-            right: 0;
-            margin: 0;
-            padding: 8px 12px;
-            background: $white;
-            border: 1px solid $mediumGrey;
-
-
-            li {
-              width: 115px;
-              margin-bottom: 3px;
-              padding-bottom: 3px;
-              border-bottom: 1px solid $lightGrey;
-
-              &:last-child {
-                margin-bottom: 0;
-                padding-bottom: 0;
-                border: none;
-
-                a {
-                  color: $darkGrey;
-                }
-              }
-            }
-
-            a {
-              color: $blue;
-
-              &.is-selected {
-                font-weight: bold;
-              }
-            }
-          }
-
-          // dropdown state
-          &.is-active {
-
-            .menu {
-              z-index: 1000;
-              display: block;
-              opacity: 1.0;
-            }
-
-            .menu-toggle {
-              z-index: 10000;
-            }
-          }
-
-          // set state
-          &.is-set {
-
-            .menu-toggle {
-              color: $blue;
-            }
-
-            .status-label {
-              display: block;
-              color: $blue;
-            }
-          }
-        }
-
-
-
-
+      .menu-toggle {
+        z-index: 10000;
       }
+    }
+
+    // set state
+    &.is-set {
+
+      .menu-toggle {
+        color: $blue;
+      }
+
+      .status-label {
+        display: block;
+        color: $blue;
+      }
+
     }
   }
 
@@ -233,33 +239,15 @@
     @extend %ui-window;
     @include transition(background $tmg-avg ease-in-out 0);
     position: relative;
-    padding: $baseline;
+    padding-bottom: ($baseline/2);
 
     &.collapsed {
-      padding-bottom: 0;
+        padding-bottom: 0;
     }
 
     label {
-      float: left;
-      line-height: 29px;
-    }
-
-    .datepair {
-      float: left;
-      margin-left: 10px;
-    }
-
-    &.released .section-published-date {
-      background-color: transparent;
-      color: $gray-l1;
-
-      a {
-        color: $gray-l2;
-
-        &:hover {
-          color: $blue;
-        }
-      }
+        float: left;
+        line-height: 29px;
     }
 
     .section-published-date {
@@ -279,42 +267,8 @@
           font-weight: bold;
         }
       }
-
-      .schedule-button {
-        @include blue-button;
-      }
-
-      .edit-button {
-        @include blue-button;
-      }
-
-      .schedule-button,
-      .edit-button {
-        @include font-size(11);
-        padding: 3px 15px 5px;
-      }
     }
 
-    .datepair .date,
-    .datepair .time {
-      @include font-size(13);
-      box-shadow: none;
-      padding-left: 0;
-      padding-right: 0;
-      border: none;
-      background: none;
-      font-weight: bold;
-      color: $blue;
-      cursor: pointer;
-    }
-
-    .datepair .date {
-      width: 80px;
-    }
-
-    .datepair .time {
-      width: 65px;
-    }
 
     &.collapsed .subsection-list,
     .collapsed .subsection-list,
@@ -341,9 +295,24 @@
           margin-right: 10px;
         }
 
-        .section-name-span {
-          @include transition(color $tmg-f2 linear 0s);
-          cursor: pointer;
+        .item-details {
+            float: none;
+            display: inline-block;
+            padding: 20px 0 10px 0;
+            @include clearfix();
+
+            .section-name {
+              @include font-size(19);
+              float: left;
+              margin-right: 10px;
+              width: 350px;
+              font-weight: bold;
+              color: $blue;
+            }
+
+            .section-name-span {
+              @include transition(color $tmg-f2 linear 0s);
+              cursor: pointer;
 
           &:hover {
           color: $blue;
@@ -917,4 +886,5 @@
   .ui-splint-indicator {
     position: relative;
   }
+}
 }
