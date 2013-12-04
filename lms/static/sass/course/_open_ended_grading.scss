@@ -1,6 +1,58 @@
 .open-ended-problems,
 .combined-notifications
 {
+
+    // system feedback - messages
+    .msg {
+      border-radius: 1px;
+      padding: $baseline/2 $baseline*0.75;
+      margin-bottom: $baseline;
+      font-weight: 600;
+
+      .copy {
+        font-weight: 600;
+      }
+    }
+
+    // TYPE: warning
+    .msg-warning {
+      border-top: 2px solid $warning-color;
+      background: tint($warning-color,95%);
+      display: none;
+      color: $warning-color;
+    }
+
+    // TYPE: confirm
+    .msg-confirm {
+      border-top: 2px solid $confirm-color;
+      background: tint($confirm-color,95%);
+      display: none;
+      color: $confirm-color;
+    }
+
+    // TYPE: error
+    .msg-error {
+      border-top: 2px solid $error-color;
+      background: tint($error-color,95%);
+
+      .copy {
+        color: $error-color;
+      }
+    }
+
+    // inline copy
+    .copy-confirm {
+      color: $confirm-color;
+    }
+
+    .copy-warning {
+      color: $warning-color;
+    }
+
+    .copy-error {
+      color: $error-color;
+    }
+
     padding: 40px;
     .problem-list
     {
@@ -36,7 +88,7 @@
                 text-align: center;
             }
         }
-        .notification-title 
+        .notification-title
         {
             text-transform: uppercase;
             background: $blue;
@@ -53,7 +105,7 @@
         {
             padding-top:5%;
         }
-        .alert-message 
+        .alert-message
         {
             img
             {
