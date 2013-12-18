@@ -213,3 +213,29 @@
         }
     }
 }
+
+
+
+
+
+
+
+// used by the unit status: adjust the status icon appearance
+.unit-status-section-icon-adjustment {
+  display: inline-block;
+}
+
+// used by the unit status: show the 'private' icon in a specific color
+.unit-status-all-private {
+  color: #ff683c;
+}
+
+// used by the unit status: show the 'public' icon in a specific color
+.unit-status-all-public {
+  color: #5dff2f;
+}
+
+// used by the unit status: show the 'mixed' icon in a specific color
+.unit-status-mixed-state {
+  color: #eaf515;
+}
