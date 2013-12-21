@@ -330,6 +330,13 @@ def catalog_unit_states( section ):
     foundPrivate = 0                            # counts the number of private units
     found_public = 0                            # counts the number of public units
     found_units = 0                             # counts the total number of units
+    affected_units = 0                          # total number of units which could be affected by a user status change
+
+    #section.position = section.position + 1     # TRBM this inc will be passed back properly
+    #import pdb;  print("\n\n_______________________________________________ 1 \n\n"); pdb.set_trace()
+
+
+
     for child in section.get_children():
       found_private_subsection = 0              # counts the number of private units in this subsection
       found_public_subsection = 0               # counts the number of public units in this subsection
@@ -349,9 +356,12 @@ def catalog_unit_states( section ):
             found_private_subsection += 1
 
     if found_public == found_units:
+        affected_units = found_units
         return_string = ALL_PUBLIC_ICON_STRING
 
     if found_public == 0:
+        affected_units = found_units
         return_string = ALL_PRIVATE_ICON_STRING
+
 
     return return_string + " unit-status-section-icon-adjustment"

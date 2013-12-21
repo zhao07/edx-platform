@@ -315,21 +315,24 @@ function unitStatusChangeSection(e) {
 }
 
 function _unitStatusChange($el, type) {
+
+    var affectedCount = 77;   // $el.position;
+
     var confirm = new PromptView.Warning({
         title: gettext('Changing Unit Status (' + type + ')'),
-        message: gettext('You are about to change N units to PRIVATE.'),
+        message: gettext('You are about to change ' + affectedCount + ' units to PRIVATE.'),
         actions: {
             primary: {
-                text: gettext('Yes, delete this ' + type),
+                text: gettext('Yes, change to PRIVATE'),
                 click: function(view) {
                     view.hide();
 
                     var locator = $el.data('locator');
 
-                    analytics.track('Deleted an Item', {
-                        'course': course_location_analytics,
-                        'id': locator
-                    });
+//                    analytics.track('Deleted an Item', {
+//                        'course': course_location_analytics,
+//                        'id': locator
+//                    });
 
                     var deleting = new NotificationView.Mini({
                         title: gettext('Deleting&hellip;')
