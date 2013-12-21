@@ -97,6 +97,16 @@ domReady(function() {
     $('.remove-date').bind('click', removeDateSetter);
 
     $('.delete-section-button').bind('click', deleteSection);
+    //$('.unit-status-change-section').bind('click', deleteSection);    // this works to connect the icon to the delete dialog
+    $('.unit-status-change-section').bind('click', unitStatusChangeSection);
+
+
+
+
+
+
+
+
     $('.delete-subsection-button').bind('click', deleteSubsection);
 
     $('.sync-date').bind('click', syncReleaseDate);
@@ -260,6 +270,54 @@ function _deleteItem($el, type) {
     var confirm = new PromptView.Warning({
         title: gettext('Delete this ' + type + '?'),
         message: gettext('Deleting this ' + type + ' is permanent and cannot be undone.'),
+        actions: {
+            primary: {
+                text: gettext('Yes, delete this ' + type),
+                click: function(view) {
+                    view.hide();
+
+                    var locator = $el.data('locator');
+
+                    analytics.track('Deleted an Item', {
+                        'course': course_location_analytics,
+                        'id': locator
+                    });
+
+                    var deleting = new NotificationView.Mini({
+                        title: gettext('Deleting&hellip;')
+                    });
+                    deleting.show();
+
+                    $.ajax({
+                        type: 'DELETE',
+                        url: ModuleUtils.getUpdateUrl(locator) +'?'+ $.param({recurse: true, all_versions: true}),
+                        success: function () {
+                            $el.remove();
+                            deleting.hide();
+                        }
+                    });
+                }
+            },
+            secondary: {
+                text: gettext('Cancel'),
+                click: function(view) {
+                    view.hide();
+                }
+            }
+        }
+    });
+    confirm.show();
+}
+
+function unitStatusChangeSection(e) {
+    e.preventDefault();
+    _unitStatusChange($(this).parents('section.branch'), 'Section');
+}
+
+function _unitStatusChange($el, type) {
+    var confirm = new PromptView.Warning({
+        title: gettext('Changing Unit Status (' + type + ')'),
+        message: gettext('You are about to change N units to PRIVATE.'),
         actions: {
             primary: {
                 text: gettext('Yes, delete this ' + type),

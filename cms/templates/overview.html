@@ -192,31 +192,35 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                 </a>
 
                 <a href="#" data-tooltip="${_('Bulk change unit status')} TRBM_bulk-change-units-section-button"  >
-                  <% print("\n\n——--- ZORK ------\n\n"); %>
-                    <i class="${catalog_unit_states(section)} "  >
-                        <div style="position: absolute;
-                                    text-align:center;
-                                    font-size: 12px;
-                                    font-family: 'Open Sans',sans-serif;
-                                    width: 400px;
-                                    height: 70px;
-                                    border: 1px solid #1D9348;
-                                    border-radius: 3px;
-                                    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset;
-                                    color: #000000;
-                                    right: 0;
-                                    margin-top: 8;
-                                    background-color: #ddddbb;">
-                            <div style="margin-top: 18; text-align: center">
-                                You are about to change the status of X units
-                            </div>
 
-                            <input style="vertical-align: bottom"   type="button"       value="All Public" />
-                            <input type="button" value="All Private" />
-                            <input type="button" value="Cancel" />
+                     <i class="${catalog_unit_states(section)} unit-status-change-section"  >
 
-                        </div>
-                    </i>
+
+
+
+                        <!--<div style="position: absolute;-->
+                                    <!--text-align:center;-->
+                                    <!--font-size: 12px;-->
+                                    <!--font-family: 'Open Sans',sans-serif;-->
+                                    <!--width: 400px;-->
+                                    <!--height: 70px;-->
+                                    <!--border: 1px solid #1D9348;-->
+                                    <!--border-radius: 3px;-->
+                                    <!--box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset;-->
+                                    <!--color: #000000;-->
+                                    <!--right: 0;-->
+                                    <!--margin-top: 8;-->
+                                    <!--background-color: #ddddbb;">-->
+                            <!--<div style="margin-top: 18; text-align: center">-->
+                                <!--You are about to change the status of X units-->
+                            <!--</div>-->
+
+                            <!--<input style="vertical-align: bottom"   type="button"       value="All Public" />-->
+                            <!--<input type="button" value="All Private" />-->
+                            <!--<input type="button" value="Cancel" />-->
+
+                        <!--</div>-->
+                   </i>
                 </a>
 
 
