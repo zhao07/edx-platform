@@ -142,6 +142,20 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
 
       <div class="wrapper-dnd">
         <%
+
+
+
+
+
+          section_counter = 0      # TRBM just a test setting variable
+
+
+
+
+
+
+
+
           course_locator = loc_mapper().translate_location(
             context_course.location.course_id, context_course.location, False, True
           )
@@ -149,6 +163,20 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
         <article class="courseware-overview" data-locator="${course_locator}">
           % for section in sections:
           <%
+
+
+
+
+
+
+
+            section.position = section_counter         # TRBM just a test setting variable
+            section_counter = section_counter + 1         # TRBM just a test setting variable
+
+
+
+
+
             section_locator = loc_mapper().translate_location(
               context_course.location.course_id, section.location, False, True
             )
