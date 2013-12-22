@@ -3,6 +3,9 @@
   import logging
   from contentstore.utils import get_subsection_state
   from contentstore.utils import get_section_unit_states
+  from contentstore.utils import get_section_unit_counts_found
+  from contentstore.utils import get_section_unit_counts_public
+  from contentstore.utils import get_section_unit_counts_private
   from xmodule.util import date_utils
   from django.utils.translation import ugettext as _
   from django.core.urlresolvers import reverse
@@ -162,6 +165,7 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
         %>
         <article class="courseware-overview" data-locator="${course_locator}">
           % for section in sections:
+
           <%
 
 
@@ -222,6 +226,22 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                 <a href="#" data-tooltip="${_('Bulk change unit status')} TRBM_bulk-change-units-section-button"  >
 
                      <i  class="${get_section_unit_states(section)} unit-status-change-section"  >
+                         <%
+                            six = 6
+                            print str('BONK ')
+
+                            print str('         ' + str(six) )
+
+                            ssix = get_section_unit_states( section )
+                            print str('               ' + str(ssix) )
+
+                            nine = get_section_unit_counts_found( section )
+                            print( str( nine ) )
+                          #  import pdb;  print("\n\n_______________________________________________\n\n"); pdb.set_trace()
+
+                         %>
+
+
 
 
 <!--var six = "6";-->
@@ -359,8 +379,6 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
           <input class="start-time time" type="text" name="start_time" value="" placeholder="HH:MM" class="time" size='10' autocomplete="off"/>
         </div>
 
-
-          <% print("\n\n------------ ARGGG -----------\n\n"); %>
 
 
 

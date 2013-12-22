@@ -21,9 +21,9 @@ from xmodule.modulestore.draft import DIRECT_ONLY_CATEGORIES
 
 unit_stateById = {}              # dictionary of unit states: key=ID, value=stateString
 
-MIXED_STATE_ICON_STRING = "icon-adjust      unit-status-mixed-state"
-ALL_PUBLIC_ICON_STRING = "icon-circle-blank unit-status-all-public"
-ALL_PRIVATE_ICON_STRING = "icon-circle      unit-status-all-private"
+MIXED_STATE_ICON_STRING = "icon-adjust       unit-status-mixed-state"
+ALL_PUBLIC_ICON_STRING  = "icon-circle-blank unit-status-all-public"
+ALL_PRIVATE_ICON_STRING = "icon-circle       unit-status-all-private"
 NO_UNITS_ICON_STRING = ""
 
 log = logging.getLogger(__name__)
@@ -329,7 +329,55 @@ def get_subsection_state( subsection ):
     return return_string
 
 
-def get_section_unit_counts( section ):
+def get_section_unit_counts_private( section ):
+    """
+    Check all the units belonging to all subsections, returning
+    just the count of the number of private units
+
+    @param section: the section whose units are to be analyzed
+    @return: number of private units found
+
+    NOTE: this function assumes the 'unit_stateById' dictionary has been
+    populated before it is called (see 'get_section_unit_states' below)
+    """
+    assert unit_stateById.__sizeof__() > 0  # be sure the dictionary of unit/state has been created
+    found_public, found_private, found_units = _get_section_unit_counts( section )
+    return found_private
+
+
+def get_section_unit_counts_public( section ):
+    """
+    Check all the units belonging to all subsections, returning
+    just the count of the number of public units
+
+    @param section: the section whose units are to be analyzed
+    @return: number of public units found
+
+    NOTE: this function assumes the 'unit_stateById' dictionary has been
+    populated before it is called (see 'get_section_unit_states' below)
+    """
+    assert unit_stateById.__sizeof__() > 0  # be sure the dictionary of unit/state has been created
+    found_public, found_private, found_units = _get_section_unit_counts( section )
+    return found_public
+
+
+def get_section_unit_counts_found( section ):
+    """
+    Check all the units belonging to all subsections, returning
+    just the count of the number of found units
+
+    @param section: the section whose units are to be analyzed
+    @return: number of units found
+
+    NOTE: this function assumes the 'unit_stateById' dictionary has been
+    populated before it is called (see 'get_section_unit_states' below)
+    """
+    assert unit_stateById.__sizeof__() > 0  # be sure the dictionary of unit/state has been created
+    found_public, found_private, found_units = _get_section_unit_counts( section )
+    return found_units
+
+
+def _get_section_unit_counts( section ):
     """
     Check all the units belonging to all subsections, returning
     a count of the number of units in each of the following 
