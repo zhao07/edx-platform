@@ -316,7 +316,7 @@ function unitStatusChangeSection(e) {
 
 function _unitStatusChange($el, type) {
 
-    var affectedCount = 77;   // $el.position;
+    var affectedCount = 77;   // this is wrong: = $el.position;
 
     var confirm = new PromptView.Warning({
         title: gettext('Changing Unit Status (' + type + ')'),
