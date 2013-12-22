@@ -280,6 +280,8 @@ def get_unit_state_icon_name( unit ):
     """
     Check the supplied unit's public/private/draft state, returning
     a string describing the icon style for the unit
+    @param unit: A unit to look up in the dictionary of unit/states
+    @return: A string indicating one of three states--mixed, all public, all private.
     """
     return_string = MIXED_STATE_ICON_STRING
     state = compute_unit_state(unit)
@@ -297,9 +299,14 @@ def get_subsection_state( subsection ):
     Check all the units belonging to the supplied subsection, returning
     a string describing the style for the SUBSECTION icon to show
 
+    @param subsection: the subsection whose units are to be analyzed
+    @return: A string indicating one of three states--mixed, all public, all private.
+
     NOTE: this function assumes the 'unit_stateById' dictionary has been
-    populated before it is called (see 'catalog_unit_states' below)
+    populated before it is called (see 'get_section_unit_states' below)
     """
+    assert unit_stateById.__sizeof__() > 0  # be sure the dictionary of unit/state has been created
+
     unit_count = 0
     return_string = MIXED_STATE_ICON_STRING
     unit_public_count = 0
@@ -321,21 +328,60 @@ def get_subsection_state( subsection ):
 
     return return_string
 
-def catalog_unit_states( section ):
+
+def get_section_unit_counts( section ):
     """
     Check all the units belonging to all subsections, returning
-    a string describing the style for the icon to show
+    a count of the number of units in each of the following 
+    categories:
+        public      -- unit status is public
+        private     -- unit status is private
+        found       -- each unit found adds one count
+
+    @param section: the section whose units are to be analyzed
+    @return: public, private, and found counts
+
+    NOTE: this function assumes the 'unit_stateById' dictionary has been
+    populated before it is called (see 'get_section_unit_states' below)
+    """
+    assert unit_stateById.__sizeof__() > 0  # be sure the dictionary of unit/state has been created
+
+    found_private = 0                           # counts the number of private units
+    found_public = 0                            # counts the number of public units
+    found_units = 0                             # counts the total number of units
+
+    for child in section.get_children():
+      found_private_subsection = 0              # counts the number of private units in this subsection
+      found_public_subsection = 0               # counts the number of public units in this subsection
+      found_units_subsection = 0                # counts the total number of units in this subsection
+      for unit in child.get_children():
+        found_units += 1
+        state = compute_unit_state(unit)
+        unit_stateById[ unit.location.name ] = state
+
+        if state == "public":
+            found_public += 1
+
+        if (state == "private") or (state == "draft"):
+            found_private += 1
+
+    return (found_public, found_private, found_units)
+
+
+def get_section_unit_states( section ):
+    """
+    Check all the units belonging to all subsections, returning
+    a string describing the style for the icon to show. Note that
+    a dictionary of unit/state entries is created by this function
+    to be used by other functions found in this file. Thus, this
+    function must be run first, before those other functions can
+    be safely called.
     """
     return_string = MIXED_STATE_ICON_STRING
-    foundPrivate = 0                            # counts the number of private units
+    found_private = 0                            # counts the number of private units
     found_public = 0                            # counts the number of public units
     found_units = 0                             # counts the total number of units
     affected_units = 0                          # total number of units which could be affected by a user status change
-
-    #section.position = section.position + 1     # TRBM this inc will be passed back properly
-    #import pdb;  print("\n\n_______________________________________________ 1 \n\n"); pdb.set_trace()
-
-
 
     for child in section.get_children():
       found_private_subsection = 0              # counts the number of private units in this subsection
@@ -352,7 +398,7 @@ def catalog_unit_states( section ):
             found_public_subsection += 1
 
         if (state == "private") or (state == "draft"):
-            foundPrivate += 1
+            found_private += 1
             found_private_subsection += 1
 
     if found_public == found_units:
@@ -363,5 +409,5 @@ def catalog_unit_states( section ):
         affected_units = found_units
         return_string = ALL_PRIVATE_ICON_STRING
 
-
     return return_string + " unit-status-section-icon-adjustment"
+
