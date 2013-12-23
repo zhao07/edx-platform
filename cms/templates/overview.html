@@ -226,53 +226,14 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                 <a href="#" data-tooltip="${_('Bulk change unit status')} TRBM_bulk-change-units-section-button"  >
 
                      <i  class="${get_section_unit_states(section)} unit-status-change-section"  >
-                         <!-- using these input boxes as invisible containers to hold unit counts -->
-                         <div   class='units_found'  > ${get_section_unit_counts_found(section)}      </div>
-                         <div   class='private_units'> ${get_section_unit_counts_private(section)}    </div>
-                         <div   class='public_units' > ${get_section_unit_counts_public(section)}     </div>
-
-
-                         <!--<script>-->
-                            <!--var myTextField = document.getElementById('myText');-->
-                            <!--alert("fred holds: " + myTextField.value)-->
-                         <!--</script>-->
-
-
-                         <%
-                            #six = 6
-                            #print str('BONK ')
-
-                            #print str('         ' + str(six) )
-
-                            #ssix = get_section_unit_states( section )
-                            #print str('               ' + str(ssix) )
-
-                            #nine = get_section_unit_counts_found( section )
-                            #print( str( nine ) )
-                      #      import pdb;  print("\n\n_______________________________________________\n\n"); pdb.set_trace()
-
-                            #self.response.write("HACK")
-                         %>
+                         <!-- using these div elements as invisible containers to hold unit counts -->
+                         <div hidden class='units_found'  > ${get_section_unit_counts_found(section)}      </div>
+                         <div hidden   class='private_units'> ${get_section_unit_counts_private(section)}  </div>
+                         <div hidden   class='public_units' > ${get_section_unit_counts_public(section)}   </div>
 
 
 
 
-
-<!--var six = "6";-->
-                         <!--Here is <script>document.write("6")</script> text.-->
-
-
-
-
-
-
-
-
-<!--<span id="printHere"></span>-->
-                         <!--<script>-->
-                                      <!--var x = 69;-->
-                             <!--$('#printHere').html(x);-->
-                         <!--</script>-->
 
 
 
