@@ -226,20 +226,33 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                 <a href="#" data-tooltip="${_('Bulk change unit status')} TRBM_bulk-change-units-section-button"  >
 
                      <i  class="${get_section_unit_states(section)} unit-status-change-section"  >
+                         <input hidden type='text' id='units_found' value="0" />
+                         <input hidden type='text' id='private_units' value="0" />
+                         <input hidden type='text' id='public_units' value="0" />
+
+
+                         <!--<script>-->
+                            <!--var myTextField = document.getElementById('myText');-->
+                            <!--alert("fred holds: " + myTextField.value)-->
+                         <!--</script>-->
+
+
                          <%
-                            six = 6
-                            print str('BONK ')
+                            #six = 6
+                            #print str('BONK ')
 
-                            print str('         ' + str(six) )
+                            #print str('         ' + str(six) )
 
-                            ssix = get_section_unit_states( section )
-                            print str('               ' + str(ssix) )
+                            #ssix = get_section_unit_states( section )
+                            #print str('               ' + str(ssix) )
 
-                            nine = get_section_unit_counts_found( section )
-                            print( str( nine ) )
-                          #  import pdb;  print("\n\n_______________________________________________\n\n"); pdb.set_trace()
+                            #nine = get_section_unit_counts_found( section )
+                            #print( str( nine ) )
+                      #      import pdb;  print("\n\n_______________________________________________\n\n"); pdb.set_trace()
 
+                            #self.response.write("HACK")
                          %>
+
 
 
 
