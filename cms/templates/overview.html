@@ -226,9 +226,10 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                 <a href="#" data-tooltip="${_('Bulk change unit status')} TRBM_bulk-change-units-section-button"  >
 
                      <i  class="${get_section_unit_states(section)} unit-status-change-section"  >
-                         <input hidden type='text' id='units_found' value="0" />
-                         <input hidden type='text' id='private_units' value="0" />
-                         <input hidden type='text' id='public_units' value="0" />
+                         <!-- using these input boxes as invisible containers to hold unit counts -->
+                         <div   class='units_found'  > ${get_section_unit_counts_found(section)}      </div>
+                         <div   class='private_units'> ${get_section_unit_counts_private(section)}    </div>
+                         <div   class='public_units' > ${get_section_unit_counts_public(section)}     </div>
 
 
                          <!--<script>-->

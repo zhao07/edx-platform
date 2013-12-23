@@ -97,7 +97,6 @@ domReady(function() {
     $('.remove-date').bind('click', removeDateSetter);
 
     $('.delete-section-button').bind('click', deleteSection);
-    //$('.unit-status-change-section').bind('click', deleteSection);    // this works to connect the icon to the delete dialog
     $('.unit-status-change-section').bind('click', unitStatusChangeSection);
 
 
@@ -316,11 +315,43 @@ function unitStatusChangeSection(e) {
 
 function _unitStatusChange($el, type) {
 
-    var affectedCount = 77;   // this is wrong: = $el.position;
+//    var affectedCount = 777;   // this is wrong: = $el.position;
+//
+//    //var publicContainer = this.getitemById('units_found');
+//
+//    var parent = $el.data('parent');
+//    var locator = $el.data('locator');
+//
+
+//    for (var i = 0; i < metadata_fields.length; i++) {
+//        var el = metadata_fields[i];
+//        metadata[$(el).data("metadata-name")] = el.value;
+//    }
+
+    units_found = 0;
+    private_units = 0;
+    public_units = 0;
+    for(var i = 0; i < $el.context.children.length; i++) {
+        childElement = $el.context.children[i];
+
+        if(childElement.className == "units_found") {
+           units_found = parseInt(childElement.textContent);
+           childElement.textContent = "= " + childElement.textContent;
+        }
+        if(childElement.className == "private_units") {
+           private_units = parseInt(childElement.textContent);
+        }
+        if(childElement.className == "public_units") {
+           public_units = parseInt(childElement.textContent);
+        }
+    }
+
+    alert("public: " + str(public_units));
+
 
     var confirm = new PromptView.Warning({
         title: gettext('Changing Unit Status (' + type + ')'),
-        message: gettext('You are about to change ' + affectedCount + ' units to PRIVATE.'),
+        message: gettext('You are about to change ' + parent.name + ' units to PRIVATE.'),
         actions: {
             primary: {
                 text: gettext('Yes, change to PRIVATE'),
@@ -333,20 +364,20 @@ function _unitStatusChange($el, type) {
 //                        'course': course_location_analytics,
 //                        'id': locator
 //                    });
+//
+//                    var deleting = new NotificationView.Mini({
+//                        title: gettext('Deleting&hellip;')
+//                    });
+//                    deleting.show();
 
-                    var deleting = new NotificationView.Mini({
-                        title: gettext('Deleting&hellip;')
-                    });
-                    deleting.show();
-
-                    $.ajax({
-                        type: 'DELETE',
-                        url: ModuleUtils.getUpdateUrl(locator) +'?'+ $.param({recurse: true, all_versions: true}),
-                        success: function () {
-                            $el.remove();
-                            deleting.hide();
-                        }
-                    });
+//                    $.ajax({
+//                        type: 'DELETE',
+//                        url: ModuleUtils.getUpdateUrl(locator) +'?'+ $.param({recurse: true, all_versions: true}),
+//                        success: function () {
+//                            $el.remove();
+//                            deleting.hide();
+//                        }
+//                    });
                 }
             },
             secondary: {

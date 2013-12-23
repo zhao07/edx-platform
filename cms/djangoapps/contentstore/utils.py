@@ -335,14 +335,14 @@ def get_section_unit_counts_private( section ):
     just the count of the number of private units
 
     @param section: the section whose units are to be analyzed
-    @return: number of private units found
+    @return: a string -- number of private units found
 
     NOTE: this function assumes the 'unit_stateById' dictionary has been
     populated before it is called (see 'get_section_unit_states' below)
     """
     assert unit_stateById.__sizeof__() > 0  # be sure the dictionary of unit/state has been created
     found_public, found_private, found_units = _get_section_unit_counts( section )
-    return found_private
+    return str(found_private)
 
 
 def get_section_unit_counts_public( section ):
@@ -351,14 +351,14 @@ def get_section_unit_counts_public( section ):
     just the count of the number of public units
 
     @param section: the section whose units are to be analyzed
-    @return: number of public units found
+    @return: a string -- number of public units found
 
     NOTE: this function assumes the 'unit_stateById' dictionary has been
     populated before it is called (see 'get_section_unit_states' below)
     """
     assert unit_stateById.__sizeof__() > 0  # be sure the dictionary of unit/state has been created
     found_public, found_private, found_units = _get_section_unit_counts( section )
-    return found_public
+    return str(found_public)
 
 
 def get_section_unit_counts_found( section ):
@@ -367,14 +367,14 @@ def get_section_unit_counts_found( section ):
     just the count of the number of found units
 
     @param section: the section whose units are to be analyzed
-    @return: number of units found
+    @return: a string -- number of units found
 
     NOTE: this function assumes the 'unit_stateById' dictionary has been
     populated before it is called (see 'get_section_unit_states' below)
     """
     assert unit_stateById.__sizeof__() > 0  # be sure the dictionary of unit/state has been created
     found_public, found_private, found_units = _get_section_unit_counts( section )
-    return found_units
+    return str(found_units)
 
 
 def _get_section_unit_counts( section ):
