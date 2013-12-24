@@ -331,7 +331,8 @@ function _unitStatusChange($el, type) {
         }
     }
 
-    var messageText =
+    var buttonText = "PUBLIC"
+    var promptText =
         'This section has a mix of ' +
         public_units.toString() +
         ' public and ' +
@@ -341,28 +342,30 @@ function _unitStatusChange($el, type) {
 
     if(units_found == public_units) {
         if(public_units == 1) {
-            messageText = 'Are you sure you want to change 1 unit to private?';
+            promptText = 'Are you sure you want to change 1 unit to private?';
         }
         else {
-            messageText = 'Are you sure you want to change all ' + public_units.toString() + ' units to private?';
+            promptText = 'Are you sure you want to change all ' + public_units.toString() + ' units to private?';
         }
+        buttonText = "PRIVATE"
     }
 
     if(units_found == private_units) {
         if(private_units == 1) {
-            messageText = 'Are you sure you want to change 1 unit to public?';
+            promptText = 'Are you sure you want to change 1 unit to public?';
         }
         else {
-            messageText = 'Are you sure you want to change all ' + private_units.toString() + ' units to public?';
+            promptText = 'Are you sure you want to change all ' + private_units.toString() + ' units to public?';
         }
+        buttonText = "PUBLIC"
     }
 
     var confirm = new PromptView.Warning({
         title: gettext('Changing Unit Status (' + type + ')'),
-        message: gettext(messageText),
+        message: gettext(promptText),
         actions: {
             primary: {
-                text: gettext('Yes, change to PRIVATE'),
+                text: gettext('Yes, change to ' + buttonText),
                 click: function(view) {
                     view.hide();
 
