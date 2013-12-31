@@ -308,99 +308,8 @@ function _deleteItem($el, type) {
     confirm.show();
 }
 
-function unitStatusChangeSection(e) {
-    e.preventDefault();
-    _unitStatusChange($(this).parents('section.branch'), 'Section');
-}
 
-function _unitStatusChange($el, type) {
-    var units_found = 0;
-    var private_units = 0;
-    var public_units = 0;
-    for(var i = 0; i < $el.context.children.length; i++) {
-        childElement = $el.context.children[i];
 
-        if(childElement.className == "units_found") {
-           units_found = parseInt(childElement.textContent);
-        }
-        if(childElement.className == "private_units") {
-           private_units = parseInt(childElement.textContent);
-        }
-        if(childElement.className == "public_units") {
-           public_units = parseInt(childElement.textContent);
-        }
-    }
-
-    var buttonText = "PUBLIC"
-    var promptText =
-        'This section has a mix of ' +
-        public_units.toString() +
-        ' public and ' +
-        private_units.toString() +
-        ' private units. ' +
-        'Are you sure you want to change them all to public?';
-
-    if(units_found == public_units) {
-        if(public_units == 1) {
-            promptText = 'Are you sure you want to change 1 unit to private?';
-        }
-        else {
-            promptText = 'Are you sure you want to change all ' + public_units.toString() + ' units to private?';
-        }
-        buttonText = "PRIVATE"
-    }
-
-    if(units_found == private_units) {
-        if(private_units == 1) {
-            promptText = 'Are you sure you want to change 1 unit to public?';
-        }
-        else {
-            promptText = 'Are you sure you want to change all ' + private_units.toString() + ' units to public?';
-        }
-        buttonText = "PUBLIC"
-    }
-
-    var confirm = new PromptView.Warning({
-        title: gettext('Changing Unit Status (' + type + ')'),
-        message: gettext(promptText),
-        actions: {
-            primary: {
-                text: gettext('Yes, change to ' + buttonText),
-                click: function(view) {
-                    view.hide();
-
-                    var locator = $el.data('locator');
-
-//                    analytics.track('Deleted an Item', {
-//                        'course': course_location_analytics,
-//                        'id': locator
-//                    });
-//
-//                    var deleting = new NotificationView.Mini({
-//                        title: gettext('Deleting&hellip;')
-//                    });
-//                    deleting.show();
-
-//                    $.ajax({
-//                        type: 'DELETE',
-//                        url: ModuleUtils.getUpdateUrl(locator) +'?'+ $.param({recurse: true, all_versions: true}),
-//                        success: function () {
-//                            $el.remove();
-//                            deleting.hide();
-//                        }
-//                    });
-                }
-            },
-            secondary: {
-                text: gettext('Cancel'),
-                click: function(view) {
-                    view.hide();
-                }
-            }
-        }
-    });
-    confirm.show();
-}
 
 function showDateSetter(e) {
     e.preventDefault();
@@ -442,5 +351,123 @@ function cancelSetSectionScheduleDate(e) {
 }
 
     window.deleteSection = deleteSection;
+
+
+
+
+//________________________________________________ Unit Status Change
+//
+function unitStatusChangeSection(e) {
+    e.preventDefault();
+    _unitStatusChange($(this).parents('section.branch'), 'Section');
+}
+
+function _unitStatusChange($el, type) {
+    var units_found = 0;
+    var private_units = 0;
+    var public_units = 0;
+    for(var i = 0; i < $el.context.children.length; i++) {
+        childElement = $el.context.children[i];
+
+        if(childElement.className == "units_found") {
+           units_found = parseInt(childElement.textContent);
+        }
+        if(childElement.className == "private_units") {
+           private_units = parseInt(childElement.textContent);
+        }
+        if(childElement.className == "public_units") {
+           public_units = parseInt(childElement.textContent);
+        }
+    }
+
+    var changeToPublic = true;
+    var buttonText = "PUBLIC";
+    var promptText =
+        'This section has a mix of ' +
+        public_units.toString() +
+        ' public and ' +
+        private_units.toString() +
+        ' private units. ' +
+        'Are you sure you want to change them all to public?';
+
+    if(units_found == public_units) {
+        if(public_units == 1) {
+            promptText = 'Are you sure you want to change 1 unit to private?';
+        }
+        else {
+            promptText = 'Are you sure you want to change all ' + public_units.toString() + ' units to private?';
+        }
+        buttonText = "PRIVATE"
+        changeToPublic = false;
+    }
+
+    if(units_found == private_units) {
+        if(private_units == 1) {
+            promptText = 'Are you sure you want to change 1 unit to public?';
+        }
+        else {
+            promptText = 'Are you sure you want to change all ' + private_units.toString() + ' units to public?';
+        }
+        buttonText = "PUBLIC"
+        changeToPublic = true;
+    }
+
+    var confirm = new PromptView.Warning({
+        title: gettext('Changing Unit Status (' + type + ')'),
+        message: gettext(promptText),
+        actions: {
+            primary: {
+                text: gettext('Yes, change to ' + buttonText),
+                click: function(view) {
+                    view.hide();
+
+                    changeUnitVisibilityStatus( changeToPublic, this );
+                }
+            },
+            secondary: {
+                text: gettext('Cancel'),
+                click: function(view) {
+                    view.hide();
+                }
+            }
+        }
+    });
+    confirm.show();
+}
+
+function changeUnitVisibilityStatus( toPublic, oWindow ) {
+    action = 'make_public';         // assume the change will be to PUBLIC
+    visibility = 'public';          // assume the change will be to PUBLIC
+
+    if(!toPublic) {                 // if we guessed wrong
+        action = 'make_private';
+        visibility = 'private';
+    }
+
+    console.error('\nerror\n');
+    console.log('\nlog\n');
+    oWindow.wait(true);
+    return $.postJSON(
+        this.model.url(), {publish: action}, function() {
+            analytics.track(
+                "Set Unit Visibility", {
+                    course: course_location_analytics,
+                    unit_id: unit_location_analytics,
+                    visibility: visibility
+                }
+            );
+//            return _this.model.set('state', _this.$('.visibility-select').val());
+            return oWindow.model.set('state', _this.$('.visibility-select').val());
+        }
+    );
+}
+
+
+
+
+
+
+
+
 
 }); // end require()
