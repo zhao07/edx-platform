@@ -12,8 +12,7 @@ BOK_CHOY_NUM_PARALLEL = ENV.fetch('NUM_PARALLEL', 1).to_i
 BOK_CHOY_TEST_TIMEOUT = ENV.fetch("TEST_TIMEOUT", 300).to_f
 
 # Ensure that we have a directory to put logs and reports
-BOK_CHOY_DIR = File.join(REPO_ROOT, "common", "test", "bok_choy")
-BOK_CHOY_TEST_DIR = File.join(BOK_CHOY_DIR, "tests")
+BOK_CHOY_TEST_DIR = File.join(REPO_ROOT, "common", "test", "bok_choy_tests")
 BOK_CHOY_LOG_DIR = File.join(REPO_ROOT, "test_root", "log")
 directory BOK_CHOY_LOG_DIR
 
@@ -76,7 +75,19 @@ end
 
 
 def nose_cmd(test_spec)
-    cmd = ["PYTHONPATH='#{BOK_CHOY_DIR}:$PYTHONPATH'", "SCREENSHOT_DIR='#{BOK_CHOY_LOG_DIR}'", "nosetests", test_spec]
+    cmd = [
+        # Ensure that the Python path allows access to settings modules
+        "PYTHONPATH=$PYTHONPATH:#{REPO_ROOT}",
+
+        # Use Studio settings for the test suite when it calls management commands
+        "DJANGO_SETTINGS_MODULE='cms.envs.bok_choy'",
+
+        # Save screenshots on failure to the test logs
+        "SCREENSHOT_DIR=#{BOK_CHOY_LOG_DIR}",
+
+        # Run the tests using nose
+        "nosetests", test_spec
+    ]
     if BOK_CHOY_NUM_PARALLEL > 1
         cmd += ["--processes=#{BOK_CHOY_NUM_PARALLEL}", "--process-timeout=#{BOK_CHOY_TEST_TIMEOUT}"]
     end
@@ -182,6 +193,5 @@ end
 # Default: set up and run the tests
 desc "Run acceptance tests that use the bok-choy framework"
 task :'test:bok_choy', [:test_spec] => [:'test:bok_choy:setup'] do |t, args|
-    puts "test bok_choy #{args}"
     Rake::Task["test:bok_choy:fast"].invoke(args.test_spec)
 end
