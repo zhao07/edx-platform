@@ -164,7 +164,14 @@ def _save_item(request, usage_loc, item_location, data=None, children=None, meta
 
     if publish:
         if publish == 'make_private':
-            _xmodule_recurse(existing_item, lambda i: modulestore().unpublish(i.location))
+            from pydbgr.api import debug; print("_____________________________ make_private ___________________________"); debug();
+            child_xmodules = []
+            _xmodule_recurse(existing_item, lambda i: child_xmodules.append(i))   # get a list of children items
+            for child_item in child_xmodules:
+                print(child_item.location)
+                if child_item.location.category == 'vertical':
+                    modulestore().unpublish(child_item.location)
+
         elif publish == 'create_draft':
             # This clones the existing item location to a draft location (the draft is
             # implicit, because modulestore is a Draft modulestore)

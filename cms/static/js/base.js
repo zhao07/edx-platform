@@ -421,7 +421,7 @@ function _unitStatusChange($el, type) {
                 click: function(view) {
                     view.hide();
 
-                    changeUnitVisibilityStatus( changeToPublic, this );
+                    changeUnitVisibilityStatus( $el, changeToPublic );
                 }
             },
             secondary: {
@@ -435,7 +435,7 @@ function _unitStatusChange($el, type) {
     confirm.show();
 }
 
-function changeUnitVisibilityStatus( toPublic, oWindow ) {
+function changeUnitVisibilityStatus( $el, toPublic ) {
     action = 'make_public';         // assume the change will be to PUBLIC
     visibility = 'public';          // assume the change will be to PUBLIC
 
@@ -444,22 +444,63 @@ function changeUnitVisibilityStatus( toPublic, oWindow ) {
         visibility = 'private';
     }
 
-    console.error('\nerror\n');
-    console.log('\nlog\n');
-    oWindow.wait(true);
-    return $.postJSON(
-        this.model.url(), {publish: action}, function() {
-            analytics.track(
-                "Set Unit Visibility", {
-                    course: course_location_analytics,
-                    unit_id: unit_location_analytics,
-                    visibility: visibility
-                }
-            );
-//            return _this.model.set('state', _this.$('.visibility-select').val());
-            return oWindow.model.set('state', _this.$('.visibility-select').val());
-        }
-    );
+
+
+
+                      var locator = $el.data('locator');
+
+                    var updating = new NotificationView.Mini({
+                        title: gettext('Updating&hellip;')
+                    });
+                    updating.show();
+
+
+
+
+
+
+
+
+
+//    this worked pretty well except that the _save_item() call expects JSON
+//                        $.ajax({
+//                        type: 'POST',
+//                        url: ModuleUtils.getUpdateUrl(locator) +'?'+ $.param({publish: action}),
+//                        success: function () {
+//                            updating.hide();
+//                        }
+//                    });
+
+    // so back to this:
+
+    url = ModuleUtils.getUpdateUrl(locator)
+
+
+        return $.postJSON(url, {publish: action} );
+
+
+
+
+
+
+
+
+//    console.error('\nerror\n');
+//    console.log('\nlog\n');
+//    oWindow.wait(true);
+//    return $.postJSON(
+//        this.model.url(), {publish: action}, function() {
+//            analytics.track(
+//                "Set Unit Visibility", {
+//                    course: course_location_analytics,
+//                    unit_id: unit_location_analytics,
+//                    visibility: visibility
+//                }
+//            );
+////            return _this.model.set('state', _this.$('.visibility-select').val());
+//            return oWindow.model.set('state', _this.$('.visibility-select').val());
+//        }
+//    );
 }
 
 
