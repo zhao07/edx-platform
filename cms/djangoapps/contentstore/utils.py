@@ -19,6 +19,7 @@ from xmodule.course_module import CourseDescriptor
 from xmodule.modulestore.draft import DIRECT_ONLY_CATEGORIES
 
 
+
 unit_stateById = {}              # dictionary of unit states: key=ID, value=stateString
 
 MIXED_STATE_ICON_STRING = "icon-adjust       unit-status-mixed-state"
@@ -435,7 +436,8 @@ def get_section_unit_states( section ):
       found_private_subsection = 0              # counts the number of private units in this subsection
       found_public_subsection = 0               # counts the number of public units in this subsection
       found_units_subsection = 0                # counts the total number of units in this subsection
-      for unit in child.get_children():
+      #for unit in child.get_children():
+      for unit in get_children_including_drafts(child):
         found_units_subsection += 1
         found_units += 1
         state = compute_unit_state(unit)
@@ -459,3 +461,56 @@ def get_section_unit_states( section ):
 
     return return_string + " unit-status-section-icon-adjustment"
 
+
+
+def get_children_including_drafts(self):
+    """
+    Returns a list of XBlock instances for the children of
+    this module. Both the draft and non-draft locations will be tried before
+    giving up and throwing an 'ItemNotFoundError' exception.
+    This function is an modified version of _get_children in file x_module.py.
+    """
+    #from pydbgr.api import debug; print("_____________________________ _get_children_including_drafts ___________________________"); debug();
+
+
+    child_instance_count = -1                               # assume no _child_instances attribute exists
+    child_instances = []
+    try:
+        child_instance_count = len(self.children)           # get the number of child locations (or throw an exception)
+    except AttributeError:                                  # an exception just means no '_child_instances' attribute
+        child_instance_count = -1
+    finally:
+        pass
+
+
+
+
+    print("                  >>>>>>>>>>>>>>>>>>>>> child_instance_count: " + str(child_instance_count))
+
+
+
+
+    if child_instance_count > 0:
+        try:
+            for child_loc in self.children:
+                try:
+                    child = self.runtime.get_block(child_loc)
+                    print("          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> found (non draft):" + str(child.location))
+                    child_instances.append(child)
+                except ItemNotFoundError:
+                    try:                                    # let's try the 'draft' version of location
+                        child = self.runtime.get_block(as_draft(child_loc))
+                        print("          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> found (draft):" + str(child.location))
+                        child_instances.append(child)
+                    except ItemNotFoundError:
+                        log.exception('Unable to load item {loc}, skipping'.format(loc=child_loc))
+                finally:
+                    pass
+        except:
+            print('bang 11')
+        finally:
+            print('bang 22')
+
+    print("                  >>>>>>>>>>>>>>>>>>>>> child_instances count: " + str(len(child_instances)))
+
+    return child_instances

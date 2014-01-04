@@ -216,6 +216,7 @@ class XModuleMixin(XBlockMixin):
                 try:
                     child = self.runtime.get_block(child_loc)
                 except ItemNotFoundError:
+                    from pydbgr.api import debug; print("_____________________________ ItemNotFoundError ___________________________"); debug();
                     log.exception('Unable to load item {loc}, skipping'.format(loc=child_loc))
                     continue
                 self._child_instances.append(child)

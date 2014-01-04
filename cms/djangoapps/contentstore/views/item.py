@@ -3,6 +3,8 @@
 import logging
 from uuid import uuid4
 
+from contentstore.utils import get_children_including_drafts
+
 from functools import partial
 from static_replace import replace_static_urls
 from xmodule_modifiers import wrap_xblock
@@ -147,7 +149,7 @@ def _save_item(request, usage_loc, item_location, data=None, children=None, meta
 
     The item_location is still the old-style location whereas usage_loc is a BlockUsageLocator
     """
-    print("                 save_item:" + publish)
+    print("                 save_item:" + str(publish))
     #from pydbgr.api import debug; print("_________________ * __________________"); debug();
 
     store = get_modulestore(item_location)
@@ -399,42 +401,62 @@ def _get_module_info(usage_loc, rewrite_static_links=True):
 
 
 
-
-
-def _get_children_including_drafts(self):
-    """
-    Returns a list of XBlock instances for the children of
-    this module. If 'allow_drafts' is True, both the draft and non-draft
-    locations will be tried before giving up and throwing an 'ItemNotFoundError' exception.
-    This function is an enhanced version of _get_children in file x_module.py.
-    """
-
-    self._child_instances = []  # pylint: disable=attribute-defined-outside-init
-
-    if not self.has_children:
-        return []
-
-    if getattr(self, '_child_instances', None) is None:
-        try:
-            for child_loc in self.children:
-                print("          (_get_children_including_drafts) child_loc:" + str(child_loc))
-                try:
-                    child = self.runtime.get_block(child_loc)
-                    print("             found 1")
-                    self._child_instances.append(child_loc)
-                except ItemNotFoundError:
-                    try:                                    # let's try the 'draft' version of location
-                        child = self.runtime.get_block(as_draft(child_loc))
-                        print("             found 2")
-                        self._child_instances.append(child_loc)
-                    except ItemNotFoundError:
-                        log.exception('Unable to load item {loc}, skipping'.format(loc=child_loc))
-        except:
-            print('bang 1')
-        finally:
-            print('bang 2')
-
-    return self._child_instances
+#
+#
+#def _get_children_including_drafts(self):
+#    """
+#    Returns a list of XBlock instances for the children of
+#    this module. Both the draft and non-draft locations will be tried before
+#    giving up and throwing an 'ItemNotFoundError' exception.
+#    This function is an modified version of _get_children in file x_module.py.
+#    """
+#    #from pydbgr.api import debug; print("_____________________________ _get_children_including_drafts ___________________________"); debug();
+#
+#
+#    child_instance_count = -1                               # assume no _child_instances attribute exists
+#    child_instances = []
+#    try:
+#        print('                                  >> >>>>>>>>>>>>>>>>>>>>> try')
+#        #child_instances = self._child_instances             # get the number of child instances (or throw an exception)
+#        child_instance_count = len(self.children)           # get the number of child locations (or throw an exception)
+#    except AttributeError:                                  # an exception just means no '_child_instances' attribute
+#        print('                                  >> >>>>>>>>>>>>>>>>>>>>> except')
+#        child_instance_count = -1
+#    finally:
+#        print('                                  >> >>>>>>>>>>>>>>>>>>>>> finally')
+#        pass
+#
+#
+#
+#
+#    print("                  >>>>>>>>>>>>>>>>>>>>> child_instance_count: " + str(child_instance_count))
+#
+#
+#
+#
+#    if child_instance_count > 0:
+#        try:
+#            for child_loc in self.children:
+#                print("          (_get_children_including_drafts) child_loc:" + str(child_loc))
+#                try:
+#                    child = self.runtime.get_block(child_loc)
+#                    print("             found 1")
+#                    child_instances.append(child)
+#                except ItemNotFoundError:
+#                    try:                                    # let's try the 'draft' version of location
+#                        child = self.runtime.get_block(as_draft(child_loc))
+#                        print("             found 2")
+#                        child_instances.append(child)
+#                    except ItemNotFoundError:
+#                        log.exception('Unable to load item {loc}, skipping'.format(loc=child_loc))
+#        except:
+#            print('bang 1')
+#        finally:
+#            print('bang 2')
+#
+#    print("                  >>>>>>>>>>>>>>>>>>>>> child_instances count: " + str(len(child_instances)))
+#
+#    return child_instances
 
 def _publish_unpublish_units( parent_item, request, doPublish ):
     '''
@@ -446,7 +468,7 @@ def _publish_unpublish_units( parent_item, request, doPublish ):
     child_xmodules = []
     _item_recurse(parent_item, lambda i: child_xmodules.append(i))   # get a list of children items
 
-    print("                    COUNT: " + str(len(child_xmodules)))
+    print("                    >>>>>>>>>>>>>>>>>>>>> COUNT: " + str(len(child_xmodules)))
 
 
     for child_item in child_xmodules:
@@ -465,7 +487,7 @@ def _item_recurse(item, action):
     Exactly like '_xmodule_recurse' in file x_module.py except that this recursion uses a safer
     version of _get_children (defined in this file just above).
     '''
-    for child in _get_children_including_drafts(item):
+    for child in get_children_including_drafts(item):
         _item_recurse(child, action)
     action(item)
 
