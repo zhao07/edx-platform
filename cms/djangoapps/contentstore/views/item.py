@@ -147,6 +147,9 @@ def _save_item(request, usage_loc, item_location, data=None, children=None, meta
 
     The item_location is still the old-style location whereas usage_loc is a BlockUsageLocator
     """
+    print("                 save_item:" + publish)
+    #from pydbgr.api import debug; print("_________________ * __________________"); debug();
+
     store = get_modulestore(item_location)
 
     try:
@@ -165,7 +168,7 @@ def _save_item(request, usage_loc, item_location, data=None, children=None, meta
 
     if publish:
         if publish == 'make_private':
-            _publish_unpublish_units( existing_item, doPublish=False)
+            _publish_unpublish_units( existing_item, request, doPublish=False)
 
         elif publish == 'create_draft':
             # This clones the existing item location to a draft location (the draft is
@@ -231,7 +234,7 @@ def _save_item(request, usage_loc, item_location, data=None, children=None, meta
     # Make public after updating the xblock, in case the caller asked
     # for both an update and a publish.
     if publish and publish == 'make_public':
-        _publish_unpublish_units( existing_item, doPublish=True)
+        _publish_unpublish_units( existing_item, request, doPublish=True)
 
     # Note that children aren't being returned until we have a use case.
     return JsonResponse(result)
@@ -405,46 +408,55 @@ def _get_children_including_drafts(self):
     locations will be tried before giving up and throwing an 'ItemNotFoundError' exception.
     This function is an enhanced version of _get_children in file x_module.py.
     """
+
+    self._child_instances = []  # pylint: disable=attribute-defined-outside-init
+
     if not self.has_children:
         return []
 
     if getattr(self, '_child_instances', None) is None:
-        self._child_instances = []  # pylint: disable=attribute-defined-outside-init
-        for child_loc in self.children:
-            itemFound = False                               # assume we'll hit an exception
-            try:
-                child = self.runtime.get_block(child_loc)
-                itemFound = True                            # we did find the item
-            except ItemNotFoundError:
-                try:                                    # let's try the 'draft' version of location
-                    child = self.runtime.get_block(as_draft(child_loc))
-                    itemFound = True                    # we did find the item
+        try:
+            for child_loc in self.children:
+                print("          (_get_children_including_drafts) child_loc:" + str(child_loc))
+                try:
+                    child = self.runtime.get_block(child_loc)
+                    print("             found 1")
+                    self._child_instances.append(child_loc)
                 except ItemNotFoundError:
-                    itemFound = False                   # we did NOT find the item
-                    continue
-                continue
+                    try:                                    # let's try the 'draft' version of location
+                        child = self.runtime.get_block(as_draft(child_loc))
+                        print("             found 2")
+                        self._child_instances.append(child_loc)
+                    except ItemNotFoundError:
+                        log.exception('Unable to load item {loc}, skipping'.format(loc=child_loc))
+        except:
+            print('bang 1')
+        finally:
+            print('bang 2')
 
-            if not itemFound:
-                log.exception('Unable to load item {loc}, skipping'.format(loc=child_loc))
-            else:
-                self._child_instances.append(child)
     return self._child_instances
 
-def _publish_unpublish_units( parent_item, doPublish ):
+def _publish_unpublish_units( parent_item, request, doPublish ):
     '''
     Helper function to run through all child items (whether in draft or non-draft form) and
     apply the appropriate operation (either publish or unpublish, depending on the value of
     'doPublish'
     '''
-    from pydbgr.api import debug; print("_____________________________ _publish_unpublish_units ___________________________"); debug();
+    #from pydbgr.api import debug; print("_____________________________ _publish_unpublish_units ___________________________"); debug();
     child_xmodules = []
     _item_recurse(parent_item, lambda i: child_xmodules.append(i))   # get a list of children items
+
+    print("                    COUNT: " + str(len(child_xmodules)))
+
+
     for child_item in child_xmodules:
-        print(child_item.location)
+        print(str(child_item.location) + ", category: " + child_item.location.category)
         if child_item.location.category == 'vertical':                  # only 'vertical' units are affected
             if doPublish:
-                modulestore().publish(child_item.location)
+                print("             publish: " + str(child_item.location))
+                modulestore().publish(child_item.location, request.user.id)
             else:
+                print("             unpublish: " + str(child_item.location))
                 modulestore().unpublish(child_item.location)
 
 
@@ -454,7 +466,7 @@ def _item_recurse(item, action):
     version of _get_children (defined in this file just above).
     '''
     for child in _get_children_including_drafts(item):
-        _xmodule_recurse(child, action)
+        _item_recurse(child, action)
     action(item)
 
 

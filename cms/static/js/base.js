@@ -395,7 +395,7 @@ function _unitStatusChange($el, type) {
             promptText = 'Are you sure you want to change 1 unit to private?';
         }
         else {
-            promptText = 'Are you sure you want to change all ' + public_units.toString() + ' units to private?';
+            promptText = 'Are you sure you want to change ' + public_units.toString() + ' units to private?';
         }
         buttonText = "PRIVATE"
         changeToPublic = false;
@@ -406,7 +406,7 @@ function _unitStatusChange($el, type) {
             promptText = 'Are you sure you want to change 1 unit to public?';
         }
         else {
-            promptText = 'Are you sure you want to change all ' + private_units.toString() + ' units to public?';
+            promptText = 'Are you sure you want to change ' + private_units.toString() + ' units to public?';
         }
         buttonText = "PUBLIC"
         changeToPublic = true;
