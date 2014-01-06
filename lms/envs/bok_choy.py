@@ -45,7 +45,8 @@ import logging
 LOG_OVERRIDES = [
     ('track.middleware', logging.CRITICAL),
     ('edxmako.shortcuts', logging.ERROR),
-    ('dd.dogapi', logging.ERROR)
+    ('dd.dogapi', logging.ERROR),
+    ('edx.discussion', logging.CRITICAL),
 ]
 for log_name, log_level in LOG_OVERRIDES:
     logging.getLogger(log_name).setLevel(log_level)

@@ -37,10 +37,22 @@ PIPELINE = True
 # Silence noisy logs
 import logging
 LOG_OVERRIDES = [
-    ('track.middleware', logging.CRITICAL)
+    ('track.middleware', logging.CRITICAL),
+    ('edx.discussion', logging.CRITICAL),
 ]
 for log_name, log_level in LOG_OVERRIDES:
     logging.getLogger(log_name).setLevel(log_level)
+
+# Disable CSRF to make Studio API access easier
+TEMPLATE_CONTEXT_PROCESSORS = tuple([
+    proc for proc in TEMPLATE_CONTEXT_PROCESSORS
+    if proc != 'django.core.context_processors.csrf'
+])
+
+MIDDLEWARE_CLASSES = tuple([
+    clz for clz in MIDDLEWARE_CLASSES
+    if clz != 'django.middleware.csrf.CsrfViewMiddleware'
+])
 
 # Unfortunately, we need to use debug mode to serve staticfiles
 DEBUG = True
