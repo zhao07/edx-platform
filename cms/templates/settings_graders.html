@@ -141,6 +141,7 @@ require(["domReady!", "jquery", "js/views/settings/grading", "js/models/settings
           course_team_url = course_locator.url_reverse('course_team/')
           advanced_settings_url = course_locator.url_reverse('settings/advanced/')
           detailed_settings_url = course_locator.url_reverse('settings/details/')
+          pub_to_lr_url = course_locator.url_reverse('settings/pub_to_lr/')
         %>
         <h3 class="title-3">${_("Other Course Settings")}</h3>
         <nav class="nav-related">
@@ -148,6 +149,7 @@ require(["domReady!", "jquery", "js/views/settings/grading", "js/models/settings
             <li class="nav-item"><a href="${detailed_settings_url}">${_("Details &amp; Schedule")}</a></li>
             <li class="nav-item"><a href="${course_team_url}">${_("Course Team")}</a></li>
             <li class="nav-item"><a href="${advanced_settings_url}">${_("Advanced Settings")}</a></li>
+            <li class="nav-item"><a href="${pub_to_lr_url}">${_("Publish To Learning Registry")}</a></li>
           </ul>
         </nav>
       % endif

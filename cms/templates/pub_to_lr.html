@@ -1,0 +1,123 @@
+<%inherit file="base.html" />
+<%namespace name='static' file='static_content.html'/>
+<%!
+  from django.utils.translation import ugettext as _
+  from contentstore import utils
+  from xmodule.modulestore.django import loc_mapper
+%>
+<%block name="title">${_("Publish Course Metadata To Learning Registry")}</%block>
+<%block name="bodyclass">is-signedin course advanced view-settings</%block>
+
+<%block name="jsextra">
+<script type="text/javascript">
+require(["jquery", "jquery.cookie", "utility"], function($) {
+  $('form#pub_to_lr').submit(function(e) {
+    e.preventDefault();
+    $.ajax({type:'POST',
+      data: $('form#pub_to_lr').serialize(),
+      headers : {'X-CSRFToken':$.cookie('csrftoken')},
+      success: function(data) { 
+        if (data.OK) {
+          $('.message-status.confirm').addClass('is-shown').removeClass('is-hidden');
+          $('.message-status.error').addClass('is-hidden').removeClass('is-shown');
+        } else {
+          $('.message-status.confirm').addClass('is-hidden').removeClass('is-shown');
+          $('.message-status.error').html('${_("There was an error publishing metatdata:")} ' + data.message).addClass('is-shown').removeClass('is-hidden');
+        }
+      },
+    });
+  });
+});
+</script>
+</%block>
+
+<%block name="content">
+<div class="wrapper-mast wrapper">
+  <header class="mast has-subtitle">
+    <h1 class="page-header">
+      <small class="subtitle">${_("Settings")}</small>
+      <span class="sr">&gt; </span>${_("Publish Metadata")}
+    </h1>
+  </header>
+</div>
+
+<div class="wrapper-content wrapper">
+  <section class="content">
+    <article class="content-primary" role="main">
+      <form id="pub_to_lr" class="settings-advanced" method="post" >
+
+        <section class="group-settings advanced-policies">
+          <header>
+            <h2 class="title-2">${_("Learning Registry")}</h2>
+            <span class="tip">${_("Create or update this course's entry in the Learning Registry (sandbox).")}</span>
+          </header>
+
+        </section>
+        
+        <section class="group-settings document-json">
+        <span>${_("LRMI Metadata")}</span>
+          <br/>
+          <textarea name="lr_document" style="font-family: monospace; font-size: 13px; width: 50pc; height: 300px;">${document_json}</textarea>
+        </section>
+
+        <section class="group-settings lr-creds">
+          <span>${_("Learning Registry Username")}</span>
+          <br/>
+          <input type="text" name="lr_username"/>
+          <br/>
+          <br/>
+          <span>${_("Learning Registry Password")}</span>
+          <br/>
+          <input type="password" name="lr_password"/>
+          <br/>
+        </section>
+        
+        <input type="submit" class="action action-publish" value="${_('Publish Now')}"/>
+
+        <div>&nbsp;</div>
+
+        <div class="message message-status confirm">
+          ${_("This course's Learning Registry (sandbox) metadata entry has been updated.")}
+        </div>
+
+        <div class="message message-status error">
+          ${_("There was an error saving your information. Please see below.")}
+        </div>
+
+      </form>
+
+    </article>
+
+    <aside class="content-supplementary" role="complimentary">
+      <div class="bit">
+        <h3 class="title-3">${_("Why Publish Metadata?")}</h3>
+        <p>${_("By publishing metadata for this course to external repositories, such as the Learning Registry, you will help teachers and online learners find this learning material using search engines and other directory resources.  You also help other educators and data analysts understand the content of this course when it appears on a student's transcript.")}</p>
+
+        <p>${_("You can submit the metadata as-is, or if you are familiar with LRMI / Learning Registry, you can amend the raw JSON to include additional information about the course.")}</p>
+      </div>
+
+      <div class="bit">
+      % if context_course:
+        <%
+          ctx_loc = context_course.location
+          location = loc_mapper().translate_location(ctx_loc.course_id, ctx_loc, False, True)
+          details_url = location.url_reverse('settings/details/')
+          grading_url = location.url_reverse('settings/grading/')
+          course_team_url = location.url_reverse('course_team/', '')
+          advanced_settings_url = location.url_reverse('settings/advanced/')
+        %>
+      <h3 class="title-3">${_("Other Course Settings")}</h3>
+        <nav class="nav-related">
+          <ul>
+            <li class="nav-item"><a href="${details_url}">${_("Details &amp; Schedule")}</a></li>
+            <li class="nav-item"><a href="${grading_url}">${_("Grading")}</a></li>
+            <li class="nav-item"><a href="${course_team_url}">${_("Course Team")}</a></li>
+            <li class="nav-item"><a href="${advanced_settings_url}">${_("Advanced Settings")}</a></li>
+          </ul>
+        </nav>
+      % endif
+      </div>
+    </aside>
+  </section>
+</div>
+</%block>

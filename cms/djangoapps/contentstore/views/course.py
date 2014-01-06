@@ -1,8 +1,10 @@
 """
 Views related to operations on course objects
 """
+import datetime
 import json
 import random
+import requests
 import string  # pylint: disable=W0402
 import re
 import bson
@@ -57,6 +59,7 @@ __all__ = ['course_info_handler', 'course_handler', 'course_info_update_handler'
            'settings_handler',
            'grading_handler',
            'advanced_settings_handler',
+           'pub_to_lr_handler',
            'textbooks_list_handler', 'textbooks_detail_handler']
 
 
@@ -586,6 +589,94 @@ def advanced_settings_handler(request, package_id=None, branch=None, version_gui
                     "Incorrect setting format. {}".format(err),
                     content_type="text/plain"
                 )
+
+@login_required
+@ensure_csrf_cookie
+@require_http_methods(("GET", "POST"))
+@expect_json
+def pub_to_lr_handler(request, package_id=None, branch=None, version_guid=None, block=None, tag=None):
+    """
+    course metadata publishing UI
+    """
+
+    locator, course_module = _get_locator_and_course(
+        package_id, branch, version_guid, block, request.user
+    )
+
+    # default UI state handling
+    if 'text/html' in request.META.get('HTTP_ACCEPT', '') and request.method == 'GET':
+
+        #street-style introspection of the course metadata
+        #for k in dir(course_module):
+        #    try:
+        #        print k, getattr(course_module, k, '?')
+        #    except Exception, e:
+        #        print k, 'exception:', e
+
+        # create default LRMI payload for publishing
+        course_url = "http://www.edx.org/courses/{}".format(course_module.id)
+        document = {"documents": [{
+            "doc_type": "resource_data",
+            "resource_locator": course_url,
+            "resource_data": {
+                "copyrightYear": str(datetime.date.today().year),
+                "interactivityType": "mixed",
+                "name": course_module.display_name_with_default,
+                "inLanguage": ["eng"],
+                "url": course_url,
+                "author": [
+                    "edx.org"
+                    ],
+                "publisher": "edx.org",
+                "isFamilyFriendly": True,
+                "datePublished": course_module.start.isoformat()[:10],
+                "@type": "http://schema.org/CreativeWork",
+                "learningResourceType": "Course",
+                "audience": {
+                    "educationalRole": "student",
+                    "@type": "http://schema.org/EducationalAudience"
+                    },
+                "typicalAgeRange": ["16-"],
+                "keywords": [],
+                "useRightsUrl": "http://www.edx.org/tos",
+                "@id": course_url,
+                "provider": "edx.org",
+                "description": "This is a test entry for integration test purposes only."
+                },
+            "keys": [
+                ""
+                ],
+            "TOS": {
+                "submission_TOS": "http://www.learningregistry.org/tos/cc0/v0-5/"
+                },
+            "resource_data_type": "metadata",
+            "payload_placement": "inline",
+            "payload_schema": ["JSON-LD"],
+            "doc_version": "0.23.0",
+            "active": True,
+            "identity": {
+                "submitter": "edx.org",
+                "submitter_type": "agent"
+                }
+            }]}
+
+        document_json = json.dumps(document, indent=4, separators=(',', ': '))
+
+        return render_to_response('pub_to_lr.html', {
+            'document_json': document_json,
+            'context_course': course_module,
+        })
+    
+    elif 'application/json' in request.META.get('HTTP_ACCEPT', '') and request.method == 'POST':
+        # publish
+        lr_response = requests.post(
+            "http://sandbox.learningregistry.org/publish",
+            data=request.POST['lr_document'],
+            auth=(request.POST['lr_username'], request.POST['lr_password'])
+            )
+        
+        print lr_response.json()
+        return JsonResponse(lr_response.json())
 
 
 class TextbookValidationError(Exception):
