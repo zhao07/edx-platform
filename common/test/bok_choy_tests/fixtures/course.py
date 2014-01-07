@@ -8,18 +8,12 @@ import requests
 from lazy import lazy
 from bok_choy.web_app_fixture import WebAppFixture, WebAppFixtureError
 from . import STUDIO_BASE_URL
-from .user import StaffUserFixture
 
 
 class StudioApiFixture(WebAppFixture):
     """
     Base class for fixtures that use the Studio restful API.
     """
-
-    # Need a staff account to access the restful API
-    STAFF_USER = "staff"
-    STAFF_PASSWORD = "password"
-    STAFF_EMAIL = "staff@example.com"
 
     @lazy
     def session_cookies(self):
@@ -28,17 +22,8 @@ class StudioApiFixture(WebAppFixture):
         Raises a `WebAppFixtureError` if the login fails.
         """
 
-        # Ensure the staff user exists
-        StaffUserFixture(self.STAFF_USER, self.STAFF_PASSWORD, self.STAFF_EMAIL).install()
-
-        # Log in as the staff user
-        form_data = {
-            'email': self.STAFF_EMAIL,
-            'password': self.STAFF_PASSWORD,
-            'honor_code': True
-        }
-
-        response = requests.post(STUDIO_BASE_URL + "/login_post", data=form_data)
+        # Use auto-auth to retrieve session cookies for a logged in user
+        response = requests.get(STUDIO_BASE_URL + "/auto_auth?staff=true")
 
         # Return the cookies from the request
         if response.ok:
@@ -53,7 +38,11 @@ class StudioApiFixture(WebAppFixture):
         """
         Default HTTP headers dict.
         """
-        return {'Content-type': 'application/json', 'Accept': 'application/json'}
+        return {
+            'Content-type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRFToken': self.session_cookies.get('csrftoken', '')
+        }
 
 
 class XBlockFixtureDesc(object):

@@ -43,16 +43,8 @@ LOG_OVERRIDES = [
 for log_name, log_level in LOG_OVERRIDES:
     logging.getLogger(log_name).setLevel(log_level)
 
-# Disable CSRF to make Studio API access easier
-TEMPLATE_CONTEXT_PROCESSORS = tuple([
-    proc for proc in TEMPLATE_CONTEXT_PROCESSORS
-    if proc != 'django.core.context_processors.csrf'
-])
-
-MIDDLEWARE_CLASSES = tuple([
-    clz for clz in MIDDLEWARE_CLASSES
-    if clz != 'django.middleware.csrf.CsrfViewMiddleware'
-])
+# Use the auto_auth workflow for creating users and logging them in
+FEATURES['AUTOMATIC_AUTH_FOR_TESTING'] = True
 
 # Unfortunately, we need to use debug mode to serve staticfiles
 DEBUG = True

@@ -105,7 +105,7 @@ def wait_for_server(server, port)
     rescue
         sleep(1)
         attempts += 1
-        if attempts < 5
+        if attempts < 20
             retry
         else
             false

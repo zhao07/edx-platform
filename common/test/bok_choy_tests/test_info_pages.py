@@ -5,8 +5,6 @@ Very simple test case to verify bok-choy integration.
 from bok_choy.web_app_test import WebAppTest
 from .edxapp_pages.lms.info import InfoPage
 
-from .fixtures.user import StudentUserFixture, StaffUserFixture
-
 
 class InfoPageTest(WebAppTest):
     """
@@ -16,13 +14,6 @@ class InfoPageTest(WebAppTest):
     @property
     def page_object_classes(self):
         return [InfoPage]
-
-    @property
-    def fixtures(self):
-        return [
-            StudentUserFixture('test', 'test', 'test@example.com'),
-            StaffUserFixture('test', 'test', 'test@example.com')
-        ]
 
     def test_info(self):
         for section_name in InfoPage.sections():

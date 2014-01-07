@@ -19,16 +19,15 @@ class CourseAboutPage(PageObject):
     def js_globals(self):
         return []
 
-    def url(self, course_id=None):
+    def url(self, org=None, number=None, run=None):
         """
         URL for the about page of a course.
-        Course ID is currently of the form "edx/999/2013_Spring"
-        but this format could change.
+        `org`, `number`, and `run` are strings used to identify the course.
         """
-        if course_id is None:
-            raise NotImplemented("Must provide a course ID to access about page")
+        if org is None or number is None or run is None:
+            raise NotImplemented("Must provide course identifiers to access about page")
 
-        return BASE_URL + "/courses/" + course_id + "about"
+        return BASE_URL + "/courses/{0}/{1}/{2}/about".format(org, number, run)
 
     def is_browser_on_page(self):
         return self.is_css_present('section.course-info')

@@ -79,9 +79,6 @@ def nose_cmd(test_spec)
         # Ensure that the Python path allows access to settings modules
         "PYTHONPATH=$PYTHONPATH:#{REPO_ROOT}",
 
-        # Use Studio settings for the test suite when it calls management commands
-        "DJANGO_SETTINGS_MODULE='cms.envs.bok_choy'",
-
         # Save screenshots on failure to the test logs
         "SCREENSHOT_DIR=#{BOK_CHOY_LOG_DIR}",
 
@@ -163,7 +160,8 @@ namespace :'test:bok_choy' do
 
         # Collect static assets
         Rake::Task["gather_assets"].invoke('lms', 'bok_choy')
-        Rake::Task["gather_assets"].invoke('lms', 'bok_choy')
+        Rake::Task["gather_assets"].reenable
+        Rake::Task["gather_assets"].invoke('cms', 'bok_choy')
     end
 
     desc "Run acceptance tests that use the bok-choy framework but skip setup"
