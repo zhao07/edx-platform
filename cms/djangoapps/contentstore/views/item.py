@@ -3,7 +3,8 @@
 import logging
 from uuid import uuid4
 
-from contentstore.utils import get_children_including_drafts
+#from contentstore.utils import get_children_including_drafts
+from xmodule.x_module import XModule
 
 from functools import partial
 from static_replace import replace_static_urls
@@ -466,13 +467,14 @@ def _publish_unpublish_units( parent_item, request, doPublish ):
     '''
     #from pydbgr.api import debug; print("_____________________________ _publish_unpublish_units ___________________________"); debug();
     child_xmodules = []
-    _item_recurse(parent_item, lambda i: child_xmodules.append(i))   # get a list of children items
+    _item_recurse(parent_item, lambda i: child_xmodules.append(i), '   ')   # get a list of child items
 
-    print("                    >>>>>>>>>>>>>>>>>>>>> COUNT: " + str(len(child_xmodules)))
+    print("                    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> COUNT: " + str(len(child_xmodules)))
 
 
     for child_item in child_xmodules:
-        print(str(child_item.location) + ", category: " + child_item.location.category)
+        counter = len(child_xmodules)
+        print(str(counter) + "  " + str(child_item.location) + ", category: " + child_item.location.category)
         if child_item.location.category == 'vertical':                  # only 'vertical' units are affected
             if doPublish:
                 print("             publish: " + str(child_item.location))
@@ -481,14 +483,19 @@ def _publish_unpublish_units( parent_item, request, doPublish ):
                 print("             unpublish: " + str(child_item.location))
                 modulestore().unpublish(child_item.location)
 
-
-def _item_recurse(item, action):
+INDENT = '    '
+def _item_recurse(item, action, spaces):
     '''
     Exactly like '_xmodule_recurse' in file x_module.py except that this recursion uses a safer
     version of _get_children (defined in this file just above).
     '''
-    for child in get_children_including_drafts(item):
-        _item_recurse(child, action)
+    spaces = spaces + INDENT
+    #for child in get_children_including_drafts(item):
+    for child in get_children(item):
+        _item_recurse(child, action, spaces)
+
+    print(spaces + " add: " + str(item.location))
     action(item)
+    spaces = spaces[:-4]
 
 

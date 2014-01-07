@@ -206,6 +206,7 @@ class XModuleMixin(XBlockMixin):
     def get_children(self):
         """Returns a list of XBlock instances for the children of
         this module"""
+        from pydbgr.api import debug; print("_____________________________ get_children 2 ___________________________");
 
         if not self.has_children:
             return []
@@ -213,10 +214,12 @@ class XModuleMixin(XBlockMixin):
         if getattr(self, '_child_instances', None) is None:
             self._child_instances = []  # pylint: disable=attribute-defined-outside-init
             for child_loc in self.children:
+                print("child: " + str(child_loc))
                 try:
                     child = self.runtime.get_block(child_loc)
                 except ItemNotFoundError:
-                    from pydbgr.api import debug; print("_____________________________ ItemNotFoundError ___________________________"); debug();
+                    #from pydbgr.api import debug; print("_____________________________ ItemNotFoundError ___________________________"); debug();
+                    print("     child not found: " + str(child_loc))
                     log.exception('Unable to load item {loc}, skipping'.format(loc=child_loc))
                     continue
                 self._child_instances.append(child)
@@ -439,6 +442,7 @@ class XModule(XModuleMixin, HTMLSnippet, XBlock):  # pylint: disable=abstract-me
         """
         Return module instances for all the children of this module.
         """
+        from pydbgr.api import debug; print("_____________________________ get_children 1 ___________________________");
         if self._loaded_children is None:
             child_descriptors = self.get_child_descriptors()
 

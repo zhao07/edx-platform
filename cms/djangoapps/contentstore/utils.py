@@ -436,8 +436,13 @@ def get_section_unit_states( section ):
       found_private_subsection = 0              # counts the number of private units in this subsection
       found_public_subsection = 0               # counts the number of public units in this subsection
       found_units_subsection = 0                # counts the total number of units in this subsection
-      #for unit in child.get_children():
-      for unit in get_children_including_drafts(child):
+
+
+
+      for unit in child.get_children():
+      #for unit in get_children_including_drafts(child):
+
+
         found_units_subsection += 1
         found_units += 1
         state = compute_unit_state(unit)
@@ -463,7 +468,7 @@ def get_section_unit_states( section ):
 
 
 
-def get_children_including_drafts(self):
+def x_get_children_including_drafts(self):
     """
     Returns a list of XBlock instances for the children of
     this module. Both the draft and non-draft locations will be tried before
@@ -492,7 +497,8 @@ def get_children_including_drafts(self):
 
     if child_instance_count > 0:
         try:
-            for child_loc in self.children:
+            #for child_loc in self.children:
+            for child_loc in get_children:
                 try:
                     child = self.runtime.get_block(child_loc)
                     print("          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> found (non draft):" + str(child.location))
