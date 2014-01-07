@@ -3,6 +3,8 @@ import os
 import sys
 import yaml
 
+
+
 from functools import partial
 from lxml import etree
 from collections import namedtuple
@@ -206,23 +208,42 @@ class XModuleMixin(XBlockMixin):
     def get_children(self):
         """Returns a list of XBlock instances for the children of
         this module"""
-        from pydbgr.api import debug; print("_____________________________ get_children 2 ___________________________");
-
         if not self.has_children:
             return []
 
+        #from pydbgr.api import debug; print("_____________________________  ___________________________"); debug();
+
         if getattr(self, '_child_instances', None) is None:
             self._child_instances = []  # pylint: disable=attribute-defined-outside-init
-            for child_loc in self.children:
-                print("child: " + str(child_loc))
+            for child_location in self.children:
+                child_location_as_draft = Location(child_location).replace(revision='draft')        # just in case
+
+
+                #if Location.is_valid(child_loc):
+                #    print("                    VALID: " + str(child_loc))
+                #else:
+                #    print("                    INVALID: " + str(child_loc))
+
+
+
+
+
+
                 try:
-                    child = self.runtime.get_block(child_loc)
+                    child = self.runtime.get_block(child_location)
+                    print("                                               child appended: " + str(child.location))
+                    self._child_instances.append(child)
                 except ItemNotFoundError:
-                    #from pydbgr.api import debug; print("_____________________________ ItemNotFoundError ___________________________"); debug();
-                    print("     child not found: " + str(child_loc))
-                    log.exception('Unable to load item {loc}, skipping'.format(loc=child_loc))
-                    continue
-                self._child_instances.append(child)
+                    try:
+                        child = self.runtime.get_block(child_location_as_draft)
+                        print("                                               child appended: " + str(child.location))
+                        self._child_instances.append(child)
+                    except ItemNotFoundError:
+                        print("                                       child not found: " + str(child_location))
+                        log.exception('Unable to load item {loc}, skipping'.format(loc=child_location))
+                        continue
+
+
 
         return self._child_instances
 
@@ -442,7 +463,6 @@ class XModule(XModuleMixin, HTMLSnippet, XBlock):  # pylint: disable=abstract-me
         """
         Return module instances for all the children of this module.
         """
-        from pydbgr.api import debug; print("_____________________________ get_children 1 ___________________________");
         if self._loaded_children is None:
             child_descriptors = self.get_child_descriptors()
 

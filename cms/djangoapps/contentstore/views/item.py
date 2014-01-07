@@ -5,6 +5,7 @@ from uuid import uuid4
 
 #from contentstore.utils import get_children_including_drafts
 from xmodule.x_module import XModule
+from xmodule.modulestore import Location
 
 from functools import partial
 from static_replace import replace_static_urls
@@ -477,8 +478,9 @@ def _publish_unpublish_units( parent_item, request, doPublish ):
         print(str(counter) + "  " + str(child_item.location) + ", category: " + child_item.location.category)
         if child_item.location.category == 'vertical':                  # only 'vertical' units are affected
             if doPublish:
-                print("             publish: " + str(child_item.location))
-                modulestore().publish(child_item.location, request.user.id)
+                child_location_as_nondraft = Location(child_item.location).replace(revision='')
+                print("             publish: " + str(child_location_as_nondraft))
+                modulestore().publish(child_location_as_nondraft, request.user.id)
             else:
                 print("             unpublish: " + str(child_item.location))
                 modulestore().unpublish(child_item.location)
@@ -491,7 +493,7 @@ def _item_recurse(item, action, spaces):
     '''
     spaces = spaces + INDENT
     #for child in get_children_including_drafts(item):
-    for child in get_children(item):
+    for child in item.get_children():
         _item_recurse(child, action, spaces)
 
     print(spaces + " add: " + str(item.location))

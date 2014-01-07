@@ -342,8 +342,8 @@ def get_section_unit_counts_private( section ):
     populated before it is called (see 'get_section_unit_states' below)
     """
     assert unit_stateById.__sizeof__() > 0  # be sure the dictionary of unit/state has been created
-    found_public, found_private, found_units = _get_section_unit_counts( section )
-    return str(found_private)
+    found_count_public, found_count_private, found_count_total = _get_section_unit_counts( section )
+    return str(found_count_private)
 
 
 def get_section_unit_counts_public( section ):
@@ -358,8 +358,8 @@ def get_section_unit_counts_public( section ):
     populated before it is called (see 'get_section_unit_states' below)
     """
     assert unit_stateById.__sizeof__() > 0  # be sure the dictionary of unit/state has been created
-    found_public, found_private, found_units = _get_section_unit_counts( section )
-    return str(found_public)
+    found_count_public, found_count_private, found_count_total = _get_section_unit_counts( section )
+    return str(found_count_public)
 
 
 def get_section_unit_counts_found( section ):
@@ -374,8 +374,8 @@ def get_section_unit_counts_found( section ):
     populated before it is called (see 'get_section_unit_states' below)
     """
     assert unit_stateById.__sizeof__() > 0  # be sure the dictionary of unit/state has been created
-    found_public, found_private, found_units = _get_section_unit_counts( section )
-    return str(found_units)
+    found_count_public, found_count_private, found_count_total = _get_section_unit_counts( section )
+    return str(found_count_total)
 
 
 def _get_section_unit_counts( section ):
@@ -395,26 +395,26 @@ def _get_section_unit_counts( section ):
     """
     assert unit_stateById.__sizeof__() > 0  # be sure the dictionary of unit/state has been created
 
-    found_private = 0                           # counts the number of private units
-    found_public = 0                            # counts the number of public units
-    found_units = 0                             # counts the total number of units
-
-    for child in section.get_children():
-      found_private_subsection = 0              # counts the number of private units in this subsection
-      found_public_subsection = 0               # counts the number of public units in this subsection
-      found_units_subsection = 0                # counts the total number of units in this subsection
-      for unit in child.get_children():
-        found_units += 1
+    found_count_private = 0                           # counts the number of private units
+    found_count_public = 0                            # counts the number of public units
+    found_count_total = 0                             # counts the total number of units
+    
+    for subsection in section.get_children():
+      #found_count_private_subsection = 0              # counts the number of private units in this subsection
+      #found_count_public_subsection = 0               # counts the number of public units in this subsection
+      #found_count_total_subsection = 0                # counts the total number of units in this subsection
+      for unit in subsection.get_children():
+        found_count_total += 1
         state = compute_unit_state(unit)
         unit_stateById[ unit.location.name ] = state
 
         if state == "public":
-            found_public += 1
+            found_count_public += 1
 
         if (state == "private") or (state == "draft"):
-            found_private += 1
+            found_count_private += 1
 
-    return (found_public, found_private, found_units)
+    return found_count_public, found_count_private, found_count_total
 
 
 def get_section_unit_states( section ):
@@ -427,96 +427,91 @@ def get_section_unit_states( section ):
     be safely called.
     """
     return_string = MIXED_STATE_ICON_STRING
-    found_private = 0                            # counts the number of private units
-    found_public = 0                            # counts the number of public units
-    found_units = 0                             # counts the total number of units
+    found_count_private = 0                            # counts the number of private units
+    found_count_public = 0                            # counts the number of public units
+    found_count_total = 0                             # counts the total number of units
     affected_units = 0                          # total number of units which could be affected by a user status change
 
-    for child in section.get_children():
-      found_private_subsection = 0              # counts the number of private units in this subsection
-      found_public_subsection = 0               # counts the number of public units in this subsection
-      found_units_subsection = 0                # counts the total number of units in this subsection
+    for subsection in section.get_children():
+      found_count_private_subsection = 0              # counts the number of private units in this subsection
+      found_count_public_subsection = 0               # counts the number of public units in this subsection
+      found_count_total_subsection = 0                # counts the total number of units in this subsection
 
-
-
-      for unit in child.get_children():
-      #for unit in get_children_including_drafts(child):
-
-
-        found_units_subsection += 1
-        found_units += 1
+      for unit in subsection.get_children():
+        found_count_total_subsection += 1
+        found_count_total += 1
         state = compute_unit_state(unit)
         unit_stateById[ unit.location.name ] = state
 
         if state == "public":
-            found_public += 1
-            found_public_subsection += 1
+            found_count_public += 1
+            found_count_public_subsection += 1
 
         if (state == "private") or (state == "draft"):
-            found_private += 1
-            found_private_subsection += 1
+            found_count_private += 1
+            found_count_private_subsection += 1
 
-    if found_public == found_units:
-        affected_units = found_units
+    if found_count_public == found_count_total:
+        affected_units = found_count_total
         return_string = ALL_PUBLIC_ICON_STRING
 
-    if found_public == 0:
-        affected_units = found_units
+    if found_count_public == 0:
+        affected_units = found_count_total
         return_string = ALL_PRIVATE_ICON_STRING
 
     return return_string + " unit-status-section-icon-adjustment"
 
 
 
-def x_get_children_including_drafts(self):
-    """
-    Returns a list of XBlock instances for the children of
-    this module. Both the draft and non-draft locations will be tried before
-    giving up and throwing an 'ItemNotFoundError' exception.
-    This function is an modified version of _get_children in file x_module.py.
-    """
-    #from pydbgr.api import debug; print("_____________________________ _get_children_including_drafts ___________________________"); debug();
-
-
-    child_instance_count = -1                               # assume no _child_instances attribute exists
-    child_instances = []
-    try:
-        child_instance_count = len(self.children)           # get the number of child locations (or throw an exception)
-    except AttributeError:                                  # an exception just means no '_child_instances' attribute
-        child_instance_count = -1
-    finally:
-        pass
-
-
-
-
-    print("                  >>>>>>>>>>>>>>>>>>>>> child_instance_count: " + str(child_instance_count))
-
-
-
-
-    if child_instance_count > 0:
-        try:
-            #for child_loc in self.children:
-            for child_loc in get_children:
-                try:
-                    child = self.runtime.get_block(child_loc)
-                    print("          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> found (non draft):" + str(child.location))
-                    child_instances.append(child)
-                except ItemNotFoundError:
-                    try:                                    # let's try the 'draft' version of location
-                        child = self.runtime.get_block(as_draft(child_loc))
-                        print("          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> found (draft):" + str(child.location))
-                        child_instances.append(child)
-                    except ItemNotFoundError:
-                        log.exception('Unable to load item {loc}, skipping'.format(loc=child_loc))
-                finally:
-                    pass
-        except:
-            print('bang 11')
-        finally:
-            print('bang 22')
-
-    print("                  >>>>>>>>>>>>>>>>>>>>> child_instances count: " + str(len(child_instances)))
-
-    return child_instances
+#def x_get_children_including_drafts(self):
+#    """
+#    Returns a list of XBlock instances for the children of
+#    this module. Both the draft and non-draft locations will be tried before
+#    giving up and throwing an 'ItemNotFoundError' exception.
+#    This function is an modified version of _get_children in file x_module.py.
+#    """
+#    #from pydbgr.api import debug; print("_____________________________ _get_children_including_drafts ___________________________"); debug();
+#
+#
+#    child_instance_count = -1                               # assume no _child_instances attribute exists
+#    child_instances = []
+#    try:
+#        child_instance_count = len(self.children)           # get the number of child locations (or throw an exception)
+#    except AttributeError:                                  # an exception just means no '_child_instances' attribute
+#        child_instance_count = -1
+#    finally:
+#        pass
+#
+#
+#
+#
+#    print("                  >>>>>>>>>>>>>>>>>>>>> child_instance_count: " + str(child_instance_count))
+#
+#
+#
+#
+#    if child_instance_count > 0:
+#        try:
+#            #for child_loc in self.children:
+#            for child_loc in get_children:
+#                try:
+#                    child = self.runtime.get_block(child_loc)
+#                    print("          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> found (non draft):" + str(child.location))
+#                    child_instances.append(child)
+#                except ItemNotFoundError:
+#                    try:                                    # let's try the 'draft' version of location
+#                        child = self.runtime.get_block(as_draft(child_loc))
+#                        print("          >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> found (draft):" + str(child.location))
+#                        child_instances.append(child)
+#                    except ItemNotFoundError:
+#                        log.exception('Unable to load item {loc}, skipping'.format(loc=child_loc))
+#                finally:
+#                    pass
+#        except:
+#            print('bang 11')
+#        finally:
+#            print('bang 22')
+#
+#    print("                  >>>>>>>>>>>>>>>>>>>>> child_instances count: " + str(len(child_instances)))
+#
+#    return child_instances

@@ -144,6 +144,12 @@ class DraftModuleStore(MongoModuleStore):
         """
         original = self.collection.find_one(location_to_query(source_location))
         draft_location = as_draft(source_location)
+
+        from pydbgr.api import debug; print("_____________________________ convert_to_draft ___________________________"); debug();
+        print(".............................. source location: " + str(source_location) + ", draft location: "  + str(draft_location)  )
+
+
+
         if draft_location.category in DIRECT_ONLY_CATEGORIES:
             raise InvalidVersionError(source_location)
         original['_id'] = draft_location.dict()
