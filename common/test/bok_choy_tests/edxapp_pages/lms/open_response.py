@@ -11,14 +11,6 @@ class OpenResponsePage(PageObject):
     def name(self):
         return "lms.open_response"
 
-    @property
-    def requirejs(self):
-        return []
-
-    @property
-    def js_globals(self):
-        return []
-
     def url(self):
         """
         Open-response isn't associated with a particular URL.

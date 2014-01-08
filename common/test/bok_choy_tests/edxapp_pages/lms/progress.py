@@ -11,14 +11,6 @@ class ProgressPage(PageObject):
     def name(self):
         return "lms.progress"
 
-    @property
-    def requirejs(self):
-        return []
-
-    @property
-    def js_globals(self):
-        return []
-
     def url(self, course_id=None):
         return BASE_URL + "/courses/" + course_id + "/progress"
 

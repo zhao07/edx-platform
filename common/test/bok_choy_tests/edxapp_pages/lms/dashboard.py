@@ -12,14 +12,6 @@ class DashboardPage(PageObject):
     def name(self):
         return "lms.dashboard"
 
-    @property
-    def requirejs(self):
-        return []
-
-    @property
-    def js_globals(self):
-        return []
-
     def url(self, **kwargs):
         return BASE_URL + "/dashboard"
 

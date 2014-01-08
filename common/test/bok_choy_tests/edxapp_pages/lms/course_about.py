@@ -11,14 +11,6 @@ class CourseAboutPage(PageObject):
     def name(self):
         return "lms.course_about"
 
-    @property
-    def requirejs(self):
-        return []
-
-    @property
-    def js_globals(self):
-        return []
-
     def url(self, org=None, number=None, run=None):
         """
         URL for the about page of a course.

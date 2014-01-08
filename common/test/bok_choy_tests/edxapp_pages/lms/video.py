@@ -14,14 +14,6 @@ class VideoPage(PageObject):
     def name(self):
         return "lms.video"
 
-    @property
-    def requirejs(self):
-        return []
-
-    @property
-    def js_globals(self):
-        return []
-
     def url(self):
         """
         Video players aren't associated with a particular URL.

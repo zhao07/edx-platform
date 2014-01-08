@@ -12,14 +12,6 @@ class CourseNavPage(PageObject):
     def name(self):
         return "lms.course_nav"
 
-    @property
-    def requirejs(self):
-        return []
-
-    @property
-    def js_globals(self):
-        return []
-
     def url(self, **kwargs):
         """
         Since course navigation appears on multiple pages,

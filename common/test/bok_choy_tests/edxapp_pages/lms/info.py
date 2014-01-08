@@ -35,14 +35,6 @@ class InfoPage(PageObject):
     def name(self):
         return "lms.info"
 
-    @property
-    def requirejs(self):
-        return []
-
-    @property
-    def js_globals(self):
-        return []
-
     def url(self, section=None):
         return BASE_URL + self.SECTION_PATH[section]
 

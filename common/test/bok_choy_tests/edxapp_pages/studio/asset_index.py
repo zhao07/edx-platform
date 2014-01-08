@@ -11,14 +11,6 @@ class AssetIndexPage(PageObject):
     def name(self):
         return "studio.uploads"
 
-    @property
-    def requirejs(self):
-        return []
-
-    @property
-    def js_globals(self):
-        return []
-
     def url(self, course_id=None):
         if course_id is None:
             raise NotImplemented("Must provide a course ID")

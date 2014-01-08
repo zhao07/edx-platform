@@ -11,14 +11,6 @@ class UnitPage(PageObject):
     def name(self):
         return "studio.unit"
 
-    @property
-    def requirejs(self):
-        return []
-
-    @property
-    def js_globals(self):
-        return []
-
     def url(self):
         raise NotImplemented
 

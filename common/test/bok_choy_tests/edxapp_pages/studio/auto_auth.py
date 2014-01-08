@@ -14,14 +14,6 @@ class AutoAuthPage(PageObject):
     def name(self):
         return "studio.auto_auth"
 
-    @property
-    def requirejs(self):
-        return []
-
-    @property
-    def js_globals(self):
-        return []
-
     def url(self, username=None, email=None, password=None, staff=None):
         """
         Auto-auth is an end-point for HTTP GET requests.

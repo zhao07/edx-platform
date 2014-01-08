@@ -11,14 +11,6 @@ class RegisterPage(PageObject):
     def name(self):
         return "lms.register"
 
-    @property
-    def requirejs(self):
-        return []
-
-    @property
-    def js_globals(self):
-        return []
-
     def url(self, course_id=None):
         """
         URL for the registration page of a course.

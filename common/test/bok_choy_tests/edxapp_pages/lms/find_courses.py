@@ -12,14 +12,6 @@ class FindCoursesPage(PageObject):
     def name(self):
         return "lms.find_courses"
 
-    @property
-    def requirejs(self):
-        return []
-
-    @property
-    def js_globals(self):
-        return []
-
     def url(self):
         return BASE_URL
 

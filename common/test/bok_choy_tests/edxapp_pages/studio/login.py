@@ -12,14 +12,6 @@ class LoginPage(PageObject):
     def name(self):
         return "studio.login"
 
-    @property
-    def requirejs(self):
-        return []
-
-    @property
-    def js_globals(self):
-        return []
-
     def url(self):
         return BASE_URL + "/signin"
 

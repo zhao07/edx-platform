@@ -11,14 +11,6 @@ class CourseInfoPage(PageObject):
     def name(self):
         return "lms.course_info"
 
-    @property
-    def requirejs(self):
-        return []
-
-    @property
-    def js_globals(self):
-        return []
-
     def url(self, course_id=None):
         """
         Go directly to the course info page for `course_id`.
