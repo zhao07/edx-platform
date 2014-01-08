@@ -174,3 +174,4 @@ XQUEUE_INTERFACE = {
 
 # Point the URL used to test YouTube availability to our stub YouTube server
 YOUTUBE_TEST_URL = "http://127.0.0.1:{0}/test_youtube/".format(YOUTUBE_PORT)
+COMMENTS_SERVICE_KEY = "password"

@@ -7,3 +7,6 @@ Feature: Discussion Home
     Given I visit the discussion tab
     Then I should see the discussion home screen
 
+  Scenario: User can create a new post
+    Given I visit the discussion tab
+    Then I can create a new thread
