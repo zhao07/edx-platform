@@ -98,8 +98,7 @@ domReady(function() {
 
     $('.delete-section-button').bind('click', deleteSection);
     $('.unit-status-change-section').bind('click', unitStatusChangeSection);
-
-
+    $('.unit-status-change-subsection').bind('click', unitStatusChangeSubsection);
 
 
 
@@ -362,10 +361,17 @@ function unitStatusChangeSection(e) {
     _unitStatusChange($(this).parents('section.branch'), 'Section');
 }
 
+function unitStatusChangeSubsection(e) {
+    e.preventDefault();
+    _unitStatusChange($(this).parents('section.branch'), 'Subsection');
+}
+
 function _unitStatusChange($el, type) {
     var units_found = 0;
     var private_units = 0;
     var public_units = 0;
+    var unit_locations_list = '';
+
     for(var i = 0; i < $el.context.children.length; i++) {
         childElement = $el.context.children[i];
 
@@ -377,6 +383,9 @@ function _unitStatusChange($el, type) {
         }
         if(childElement.className == "public_units") {
            public_units = parseInt(childElement.textContent);
+        }
+        if(childElement.className == "units_found_list") {
+           unit_locations_list = childElement.textContent;
         }
     }
 
@@ -413,7 +422,7 @@ function _unitStatusChange($el, type) {
     }
 
     var confirm = new PromptView.Warning({
-        title: gettext('Changing Unit Status (' + type + ')'),
+        title: gettext('Change Unit Status (' + type + ')'),
         message: gettext(promptText),
         actions: {
             primary: {
@@ -421,7 +430,7 @@ function _unitStatusChange($el, type) {
                 click: function(view) {
                     view.hide();
 
-                    changeUnitVisibilityStatus( $el, changeToPublic );
+                    changeUnitVisibilityStatus($el, changeToPublic, unit_locations_list);
                 }
             },
             secondary: {
@@ -435,72 +444,23 @@ function _unitStatusChange($el, type) {
     confirm.show();
 }
 
-function changeUnitVisibilityStatus( $el, toPublic ) {
-    action = 'make_public';         // assume the change will be to PUBLIC
-    visibility = 'public';          // assume the change will be to PUBLIC
+function changeUnitVisibilityStatus( $el, toPublic, unit_locations_list ) {
+    var action = 'make_public';         // assume the change will be to PUBLIC
+    var visibility = 'public';          // assume the change will be to PUBLIC
+    var locator = $el.data('locator');
+    var url = ModuleUtils.getUpdateUrl(locator);
 
     if(!toPublic) {                 // if we guessed wrong
         action = 'make_private';
         visibility = 'private';
     }
 
+    var updating = new NotificationView.Mini({
+        title: gettext('Updating&hellip;')
+    });
+//    updating.show();                            // slide up a card saying "Updating..."
 
-
-
-                      var locator = $el.data('locator');
-
-                    var updating = new NotificationView.Mini({
-                        title: gettext('Updating&hellip;')
-                    });
-                    updating.show();
-
-
-
-
-
-
-
-
-
-//    this worked pretty well except that the _save_item() call expects JSON
-//                        $.ajax({
-//                        type: 'POST',
-//                        url: ModuleUtils.getUpdateUrl(locator) +'?'+ $.param({publish: action}),
-//                        success: function () {
-//                            updating.hide();
-//                        }
-//                    });
-
-    // so back to this:
-
-    url = ModuleUtils.getUpdateUrl(locator)
-
-
-        return $.postJSON(url, {publish: action} );
-
-
-
-
-
-
-
-
-//    console.error('\nerror\n');
-//    console.log('\nlog\n');
-//    oWindow.wait(true);
-//    return $.postJSON(
-//        this.model.url(), {publish: action}, function() {
-//            analytics.track(
-//                "Set Unit Visibility", {
-//                    course: course_location_analytics,
-//                    unit_id: unit_location_analytics,
-//                    visibility: visibility
-//                }
-//            );
-////            return _this.model.set('state', _this.$('.visibility-select').val());
-//            return oWindow.model.set('state', _this.$('.visibility-select').val());
-//        }
-//    );
+    return $.postJSON(url, {publish: action, locations_list: unit_locations_list} );
 }
 
 

@@ -1,11 +1,19 @@
 <%inherit file="base.html" />
 <%!
   import logging
+  import contentstore.utils
+
   from contentstore.utils import get_subsection_state
   from contentstore.utils import get_section_unit_states
   from contentstore.utils import get_section_unit_counts_found
+  from contentstore.utils import get_section_units
   from contentstore.utils import get_section_unit_counts_public
   from contentstore.utils import get_section_unit_counts_private
+  from contentstore.utils import get_subsection_private_units_count
+  from contentstore.utils import get_subsection_public_units_count
+  from contentstore.utils import get_subsection_units
+  from contentstore.utils import get_subsection_total_units_count
+
   from xmodule.util import date_utils
   from django.utils.translation import ugettext as _
   from django.core.urlresolvers import reverse
@@ -217,63 +225,20 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
 
               <div class="item-actions">
 
-
+                <a href="#" data-tooltip="${_('Bulk change unit status')} TRBM_bulk-change-units-section-button"  >
+                     <i  class="${get_section_unit_states(section)} unit-status-change-section"  >
+                         <!-- div elements are invisible containers to hold unit counts and a list of locations -->
+                         <div hidden   class='units_found_list' > ${get_section_units(section)}                </div>
+                         <div hidden   class='units_found'      > ${get_section_unit_counts_found(section)}    </div>
+                         <div hidden   class='private_units'    > ${get_section_unit_counts_private(section)}  </div>
+                         <div hidden   class='public_units'     > ${get_section_unit_counts_public(section)}   </div>
+                   </i>
+                </a>
 
                 <a href="#" data-tooltip="${_('Delete this section')}" class="delete-button delete-section-button">
                     <span class="delete-icon"></span>
                 </a>
 
-                <a href="#" data-tooltip="${_('Bulk change unit status')} TRBM_bulk-change-units-section-button"  >
-
-                     <i  class="${get_section_unit_states(section)} unit-status-change-section"  >
-                         <!-- using these div elements as invisible containers to hold unit counts -->
-                         <div hidden class='units_found'  > ${get_section_unit_counts_found(section)}      </div>
-                         <div hidden   class='private_units'> ${get_section_unit_counts_private(section)}  </div>
-                         <div hidden   class='public_units' > ${get_section_unit_counts_public(section)}   </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                         <!--  <% section_counter = 100 + section.position %>      # TRBM just a test setting variable -->
-
-
-                        <!--<div style="position: absolute;-->
-                                    <!--text-align:center;-->
-                                    <!--font-size: 12px;-->
-                                    <!--font-family: 'Open Sans',sans-serif;-->
-                                    <!--width: 400px;-->
-                                    <!--height: 70px;-->
-                                    <!--border: 1px solid #1D9348;-->
-                                    <!--border-radius: 3px;-->
-                                    <!--box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset;-->
-                                    <!--color: #000000;-->
-                                    <!--right: 0;-->
-                                    <!--margin-top: 8;-->
-                                    <!--background-color: #ddddbb;">-->
-                            <!--<div style="margin-top: 18; text-align: center">-->
-                                <!--You are about to change the status of X units-->
-                            <!--</div>-->
-
-                            <!--<input style="vertical-align: bottom"   type="button"       value="All Public" />-->
-                            <!--<input type="button" value="All Private" />-->
-                            <!--<input type="button" value="Cancel" />-->
-
-                        <!--</div>-->
-                   </i>
-                </a>
 
 
 
@@ -317,7 +282,15 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
 
                     <div class="item-actcatalions">
                       <a href="#" data-tooltip="${_('Delete this subsection')}" class="delete-button delete-subsection-button"><span class="delete-icon"></span></a>
-                      <a href="#"><i class="${get_subsection_state( subsection )}"></i></a>
+                      <a href="#">
+                          <i class="${get_subsection_state( subsection )} unit-status-change-subsection">
+                             <!-- div elements are invisible containers to hold unit counts and a list of locations -->
+                             <div hidden   class='units_found_list' > ${get_subsection_units(subsection)}               </div>
+                             <div hidden   class='units_found'      > ${get_subsection_total_units_count(subsection)}               </div>
+                             <div hidden   class='private_units'    > ${get_subsection_private_units_count(subsection)} </div>
+                             <div hidden   class='public_units'     > ${get_subsection_public_units_count(subsection)}  </div>
+                          </i>
+                      </a>
                       <span data-tooltip="${_('Drag to reorder')}" class="drag-handle subsection-drag-handle"></span>
                     </div>
                   </div>
@@ -366,30 +339,4 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
     </div>
   </div>
 
-  <!--<div class="change-units-status-dialog-section showAsModal">-->
-    <!--<div class="settings">-->
-      <!--<h3>${_("Bulk Privacy Settings Change")}</h3>-->
-
-        <!--&lt;!&ndash;&lt;!&ndash;&ndash;&gt;-->
-      <!--&lt;!&ndash;<div class="picker datepair">&ndash;&gt;-->
-        <!--&lt;!&ndash;<div class="field field-start-date">&ndash;&gt;-->
-          <!--&lt;!&ndash;<label for="">${_("Release Day")}</label>&ndash;&gt;-->
-          <!--&lt;!&ndash;<input class="start-date date" type="text" name="start_date" value="" placeholder="MM/DD/YYYY" class="date" size='15' autocomplete="off"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;</div>&ndash;&gt;-->
-        <!--&lt;!&ndash;<div class="field field-start-time">&ndash;&gt;-->
-          <!--&lt;!&ndash;<label for="">${_("Release Time")} (<abbr title="${_("Coordinated Universal Time")}">UTC</abbr>)</label>&ndash;&gt;-->
-          <!--&lt;!&ndash;<input class="start-time time" type="text" name="start_time" value="" placeholder="HH:MM" class="time" size='10' autocomplete="off"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;</div>&ndash;&gt;-->
-
-        <!--&lt;!&ndash;<div class="description">&ndash;&gt;-->
-          <!--&lt;!&ndash;<p>${_('On the date set above, this section - {name} - will be released to students. Any units marked private will only be visible to admins.').format(name='<strong class="section-name"></strong>')}</p>&ndash;&gt;-->
-        <!--&lt;!&ndash;</div>&ndash;&gt;-->
-      <!--&lt;!&ndash;</div>&ndash;&gt;-->
-        <!--&lt;!&ndash;&ndash;&gt;&ndash;&gt;-->
-
-      <!--<a href="#" class="save-button">${_("Make Public")}</a>-->
-      <!--<a href="#" class="save-button">${_("Make Private")}</a>-->
-      <!--<a href="#" class="cancel-button">${_("Cancel")}</a>-->
-    <!--</div>-->
-  <!--</div>-->
 </%block>
