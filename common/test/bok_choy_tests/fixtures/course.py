@@ -47,7 +47,7 @@ class StudioApiFixture(WebAppFixture):
 
 class XBlockFixtureDesc(object):
 
-    def __init__(self, category, display_name, data=None, metadata=None, grader_type=None, publish='make_public', children=None):
+    def __init__(self, category, display_name, data=None, metadata=None, grader_type=None, publish='make_public'):
         """
         Configure the XBlock to be created by the fixture.
         These arguments have the same meaning as in the Studio REST API:
@@ -57,9 +57,6 @@ class XBlockFixtureDesc(object):
             * `metadata`
             * `grader_type`
             * `publish`
-
-        `children` is a list of `XBlockFixtureDesc` objects to create
-        as children of this XBlock.
         """
         self.category = category
         self.display_name = display_name
@@ -67,10 +64,17 @@ class XBlockFixtureDesc(object):
         self.metadata = metadata
         self.grader_type = grader_type
         self.publish = publish
-        self.children = children
+        self.children = []
 
-        if self.children is None:
-            self.children = []
+    def add_children(self, *args):
+        """
+        Add child XBlocks to this XBlock.
+        Each item in `args` is an `XBlockFixtureDescriptor` object.
+
+        Returns the `xblock_desc` instance to allow chaining.
+        """
+        self.children.extend(args)
+        return self
 
     def serialize(self, parent_loc=None):
         """
@@ -121,14 +125,11 @@ class CourseFixture(StudioApiFixture):
     between tests, you should use unique course identifiers for each fixture.
     """
 
-    def __init__(self, org, number, run, display_name, children):
+    def __init__(self, org, number, run, display_name):
         """
         Configure the course fixture to create a course with
         `org`, `number`, `run`, and `display_name` (all unicode).
         These have the same meaning as in the Studio restful API /course end-point.
-
-        `children` is a list of XBlockFixtureDescriptor objects, used to create
-        XBlocks within the course.
         """
         self._course_dict = {
             'org': org,
@@ -136,7 +137,23 @@ class CourseFixture(StudioApiFixture):
             'run': run,
             'display_name': display_name
         }
-        self._children = children
+        self._children = []
+
+    def __str__(self):
+        """
+        String representation of the course fixture, useful for debugging.
+        """
+        return "<CourseFixture: org='{org}', number='{number}', run='{run}'>".format(**self._course_dict)
+
+    def add_children(self, *args):
+        """
+        Add children XBlock to the course.
+        Each item in `args` is an `XBlockFixtureDescriptor` object.
+
+        Returns the course fixture to allow chaining.
+        """
+        self._children.extend(args)
+        return self
 
     def install(self):
         """
@@ -145,20 +162,8 @@ class CourseFixture(StudioApiFixture):
         raise a `WebAppFixtureError`.  You should use unique course identifiers to avoid
         conflicts between tests.
         """
-        if self._course_exists:
-            raise WebAppFixtureError("Course already exist for: {0}".format(self._course_dict))
-
-        else:
-            self._create_course()
-            self._create_xblock_children(self._course_loc, self._children)
-
-    @property
-    def _course_exists(self):
-        """
-        TODO
-        """
-        # TODO
-        return False
+        self._create_course()
+        self._create_xblock_children(self._course_loc, self._children)
 
     @property
     def _course_loc(self):
@@ -184,6 +189,18 @@ class CourseFixture(StudioApiFixture):
             headers=self.headers,
             cookies=self.session_cookies
         )
+
+        try:
+            err = response.json().get('ErrMsg')
+
+        except ValueError:
+            raise WebAppFixtureError(
+                "Could not parse response from course request as JSON: '{0}'".format(
+                    response.content))
+
+        # This will occur if the course identifier is not unique
+        if err is not None:
+            raise WebAppFixtureError("Could not create course {0}.  Error message: '{1}'".format( self, err))
 
         if not response.ok:
             raise WebAppFixtureError(
@@ -212,10 +229,13 @@ class CourseFixture(StudioApiFixture):
         )
 
         if not response.ok:
-            raise WebAppFixtureError("Could not create {0}".format(xblock_desc))
+            raise WebAppFixtureError(
+                 "Could not create {0}.  Status was {1}".format(
+                    xblock_desc, response.status_code))
 
         try:
             loc = response.json().get('locator')
+
         except ValueError:
             raise WebAppFixtureError("Could not decode JSON from '{0}'".format(response.content))
 

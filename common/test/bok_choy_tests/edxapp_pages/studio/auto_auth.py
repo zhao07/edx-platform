@@ -46,6 +46,9 @@ class AutoAuthPage(PageObject):
         if staff is not None:
             params['staff'] = "true" if staff else "false"
 
+        if course_id is not None:
+            params['course_id'] = course_id
+
         query_str = urllib.urlencode(params)
 
         # Append the query string to the base URL

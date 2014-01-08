@@ -20,7 +20,7 @@ class CourseAboutPage(PageObject):
         if course_id is None:
             raise NotImplemented("Must provide a course ID to access about page")
 
-        return BASE_URL + "/courses/" + course_id + "about"
+        return BASE_URL + "/courses/" + course_id + "/about"
 
     def is_browser_on_page(self):
         return self.is_css_present('section.course-info')
