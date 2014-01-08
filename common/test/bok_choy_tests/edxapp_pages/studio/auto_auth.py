@@ -14,7 +14,7 @@ class AutoAuthPage(PageObject):
     def name(self):
         return "studio.auto_auth"
 
-    def url(self, username=None, email=None, password=None, staff=None):
+    def url(self, username=None, email=None, password=None, staff=None, course_id=None):
         """
         Auto-auth is an end-point for HTTP GET requests.
         By default, it will create accounts with random user credentials,
@@ -22,6 +22,8 @@ class AutoAuthPage(PageObject):
 
         `username`, `email`, and `password` are the user's credentials (strings)
         `staff` is a boolean indicating whether the user is global staff.
+        `course_id` is the ID of the course to enroll the student in.
+        Currently, this has the form "org/number/run"
 
         Note that "global staff" is NOT the same as course staff.
         """

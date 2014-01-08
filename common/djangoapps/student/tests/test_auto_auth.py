@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
+from student.models import CourseEnrollment
 from util.testing import UrlResetMixin
 from mock import patch
 from django.core.urlresolvers import reverse, NoReverseMatch
@@ -69,6 +70,31 @@ class AutoAuthEnabledTestCase(UrlResetMixin, TestCase):
         self._auto_auth(username='test', staff='false')
         user = User.objects.get(username='test')
         self.assertFalse(user.is_staff)
+
+    def test_course_enrollment(self):
+
+        # Create a user and enroll in a course
+        course_id = "edX/Test101/2014_Spring"
+        self._auto_auth(username='test', course_id=course_id)
+
+        # Check that a course enrollment was created for the user
+        self.assertEqual(CourseEnrollment.objects.count(), 1)
+        enrollment = CourseEnrollment.objects.get(course_id=course_id)
+        self.assertEqual(enrollment.user.username, "test")
+
+    def test_double_enrollment(self):
+
+        # Create a user and enroll in a course
+        course_id = "edX/Test101/2014_Spring"
+        self._auto_auth(username='test', course_id=course_id)
+
+        # Make the same call again, re-enrolling the student in the same course
+        self._auto_auth(username='test', course_id=course_id)
+
+        # Check that only one course enrollment was created for the user
+        self.assertEqual(CourseEnrollment.objects.count(), 1)
+        enrollment = CourseEnrollment.objects.get(course_id=course_id)
+        self.assertEqual(enrollment.user.username, "test")
 
     def _auto_auth(self, **params):
         response = self.client.get(self.url, params)

@@ -989,6 +989,7 @@ def auto_auth(request):
     Accepts the following querystring parameters:
     * `username`, `email`, and `password` for the user account
     * `staff`: Set to "true" to make the user global staff.
+    * `course_id`: Enroll the student in the course with `course_id`
 
     If username, email, or password are not provided, use
     randomly generated credentials.
@@ -1002,6 +1003,7 @@ def auto_auth(request):
     password = request.GET.get('password', unique_name)
     email = request.GET.get('email', unique_name + "@example.com")
     is_staff = request.GET.get('staff', None)
+    course_id = request.GET.get('course_id', None)
 
     # Get or create the user object
     post_data = {
@@ -1039,6 +1041,10 @@ def auto_auth(request):
     reg = Registration.objects.get(user=user)
     reg.activate()
     reg.save()
+
+    # Enroll the user in a course
+    if course_id is not None:
+        CourseEnrollment.enroll(user, course_id)
 
     # Log in as the user
     user = authenticate(username=username, password=password)
