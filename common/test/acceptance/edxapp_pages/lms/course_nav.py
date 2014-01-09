@@ -1,3 +1,4 @@
+import re
 from bok_choy.page_object import PageObject
 from bok_choy.promise import EmptyPromise, fulfill_after
 from ..lms import BASE_URL
@@ -65,7 +66,7 @@ class CourseNavPage(PageObject):
             ['Chemical Bonds Video', 'Practice Problems', 'Homework']
         """
         seq_css = 'ol#sequence-list>li>a>p'
-        return self.css_map(seq_css, lambda el: el.html.strip().split('\n')[0])
+        return self.css_map(seq_css, self._clean_seq_titles)
 
     def go_to_section(self, section_title, subsection_title):
         """
@@ -193,3 +194,12 @@ class CourseNavPage(PageObject):
                 current_section_list[0].strip() == section_title and
                 current_subsection_list[0].strip().split('\n')[0] == subsection_title
             )
+
+    # Regular expression to remove HTML span tags from a string
+    REMOVE_SPAN_TAG_RE = re.compile(r'<span.+/span>')
+
+    def _clean_seq_titles(self, el):
+        """
+        Clean HTML of sequence titles, stripping out span tags and returning the first line.
+        """
+        return self.REMOVE_SPAN_TAG_RE.sub('', el.html).strip().split('\n')[0]

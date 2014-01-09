@@ -10,6 +10,7 @@ from ..edxapp_pages.lms.course_nav import CourseNavPage
 from ..edxapp_pages.lms.open_response import OpenResponsePage
 from ..fixtures.course import XBlockFixtureDesc, CourseFixture
 
+from .helpers import load_data_str
 
 class OpenResponseTest(WebAppTest):
     """
@@ -58,8 +59,8 @@ class OpenResponseTest(WebAppTest):
         course_fix.add_children(
             XBlockFixtureDesc('chapter', 'Test Section').add_children(
                 XBlockFixtureDesc('sequential', 'Test Subsection').add_children(
-                    XBlockFixtureDesc('html', 'Test HTML 1'),
-                    XBlockFixtureDesc('html', 'Test HTML 2')
+                    XBlockFixtureDesc('combinedopenended', 'Self-Assessed', data=load_data_str('ora_self_problem.xml')),
+                    XBlockFixtureDesc('combinedopenended', 'AI-Assessed', data=load_data_str('ora_ai_problem.xml'))
                 )
             )
         )
@@ -70,9 +71,8 @@ class OpenResponseTest(WebAppTest):
         """
         Test that the user can self-assess an essay.
         """
-
         # Navigate to the self-assessment problem and submit an essay
-        self.ui['lms.course_nav'].go_to_sequential('Self-Assessed Essay')
+        self.ui['lms.course_nav'].go_to_sequential('Self-Assessed')
         self._submit_essay('self', 'Censorship in the Libraries')
 
         # Check the rubric categories
@@ -96,7 +96,7 @@ class OpenResponseTest(WebAppTest):
         """
 
         # Navigate to the AI-assessment problem and submit an essay
-        self.ui['lms.course_nav'].go_to_sequential('Feedback and AI-"Graded" Essays')
+        self.ui['lms.course_nav'].go_to_sequential('AI-Assessed')
         self._submit_essay('ai', 'Censorship in the Libraries')
 
         # Expect UI feedback that the response was submitted
