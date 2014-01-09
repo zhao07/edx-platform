@@ -3,7 +3,7 @@ Very simple test case to verify bok-choy integration.
 """
 
 from bok_choy.web_app_test import WebAppTest
-from .edxapp_pages.lms.info import InfoPage
+from ..edxapp_pages.lms.info import InfoPage
 
 
 class InfoPageTest(WebAppTest):

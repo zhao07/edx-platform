@@ -3,13 +3,12 @@ Tests for ORA (Open Response Assessment) through the LMS UI.
 """
 
 from bok_choy.web_app_test import WebAppTest
-from edxapp_pages.studio.auto_auth import AutoAuthPage
-from edxapp_pages.lms.course_info import CourseInfoPage
-from edxapp_pages.lms.tab_nav import TabNavPage
-from edxapp_pages.lms.course_nav import CourseNavPage
-from edxapp_pages.lms.open_response import OpenResponsePage
-
-from .fixtures.course import XBlockFixtureDesc, CourseFixture
+from ..edxapp_pages.studio.auto_auth import AutoAuthPage
+from ..edxapp_pages.lms.course_info import CourseInfoPage
+from ..edxapp_pages.lms.tab_nav import TabNavPage
+from ..edxapp_pages.lms.course_nav import CourseNavPage
+from ..edxapp_pages.lms.open_response import OpenResponsePage
+from ..fixtures.course import XBlockFixtureDesc, CourseFixture
 
 
 class OpenResponseTest(WebAppTest):

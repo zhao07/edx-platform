@@ -3,28 +3,27 @@ Acceptance tests for Studio.
 """
 from bok_choy.web_app_test import WebAppTest
 
-from edxapp_pages.studio.asset_index import AssetIndexPage
-from edxapp_pages.studio.auto_auth import AutoAuthPage
-from edxapp_pages.studio.checklists import ChecklistsPage
-from edxapp_pages.studio.course_import import ImportPage
-from edxapp_pages.studio.course_info import CourseUpdatesPage
-from edxapp_pages.studio.edit_subsection import SubsectionPage
-from edxapp_pages.studio.edit_tabs import StaticPagesPage
-from edxapp_pages.studio.export import ExportPage
-from edxapp_pages.studio.howitworks import HowitworksPage
-from edxapp_pages.studio.index import DashboardPage
-from edxapp_pages.studio.login import LoginPage
-from edxapp_pages.studio.manage_users import CourseTeamPage
-from edxapp_pages.studio.overview import CourseOutlinePage
-from edxapp_pages.studio.settings import SettingsPage
-from edxapp_pages.studio.settings_advanced import AdvancedSettingsPage
-from edxapp_pages.studio.settings_graders import GradingPage
-from edxapp_pages.studio.signup import SignupPage
-from edxapp_pages.studio.textbooks import TextbooksPage
-from edxapp_pages.studio.unit import UnitPage
+from ..edxapp_pages.studio.asset_index import AssetIndexPage
+from ..edxapp_pages.studio.auto_auth import AutoAuthPage
+from ..edxapp_pages.studio.checklists import ChecklistsPage
+from ..edxapp_pages.studio.course_import import ImportPage
+from ..edxapp_pages.studio.course_info import CourseUpdatesPage
+from ..edxapp_pages.studio.edit_subsection import SubsectionPage
+from ..edxapp_pages.studio.edit_tabs import StaticPagesPage
+from ..edxapp_pages.studio.export import ExportPage
+from ..edxapp_pages.studio.howitworks import HowitworksPage
+from ..edxapp_pages.studio.index import DashboardPage
+from ..edxapp_pages.studio.login import LoginPage
+from ..edxapp_pages.studio.manage_users import CourseTeamPage
+from ..edxapp_pages.studio.overview import CourseOutlinePage
+from ..edxapp_pages.studio.settings import SettingsPage
+from ..edxapp_pages.studio.settings_advanced import AdvancedSettingsPage
+from ..edxapp_pages.studio.settings_graders import GradingPage
+from ..edxapp_pages.studio.signup import SignupPage
+from ..edxapp_pages.studio.textbooks import TextbooksPage
+from ..edxapp_pages.studio.unit import UnitPage
 
-from fixtures.course import CourseFixture
-from .base import StudioLoggedInBase
+from ..fixtures.course import CourseFixture
 
 
 class LoggedOutTest(WebAppTest):
@@ -99,8 +98,7 @@ class CoursePagesTest(WebAppTest):
             self.course_info['org'],
             self.course_info['number'],
             self.course_info['run'],
-            self.course_info['display_name'],
-            list() # No children
+            self.course_info['display_name']
         )
         return set(super_fixtures + [course_fix])
 
@@ -118,8 +116,6 @@ class CoursePagesTest(WebAppTest):
         # Log in
         self.ui.visit('studio.auto_auth', staff=True)
 
-        # DEBUG
         course_id = '{org}.{number}.{run}'.format(**self.course_info)
-
         for page in pages:
             self.ui.visit('studio.{0}'.format(page), course_id=course_id)

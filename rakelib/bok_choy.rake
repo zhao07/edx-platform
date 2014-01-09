@@ -12,7 +12,7 @@ BOK_CHOY_NUM_PARALLEL = ENV.fetch('NUM_PARALLEL', 1).to_i
 BOK_CHOY_TEST_TIMEOUT = ENV.fetch("TEST_TIMEOUT", 300).to_f
 
 # Ensure that we have a directory to put logs and reports
-BOK_CHOY_TEST_DIR = File.join(REPO_ROOT, "common", "test", "bok_choy_tests")
+BOK_CHOY_TEST_DIR = File.join(REPO_ROOT, "common", "test", "acceptance", "tests")
 BOK_CHOY_LOG_DIR = File.join(REPO_ROOT, "test_root", "log")
 directory BOK_CHOY_LOG_DIR
 
@@ -75,16 +75,7 @@ end
 
 
 def nose_cmd(test_spec)
-    cmd = [
-        # Ensure that the Python path allows access to settings modules
-        "PYTHONPATH=$PYTHONPATH:#{REPO_ROOT}",
-
-        # Save screenshots on failure to the test logs
-        "SCREENSHOT_DIR=#{BOK_CHOY_LOG_DIR}",
-
-        # Run the tests using nose
-        "nosetests", test_spec
-    ]
+    cmd = ["SCREENSHOT_DIR='#{BOK_CHOY_LOG_DIR}'", "nosetests", test_spec]
     if BOK_CHOY_NUM_PARALLEL > 1
         cmd += ["--processes=#{BOK_CHOY_NUM_PARALLEL}", "--process-timeout=#{BOK_CHOY_TEST_TIMEOUT}"]
     end
