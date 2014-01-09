@@ -1,5 +1,7 @@
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
+import datetime
 import json
+import uuid
 from logging import getLogger
 logger = getLogger(__name__)
 
@@ -10,40 +12,57 @@ class MockCommentServiceRequestHandler(BaseHTTPRequestHandler):
     '''
     protocol = "HTTP/1.0"
 
+    def _get_json(self):
+        '''
+        '''
+        # Retrieve the POST or PUT data into a dict.
+        # It should have been sent in json format
+        length = int(self.headers.getheader('content-length'))
+        data_string = self.rfile.read(length)
+        return json.loads(data_string)
+
+    def _return_failure(self, status=500, reason='Internal Server Error'):
+        '''
+        '''
+        self.send_response(status, reason)
+        self.send_header('Content-type', 'text/plain')
+        self.end_headers()
+        return False
+
+    def _handle(self, method):
+        '''
+        '''
+        if method in ('POST', 'PUT'):
+            try:
+                post_dict = self._get_json()
+            except Exception, e:
+                pass
+        else:
+            post_dict = None
+
+        logger.debug("Comment Service received {} request to path {}".format(
+                    method, self.path))
+
+        if not 'X-Edx-Api-Key' in self.headers:
+            return self._return_failure(reason='Unauthorized')
+
+        response = self.server._response_str
+        # Log the response
+        logger.debug("Comment Service: sending response %s" % json.dumps(response))
+
+        # Send a response back to the client
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        self.wfile.write(response)
+
     def do_POST(self):
         '''
         Handle a POST request from the client
         Used by the APIs for comment threads, commentables, comments,
         subscriptions, commentables, users
         '''
-        # Retrieve the POST data into a dict.
-        # It should have been sent in json format
-        length = int(self.headers.getheader('content-length'))
-        data_string = self.rfile.read(length)
-        post_dict = json.loads(data_string)
-
-        # Log the request
-        logger.debug("Comment Service received POST request %s to path %s" %
-                    (json.dumps(post_dict), self.path))
-
-        # Every good post has at least an API key
-        if 'X-Edx-Api-Key' in self.headers:
-            response = self.server._response_str
-            # Log the response
-            logger.debug("Comment Service: sending response %s" % json.dumps(response))
-
-            # Send a response back to the client
-            self.send_response(200)
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
-            self.wfile.write(response)
-
-        else:
-            # Respond with failure
-            self.send_response(500, 'Bad Request: does not contain API key')
-            self.send_header('Content-type', 'text/plain')
-            self.end_headers()
-            return False
+        return self._handle('POST')
 
     def do_PUT(self):
         '''
@@ -51,34 +70,13 @@ class MockCommentServiceRequestHandler(BaseHTTPRequestHandler):
         Used by the APIs for comment threads, commentables, comments,
         subscriptions, commentables, users
         '''
-        # Retrieve the PUT data into a dict.
-        # It should have been sent in json format
-        length = int(self.headers.getheader('content-length'))
-        data_string = self.rfile.read(length)
-        post_dict = json.loads(data_string)
+        return self._handle('PUT')
 
-        # Log the request
-        logger.debug("Comment Service received PUT request %s to path %s" %
-                    (json.dumps(post_dict), self.path))
-
-        # Every good post has at least an API key
-        if 'X-Edx-Api-Key' in self.headers:
-            response = self.server._response_str
-            # Log the response
-            logger.debug("Comment Service: sending response %s" % json.dumps(response))
-
-            # Send a response back to the client
-            self.send_response(200)
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
-            self.wfile.write(response)
-
-        else:
-            # Respond with failure
-            self.send_response(500, 'Bad Request: does not contain API key')
-            self.send_header('Content-type', 'text/plain')
-            self.end_headers()
-            return False
+    def do_GET(self):
+        '''
+        Handle a GET request from the client
+        '''
+        return self._handle('GET')
 
 
 class MockCommentServiceServer(HTTPServer):
