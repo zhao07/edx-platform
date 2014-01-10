@@ -1,4 +1,5 @@
 import re
+import time
 
 from lettuce import world, step
 
@@ -26,18 +27,18 @@ def post_read_and_search(step):
     for hash in step.hashes:
         text = hash['text']
 
-        title = 'title: {}'.format(text)
-        body = 'body: {}'.format(text)
-        response = 'response: {}'.format(text)
-        comment = 'comment: {}'.format(text)
+        title = u'title: {}'.format(text)
+        body = u'body: {}'.format(text)
+        response = u'response: {}'.format(text)
+        comment = u'comment: {}'.format(text)
 
         thread_id = _create_thread(title, body)
         response_id = _create_response(thread_id, response)
         comment_id = _create_comment(response_id, comment)
 
-        edited_title = 'edited {}'.format(title)
-        edited_body = 'edited {}'.format(body)
-        edited_response = 'edited {}'.format(response)
+        edited_title = u'edited {}'.format(title)
+        edited_body = u'edited {}'.format(body)
+        edited_response = u'edited {}'.format(response)
 
         _edit_thread(thread_id, edited_title, edited_body)
         _edit_response(response_id, edited_response)
@@ -59,6 +60,7 @@ def _create_thread(title, body, username='robot'):
     world.css_click('.new-post-btn')
     world.css_fill('#new-post-title', title)
     world.css_fill('#wmd-input-new-post-body-undefined', body)
+    time.sleep(1) # selenium 2.39 has a problem
     world.css_click('#new-post-submit')
     world.wait_for_js_to_load()
     assert world.css_value('div.discussion-post h1') == title
@@ -96,6 +98,7 @@ def _edit_thread(thread_id, title, body, username='robot'):
 
 def _create_response(thread_id, body, username='robot'):
     world.css_fill('#wmd-input-reply-body-{}'.format(thread_id), body)
+    time.sleep(1)
     world.css_click('.discussion-submit-post.control-button')
     world.wait_for_js_to_load()
     assert world.css_value('.discussion-response .response-body p') == body
@@ -138,7 +141,7 @@ def _create_comment(response_id, body, username='robot'):
 def _search_thread_expecting_result(text, title, thread_id):
     world.css_click('FORM.post-search')
     # world.css_fill not working correctly with the forums search input, bypassing.
-    world.browser.find_by_css('INPUT#search-discussions.post-search-field').first.fill('{}\r'.format(text))
+    world.browser.find_by_css('INPUT#search-discussions.post-search-field').first.fill(u'{}\r'.format(text))
     world.wait_for_ajax_complete()
     assert world.css_text('ul.post-list a[data-id="{}"] span.title'.format(thread_id)) == title
 
