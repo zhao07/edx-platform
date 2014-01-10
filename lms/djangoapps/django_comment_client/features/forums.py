@@ -10,6 +10,9 @@ def visit_the_discussion_tab(step):
     create_course()
     world.register_by_course_id('edx/999/Test_Course')
     world.log_in()
+    go_to_discussion_home()
+
+def go_to_discussion_home():
     world.visit('/courses/edx/999/Test_Course/discussion/forum/')
     world.wait_for_js_to_load()
 
@@ -18,16 +21,33 @@ def see_discussion_home(step):
     assert world.css_value('.discussion-article .home-header .label') == 'DISCUSSION HOME:'
     assert world.css_value('.discussion-article .home-title') == 'Test Course'
 
-@step(u'I can create a new thread')
-def create_thread(step):
-    thread_id = _create_thread('title', 'body')
-    response_id = _create_response(thread_id, 'response body')
-    comment_id = _create_comment(response_id, 'comment body')
+@step(u'I can post, read, and search in the forums with this text:')
+def post_read_and_search(step):
+    for hash in step.hashes:
+        text = hash['text']
 
-    _edit_thread(thread_id, 'title2', 'body2')
-    _edit_response(response_id, "response2")
-    _search_thread_expecting_result('title2', thread_id)
-    
+        title = 'title: {}'.format(text)
+        body = 'body: {}'.format(text)
+        response = 'response: {}'.format(text)
+        comment = 'comment: {}'.format(text)
+
+        thread_id = _create_thread(title, body)
+        response_id = _create_response(thread_id, response)
+        comment_id = _create_comment(response_id, comment)
+
+        edited_title = 'edited {}'.format(title)
+        edited_body = 'edited {}'.format(body)
+        edited_response = 'edited {}'.format(response)
+
+        _edit_thread(thread_id, edited_title, edited_body)
+        _edit_response(response_id, edited_response)
+
+        _search_thread_expecting_result(edited_title, edited_title, thread_id)
+        _search_thread_expecting_result(edited_body, edited_title, thread_id)
+        _search_thread_expecting_result(edited_response, edited_title, thread_id)
+
+        go_to_discussion_home()
+
 def create_course():
     world.clear_courses()
     course = world.scenario_dict['COURSE'] = world.CourseFactory.create(
@@ -115,10 +135,10 @@ def _create_comment(response_id, body, username='robot'):
     assert world.css_text('ol.comments div.response-body p') == body
 
 
-def _search_thread_expecting_result(text, thread_id):
+def _search_thread_expecting_result(text, title, thread_id):
     world.css_click('FORM.post-search')
     # world.css_fill not working correctly with the forums search input, bypassing.
     world.browser.find_by_css('INPUT#search-discussions.post-search-field').first.fill('{}\r'.format(text))
     world.wait_for_ajax_complete()
-    assert world.css_text('ul.post-list a[data-id="{}"] span.title'.format(thread_id)) == text
+    assert world.css_text('ul.post-list a[data-id="{}"] span.title'.format(thread_id)) == title
 

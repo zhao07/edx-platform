@@ -7,6 +7,10 @@ Feature: Discussion Home
     Given I visit the discussion tab
     Then I should see the discussion home screen
 
-  Scenario: User can create a new post
+  Scenario: User can post threads and comments
     Given I visit the discussion tab
-    Then I can create a new thread
+    Then I can post, read, and search in the forums with this text:
+        | text                  |
+        | hello world           |
+        | goodbye cruel world   |
+
