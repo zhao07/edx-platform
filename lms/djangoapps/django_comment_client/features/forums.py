@@ -1,27 +1,9 @@
-import datetime
-import json
-import threading
-import uuid
+import re
 
-from lettuce import world, step, before, after
+from lettuce import world, step
 
 from django_comment_common.utils import seed_permissions_roles
-from django_comment_client.tests.mock_cs_server.mock_cs_server import MockCommentServiceServer
 
-CS = None
-
-@before.all
-def start_mock_cs_server():
-    global CS
-    s = CS = MockCommentServiceServer(port_num=4567, response={})
-    t = threading.Thread(target=s.serve_forever)
-    t.daemon = True
-    t.start()
-
-@after.all
-def stop_mock_cs_server(step):
-    global CS
-    CS.shutdown()
 
 @step(u'I visit the discussion tab')
 def visit_the_discussion_tab(step):
@@ -38,42 +20,14 @@ def see_discussion_home(step):
 
 @step(u'I can create a new thread')
 def create_thread(step):
-    world.css_click('.new-post-btn')
-    world.css_fill('#new-post-title', 'this is the new post title')
-    world.css_fill('#wmd-input-new-post-body-undefined', 'this is the new post body')
-    CS._response_str = json.dumps({
-        "body": 'this is the new post body',
-        "anonymous_to_peers": False,
-        "votes": {
-            "count": 0,
-            "down_count": 0,
-            "point": 0,
-            "up_count": 0
-            },
-        "user_id": 1,
-        "anonymous": False,
-        "title": 'this is the new post title',
-        "username": "robot",
-        "created_at": datetime.datetime.now().isoformat(),
-        "tags": [],
-        "updated_at": datetime.datetime.now().isoformat(),
-        "commentable_id": world.browser.execute_script('$(".topic")[0].attributes["data-discussion_id"]'),
-        "abuse_flaggers": [],
-        "comments_count": 0,
-        "closed": False,
-        "course_id": 'edx/999/Test_Course',
-        "at_position_list": [],
-        "type": "thread",
-        "id": str(uuid.uuid4()).replace('-',''),
-        "pinned": False
-        })
+    thread_id = _create_thread('title', 'body')
+    response_id = _create_response(thread_id, 'response body')
+    comment_id = _create_comment(response_id, 'comment body')
 
-    world.css_click('#new-post-submit')
-    world.wait_for_js_to_load()
-    assert world.css_value('div.discussion-post h1') == 'this is the new post title'
-    assert world.css_value('div.discussion-post .post-body') == 'this is the new post body'
-    assert world.css_value('div.discussion-post .posted-details .username') == 'robot'
-
+    _edit_thread(thread_id, 'title2', 'body2')
+    _edit_response(response_id, "response2")
+    _search_thread_expecting_result('title2', thread_id)
+    
 def create_course():
     world.clear_courses()
     course = world.scenario_dict['COURSE'] = world.CourseFactory.create(
@@ -81,7 +35,90 @@ def create_course():
     )
     seed_permissions_roles(course.id)
 
-def create_user_and_visit_course():
-    world.register_by_course_id('edx/999/Test_Course')
-    world.log_in()
-    world.visit('/courses/edx/999/Test_Course/courseware/')
+def _create_thread(title, body, username='robot'):
+    world.css_click('.new-post-btn')
+    world.css_fill('#new-post-title', title)
+    world.css_fill('#wmd-input-new-post-body-undefined', body)
+    world.css_click('#new-post-submit')
+    world.wait_for_js_to_load()
+    assert world.css_value('div.discussion-post h1') == title
+    assert world.css_value('div.discussion-post .post-body') == body
+    assert world.css_value('div.discussion-post .posted-details .username') == username
+    m = re.search(r'\/threads\/([a-z0-9]{24})$', world.browser.url)
+    assert m is not None
+    thread_id = m.groups()[0]
+
+    # force reload from server and re-check
+    world.browser.reload()
+    world.wait_for_js_to_load()
+    assert world.css_value('div.discussion-post h1') == title
+    assert world.css_value('div.discussion-post .post-body') == body
+    assert world.css_value('div.discussion-post .posted-details .username') == username
+    return thread_id
+
+def _edit_thread(thread_id, title, body, username='robot'):
+    # note thread_id is ignored right now; we assume the page is already on the desired thread
+    world.css_click('div.discussion-post a.action-edit')
+    world.css_fill('input#edit-post-title.edit-post-title', title)
+    world.css_fill('textarea#wmd-input-edit-post-body-undefined.wmd-input', body)
+    world.css_click('input#edit-post-submit.post-update')
+    world.wait_for_js_to_load()
+    assert world.css_value('div.discussion-post h1') == title
+    assert world.css_value('div.discussion-post .post-body') == body
+    assert world.css_value('div.discussion-post .posted-details .username') == username
+
+    # force reload from server and re-check
+    world.browser.reload()
+    world.wait_for_js_to_load()
+    assert world.css_value('div.discussion-post h1') == title
+    assert world.css_value('div.discussion-post .post-body') == body
+    assert world.css_value('div.discussion-post .posted-details .username') == username
+
+def _create_response(thread_id, body, username='robot'):
+    world.css_fill('#wmd-input-reply-body-{}'.format(thread_id), body)
+    world.css_click('.discussion-submit-post.control-button')
+    world.wait_for_js_to_load()
+    assert world.css_value('.discussion-response .response-body p') == body
+
+    # force reload from server and re-check (also, get the real server-assigned id)
+    world.browser.reload()
+    world.wait_for_js_to_load()
+    assert world.css_value('.discussion-response .response-body p') == body
+    response_id = world.browser.evaluate_script("$('div#add-new-comment')[0].attributes['data-id'].value")
+    return response_id
+
+def _edit_response(response_id, body, username='robot'):
+    # again, not using response_id to locate the response;
+    # just assume it's the first/only one on the current screen
+    world.css_click('div.discussion-response a.action-edit')
+    world.css_fill('textarea#wmd-input-edit-post-body-undefined.wmd-input', body)
+    world.css_click('INPUT#edit-response-submit.post-update')
+    world.wait_for_js_to_load()
+    assert world.css_value('.discussion-response .response-body p') == body
+
+    # force reload from server and re-check (also, get the real server-assigned id)
+    world.browser.reload()
+    world.wait_for_js_to_load()
+    assert world.css_value('.discussion-response .response-body p') == body
+    
+
+def _create_comment(response_id, body, username='robot'):
+    world.css_click('#wmd-input-comment-body-{}'.format(response_id))
+    world.css_fill('#wmd-input-comment-body-{}'.format(response_id), body)
+    world.css_click('a.discussion-submit-comment.control-button')
+    world.wait_for_js_to_load()
+    assert world.css_text('ol.comments div.response-body p') == body
+
+    # force reload from server and re-check (also, get the real server-assigned id)
+    world.browser.reload()
+    world.wait_for_js_to_load()
+    assert world.css_text('ol.comments div.response-body p') == body
+
+
+def _search_thread_expecting_result(text, thread_id):
+    world.css_click('FORM.post-search')
+    # world.css_fill not working correctly with the forums search input, bypassing.
+    world.browser.find_by_css('INPUT#search-discussions.post-search-field').first.fill('{}\r'.format(text))
+    world.wait_for_ajax_complete()
+    assert world.css_text('ul.post-list a[data-id="{}"] span.title'.format(thread_id)) == text
+
