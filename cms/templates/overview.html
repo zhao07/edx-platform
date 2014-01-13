@@ -5,6 +5,18 @@
   from django.utils.translation import ugettext as _
   from django.core.urlresolvers import reverse
   from xmodule.modulestore.django import loc_mapper
+
+  from contentstore.utils import get_subsection_state
+  from contentstore.utils import get_section_unit_states
+  from contentstore.utils import get_section_unit_counts_found
+  from contentstore.utils import get_section_units
+  from contentstore.utils import get_section_unit_counts_public
+  from contentstore.utils import get_section_unit_counts_private
+  from contentstore.utils import get_subsection_private_units_count
+  from contentstore.utils import get_subsection_public_units_count
+  from contentstore.utils import get_subsection_units
+  from contentstore.utils import get_subsection_total_units_count
+
 %>
 <%block name="title">${_("Course Outline")}</%block>
 <%block name="bodyclass">is-signedin course view-outline feature-edit-dialog</%block>
@@ -193,6 +205,38 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                           %endif
                         </div>
                       </li>
+
+
+
+
+
+                      <li>
+                        <a href="#" data-tooltip="${_('Bulk change unit status')}">
+                          <i class="${get_section_unit_states(section)} unit-status-change-section">
+                                <!-- div elements are invisible containers to hold unit counts and a list of locations -->
+                                <div hidden class='units_found_list'> ${get_section_units(section)}</div>
+                                <div hidden class='units_found'> ${get_section_unit_counts_found(section)}</div>
+                                <div hidden class='private_units'> ${get_section_unit_counts_private(section)}</div>
+                                <div hidden class='public_units'> ${get_section_unit_counts_public(section)}</div>
+                          </i>
+                        </a>
+                      </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                       <li class="actions-item delete">
                         <a href="#" data-tooltip="${_('Delete this section')}" class="action delete-section-button"><i class="icon-trash"></i> <span class="sr">${_('Delete section')}</span></a>
                       </li>
