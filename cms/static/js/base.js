@@ -99,6 +99,10 @@ domReady(function() {
     $('.delete-section-button').bind('click', deleteSection);
     $('.delete-subsection-button').bind('click', deleteSubsection);
 
+    $('.unit-status-change-course').bind('click', unitStatusChangeCourse);
+    $('.unit-status-change-section').bind('click', unitStatusChangeSection);
+    $('.unit-status-change-subsection').bind('click', unitStatusChangeSubsection);
+
     $('.sync-date').bind('click', syncReleaseDate);
 
     // section date setting
@@ -341,5 +345,141 @@ function cancelSetSectionScheduleDate(e) {
 }
 
     window.deleteSection = deleteSection;
+
+
+
+
+
+
+
+
+
+//________________________________________________ Unit Status Change
+//
+
+function unitStatusChangeCourse(e) {
+    e.preventDefault();
+    _unitStatusChange($(this).parents('section.branch'), 'Course');
+}
+
+function unitStatusChangeSection(e) {
+    e.preventDefault();
+    _unitStatusChange($(this).parents('section.branch'), 'Section');
+}
+
+function unitStatusChangeSubsection(e) {
+    e.preventDefault();
+    _unitStatusChange($(this).parents('section.branch'), 'Subsection');
+}
+
+function _unitStatusChange($el, type) {
+    var units_found = 0;
+    var private_units = 0;
+    var public_units = 0;
+    var unit_locations_list = '';
+
+    for(var i = 0; i < $el.context.children.length; i++) {
+        childElement = $el.context.children[i];
+
+        if(childElement.className == "units_found") {
+           units_found = parseInt(childElement.textContent);
+        }
+        if(childElement.className == "private_units") {
+           private_units = parseInt(childElement.textContent);
+        }
+        if(childElement.className == "public_units") {
+           public_units = parseInt(childElement.textContent);
+        }
+        if(childElement.className == "units_found_list") {
+           unit_locations_list = childElement.textContent;
+        }
+    }
+
+    var changeToPublic = true;
+    var buttonText = "PUBLIC";
+    var promptText =
+        'This section has a mix of ' +
+        public_units.toString() +
+        ' public and ' +
+        private_units.toString() +
+        ' private units. ' +
+        'Are you sure you want to change them all to public?';
+
+    if(units_found == public_units) {
+        if(public_units == 1) {
+            promptText = 'Are you sure you want to change 1 unit to private?';
+        }
+        else {
+            promptText = 'Are you sure you want to change ' + public_units.toString() + ' units to private?';
+        }
+        buttonText = "PRIVATE"
+        changeToPublic = false;
+    }
+
+    if(units_found == private_units) {
+        if(private_units == 1) {
+            promptText = 'Are you sure you want to change 1 unit to public?';
+        }
+        else {
+            promptText = 'Are you sure you want to change ' + private_units.toString() + ' units to public?';
+        }
+        buttonText = "PUBLIC"
+        changeToPublic = true;
+    }
+
+    var confirm = new PromptView.Warning({
+        title: gettext('Change Unit Status (' + type + ')'),
+        message: gettext(promptText),
+        actions: {
+            primary: {
+                text: gettext('Yes, change to ' + buttonText),
+                click: function(view) {
+                    view.hide();
+
+                    changeUnitVisibilityStatus($el, changeToPublic, unit_locations_list);
+                }
+            },
+            secondary: {
+                text: gettext('Cancel'),
+                click: function(view) {
+                    view.hide();
+                }
+            }
+        }
+    });
+    confirm.show();
+}
+
+function changeUnitVisibilityStatus( $el, toPublic, unit_locations_list ) {
+    var action = 'make_public';         // assume the change will be to PUBLIC
+    var visibility = 'public';          // assume the change will be to PUBLIC
+    var locator = $el.data('locator');
+    var url = ModuleUtils.getUpdateUrl(locator);
+
+    if(!toPublic) {                 // if we guessed wrong
+        action = 'make_private';
+        visibility = 'private';
+    }
+
+    var updating = new NotificationView.Mini({
+        title: gettext('Updating&hellip;')
+    });
+//    updating.show();                            // slide up a card saying "Updating..."
+
+    return $.postJSON(url, {publish: action, locations_list: unit_locations_list} );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }); // end require()
