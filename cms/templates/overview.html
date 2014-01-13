@@ -189,7 +189,6 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
 
 
 
-                  <li>
                     <a href="#" data-tooltip="${_('Bulk change unit status')}">
                       <i class="${get_section_unit_states(section)} unit-status-change-section">
                             <!-- div elements are invisible containers to hold unit counts and a list of locations -->
@@ -199,7 +198,6 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                             <div hidden class='public_units'> ${get_section_unit_counts_public(section)}</div>
                       </i>
                     </a>
-                  </li>
 
 
 
@@ -292,10 +290,10 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
 
 
                         <a href="#" data-tooltip="${_('Expand/collapse this subsection')}" class="action expand-collapse expand"><i class="icon-caret-down ui-toggle-expansion"></i><span class="sr">${_('Expand/collapse this subsection')}</span></a>
-                          <a href="${subsection_locator.url_reverse('subsection')}">
+                          <a href="${subsection_locator.url_reverse('subsection')}"   style="width:400">
                             <span class="subsection-name">
-                                <span
-                                    class="subsection-name-value">[${subsection.display_name_with_default}]
+                                <span class="subsection-name-value">
+                                    ${subsection.display_name_with_default}
                                 </span>
                             </span>
                           </a>
@@ -305,18 +303,15 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
 
 
 
-
-                          <li>
-                            <a href="#">
-                              <i class="${get_subsection_state(subsection)} unit-status-change-subsection">
-                                    <!-- div elements are invisible containers to hold unit counts and a list of locations -->
-                                    <div hidden class='units_found_list'> ${get_section_units(subsection)}</div>
-                                    <div hidden class='units_found'> ${get_section_unit_counts_found(subsection)}</div>
-                                    <div hidden class='private_units'> ${get_section_unit_counts_private(subsection)}</div>
-                                    <div hidden class='public_units'> ${get_section_unit_counts_public(subsection)}</div>
-                              </i>
-                            </a>
-                          </li>
+                          <a href="#">
+                            <i class="${get_subsection_state(subsection)} unit-status-change-subsection">
+                                  <!-- div elements are invisible containers to hold unit counts and a list of locations -->
+                                  <div hidden class='units_found_list'> ${get_section_units(subsection)}</div>
+                                  <div hidden class='units_found'> ${get_section_unit_counts_found(subsection)}</div>
+                                  <div hidden class='private_units'> ${get_section_unit_counts_private(subsection)}</div>
+                                  <div hidden class='public_units'> ${get_section_unit_counts_public(subsection)}</div>
+                            </i>
+                          </a>
 
 
 
