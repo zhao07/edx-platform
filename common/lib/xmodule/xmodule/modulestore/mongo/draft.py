@@ -165,6 +165,9 @@ class DraftModuleStore(MongoModuleStore):
         location: Something that can be passed to Location
         data: A nested dictionary of problem data
         """
+
+        #from pudb import set_trace; set_trace()
+
         draft_loc = as_draft(location)
         try:
             draft_item = self.get_item(location)

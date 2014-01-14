@@ -193,9 +193,9 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                       <i class="${get_section_unit_states(section)} unit-status-change-section">
                             <!-- div elements are invisible containers to hold unit counts and a list of locations -->
                             <div hidden class='units_found_list'> ${get_section_units(section)}</div>
-                            <div  class='units_found'> ${get_section_unit_counts_found(section)}</div>
-                            <div  class='private_units'> ${get_section_unit_counts_private(section)}</div>
-                            <div  class='public_units'> ${get_section_unit_counts_public(section)}</div>
+                            <div hidden class='units_found'> ${get_section_unit_counts_found(section)}</div>
+                            <div hidden class='private_units'> ${get_section_unit_counts_private(section)}</div>
+                            <div hidden class='public_units'> ${get_section_unit_counts_public(section)}</div>
                       </i>
                     </a>
 
@@ -278,9 +278,9 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                             <i class="${get_subsection_state(subsection)} unit-status-change-subsection">
                                   <!-- div elements are invisible containers to hold unit counts and a list of locations -->
                                   <div hidden class='units_found_list'> ${get_subsection_units(subsection)}</div>
-                                  <div  class='units_found'> ${get_subsection_total_units_count(subsection)}</div>
-                                  <div  class='private_units'> ${get_subsection_private_units_count(subsection)}</div>
-                                  <div  class='public_units'> ${get_subsection_public_units_count(subsection)}</div>
+                                  <div hidden class='units_found'> ${get_subsection_total_units_count(subsection)}</div>
+                                  <div hidden class='private_units'> ${get_subsection_private_units_count(subsection)}</div>
+                                  <div hidden class='public_units'> ${get_subsection_public_units_count(subsection)}</div>
                             </i>
                           </a>
 

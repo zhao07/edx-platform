@@ -461,8 +461,15 @@ function _unitStatusChange($el, type) {
 function changeUnitVisibilityStatus( $el, toPublic, unit_locations_list ) {
     var action = 'make_public';         // assume the change will be to PUBLIC
     var visibility = 'public';          // assume the change will be to PUBLIC
+
+
+
     var locator = $el.data('locator');
-    var url = ModuleUtils.getUpdateUrl(locator);
+//    var url = ModuleUtils.getUpdateUrl(locator);
+//      var url = "StanfordUniversity.Test202.2014/branch/draft/block/vertical080";
+//      var url = ModuleUtils.getUpdateUrl();
+    var url = "/xblock/StanfordUniversity.Test202.2014%2Fbranch%2Fdraft%2Fblock%2Fvertical080"
+
 
     if(!toPublic) {                 // if we guessed wrong
         action = 'make_private';
@@ -472,9 +479,10 @@ function changeUnitVisibilityStatus( $el, toPublic, unit_locations_list ) {
     var updating = new NotificationView.Mini({
         title: gettext('Updating&hellip;')
     });
-//    updating.show();                            // slide up a card saying "Updating..."
+    updating.show();                            // slide up a card saying "Updating..."
 
-    return $.postJSON(url, {publish: action, locations_list: unit_locations_list} );
+//    return $.postJSON(url, {publish: action, locations_list: unit_locations_list} );
+    $.postJSON(url, {publish: action, locations_list: unit_locations_list} );
 }
 
 
