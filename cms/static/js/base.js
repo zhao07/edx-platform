@@ -104,8 +104,6 @@ domReady(function() {
     $('.unit-status-change-subsection').bind('click', unitStatusChangeSubsection);
     $('.unit-status-change-unit').bind('click', unitStatusChangeUnit);
 
-    unit-status-change-unit
-
     $('.sync-date').bind('click', syncReleaseDate);
 
     // section date setting
@@ -464,7 +462,7 @@ function changeUnitVisibilityStatus( $el, toPublic, unit_locations_list ) {
 
 
 
-    var locator = $el.data('locator');
+//    var locator = $el.data('locator');
 //    var url = ModuleUtils.getUpdateUrl(locator);
 //      var url = "StanfordUniversity.Test202.2014/branch/draft/block/vertical080";
 //      var url = ModuleUtils.getUpdateUrl();
@@ -481,8 +479,16 @@ function changeUnitVisibilityStatus( $el, toPublic, unit_locations_list ) {
     });
     updating.show();                            // slide up a card saying "Updating..."
 
-//    return $.postJSON(url, {publish: action, locations_list: unit_locations_list} );
-    $.postJSON(url, {publish: action, locations_list: unit_locations_list} );
+
+//    var locations = unit_locations_list.split(";");
+//    for (var i=0; i<locations.length; i++)
+//      {
+//        url = "/xblock/" + locations[i];
+//        $.postJSON(url, {publish: action} );
+//      }
+
+
+    $.postJSON(url, {publish: action} );
 }
 
 

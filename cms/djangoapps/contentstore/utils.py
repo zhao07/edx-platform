@@ -301,7 +301,8 @@ def get_unit_state_icon_name( unit ):
     return return_string
 
 def get_unit_location(unit):
-    return unit.location
+    #from pdb import set_trace; set_trace()
+    return str(unit.location).split("//")[1]
 
 def get_unit_is_private(unit):
     count = 0

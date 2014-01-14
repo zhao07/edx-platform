@@ -80,7 +80,7 @@ def xblock_handler(request, tag=None, package_id=None, branch=None, version_guid
               The locator (and old-style id) for the created xblock (minus children) is returned.
     """
 
-    print("\n\nxblock_handler: " + str(package_id) + ", " + str(block) + ", " + str(request.json.get('publish')) + "\n\n")
+    print("\n\nxblock_handler (these elements are enough): " + str(package_id) + ", " + str(block) + ", " + str(request.json.get('publish')) + "\n\n")
     #from pdb import set_trace; set_trace()
 
     if package_id is not None:
