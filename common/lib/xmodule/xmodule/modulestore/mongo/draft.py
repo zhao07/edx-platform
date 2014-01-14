@@ -142,6 +142,9 @@ class DraftModuleStore(MongoModuleStore):
 
         :param source: the location of the source (its revision must be None)
         """
+
+        #from pdb import set_trace; set_trace()
+
         original = self.collection.find_one(location_to_query(source_location))
         draft_location = as_draft(source_location)
         if draft_location.category in DIRECT_ONLY_CATEGORIES:

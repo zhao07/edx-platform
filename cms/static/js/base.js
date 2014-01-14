@@ -375,7 +375,7 @@ function unitStatusChangeSubsection(e) {
 
 function unitStatusChangeUnit(e) {
     e.preventDefault();
-    _unitStatusChange($(this).parents('section.branch'), 'Unit');
+    _unitStatusChange($(this).parents('li.courseware-unit'), 'Unit');
 }
 
 function _unitStatusChange($el, type) {
@@ -466,8 +466,9 @@ function changeUnitVisibilityStatus( $el, toPublic, unit_locations_list ) {
 //    var url = ModuleUtils.getUpdateUrl(locator);
 //      var url = "StanfordUniversity.Test202.2014/branch/draft/block/vertical080";
 //      var url = ModuleUtils.getUpdateUrl();
-    var url = "/xblock/StanfordUniversity.Test202.2014%2Fbranch%2Fdraft%2Fblock%2Fvertical080"
-
+//    var url = "/xblock/StanfordUniversity.Test202.2014"
+    var locator = $el.data('locator');
+    var url = ModuleUtils.getUpdateUrl(locator)
 
     if(!toPublic) {                 // if we guessed wrong
         action = 'make_private';
