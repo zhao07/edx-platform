@@ -300,6 +300,24 @@ def get_unit_state_icon_name( unit ):
 
     return return_string
 
+def get_unit_location(unit):
+    return unit.location
+
+def get_unit_is_private(unit):
+    count = 0
+    state = compute_unit_state(unit)
+    if (state == "private") or (state == "draft"):
+        count = 1
+    return count
+
+
+def get_unit_is_public(unit):
+    count = 0
+    state = compute_unit_state(unit)
+    if (state == "public"):
+        count = 1
+    return count
+
 def _get_subsection_state(subsection):
     """
     Check the indicated subsection's child units, returning

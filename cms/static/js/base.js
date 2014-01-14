@@ -102,6 +102,9 @@ domReady(function() {
     $('.unit-status-change-course').bind('click', unitStatusChangeCourse);
     $('.unit-status-change-section').bind('click', unitStatusChangeSection);
     $('.unit-status-change-subsection').bind('click', unitStatusChangeSubsection);
+    $('.unit-status-change-unit').bind('click', unitStatusChangeUnit);
+
+    unit-status-change-unit
 
     $('.sync-date').bind('click', syncReleaseDate);
 
@@ -370,6 +373,11 @@ function unitStatusChangeSection(e) {
 function unitStatusChangeSubsection(e) {
     e.preventDefault();
     _unitStatusChange($(this).parents('section.branch'), 'Subsection');
+}
+
+function unitStatusChangeUnit(e) {
+    e.preventDefault();
+    _unitStatusChange($(this).parents('section.branch'), 'Unit');
 }
 
 function _unitStatusChange($el, type) {

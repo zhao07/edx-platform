@@ -2,6 +2,9 @@
 <%! from django.core.urlresolvers import reverse %>
 <%! from contentstore.utils import compute_unit_state %>
 <%! from contentstore.utils import get_unit_state_icon_name %>
+<%! from contentstore.utils import get_unit_location %>
+<%! from contentstore.utils import get_unit_is_private %>
+<%! from contentstore.utils import get_unit_is_public %>
 <%! from xmodule.modulestore.django import loc_mapper %>
 
 <!--
@@ -46,8 +49,15 @@ This def will enumerate through a passed in subsection and list all of the units
             <span data-tooltip="${_("Drag to sort")}" class="drag-handle unit-drag-handle action"><span class="sr"> ${_("Drag to reorder unit")}</span></span>
           </li>
 
-
-             <span class="${get_unit_state_icon_name( unit )}" ></span>
+            <a href="#" data-tooltip="${_("Change unit status")}">
+              <i class="${get_unit_state_icon_name( unit )} unit-status-change-unit" >
+                <!-- div elements are invisible containers to hold unit counts and a list of locations -->
+                <div hidden class='units_found_list'> ${get_unit_location(unit)}</div>
+                <div  class='units_found'> 1 </div>
+                <div  class='private_units'> ${get_unit_is_private(unit)}</div>
+                <div  class='public_units'> ${get_unit_is_public(unit)}</div>
+              </i>
+            </a>
 
 
         </ul>
