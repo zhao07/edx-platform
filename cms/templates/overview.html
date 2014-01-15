@@ -16,8 +16,9 @@
   from contentstore.utils import get_subsection_public_units_count
   from contentstore.utils import get_subsection_units
   from contentstore.utils import get_subsection_total_units_count
-
+  from contentstore.utils import compute_unit_state
 %>
+
 <%block name="title">${_("Course Outline")}</%block>
 <%block name="bodyclass">is-signedin course view-outline feature-edit-dialog</%block>
 
@@ -165,6 +166,82 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
               )
             %>
             <article class="courseware-overview" data-locator="${course_locator}">
+
+
+
+
+
+
+
+
+
+
+
+                    <%
+                        section_index = 1
+                        section_units_private_dictionary = {}
+                        section_units_public_dictionary = {}
+                        section_units_draft_dictionary = {}
+                   %>
+                    % for section in sections:
+                        <%
+                            section_units_private_dictionary.clear()
+                            section_units_public_dictionary.clear()
+                            section_units_draft_dictionary.clear()
+                       %>
+                        <h1>
+                            Section: ${section.display_name_with_default | h} (${section_index} of ${len(sections)})
+                                % for subsection in section.get_children():
+                                    <h2>
+                                        Subsection: ${subsection.display_name_with_default}
+                                    </h2>
+                                    % for unit in subsection.get_children():
+                                        <%
+                                            unit_state = compute_unit_state(unit)
+
+
+                                            x = {'frog':'prince'}
+                                            section_units_private_dictionary.update(x)
+                                            #from pdb import set_trace; set_trace()
+
+
+
+                                            if unit_state == 'private': section_units_private_dictionary.update({unit.location:unit_state})
+                                            if unit_state == 'public': section_units_public_dictionary.update({unit.location:unit_state})
+                                            if unit_state == 'draft': section_units_draft_dictionary.update({unit.location:unit_state})
+
+                                            unit_locator = loc_mapper().translate_location(context_course.location.course_id, unit.location, False, True)
+                                        %>
+                                        <h3>
+                                            Unit: ${unit.display_name_with_default} (${unit_locator}:${unit_state}) dictionary length: ${len(section_units_private_dictionary)}
+                                        </h3>
+                                    % endfor
+                                % endfor
+                        </h1>
+                        <%
+                            section_index += 1
+                        %>
+
+                        <h1>private: ${len(section_units_private_dictionary)}</h1>
+                        <h1>public: ${len(section_units_public_dictionary)}</h1>
+                        <h1>draft: ${len(section_units_draft_dictionary)}</h1>
+                     % endfor
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
               % for section in sections:
               <%
                 section_locator = loc_mapper().translate_location(

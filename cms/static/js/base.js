@@ -370,7 +370,17 @@ function unitStatusChangeSection(e) {
 
 function unitStatusChangeSubsection(e) {
     e.preventDefault();
-    _unitStatusChange($(this).parents('section.branch'), 'Subsection');
+
+    var oNode = this;
+    while(oNode.parentNode) {                           // walk up the hierarchy looking for a parent of class 'details'
+       alert("oNode.parentNode.className: " + oNode.parentNode.className);
+       if(oNode.parentNode.className == 'details') {
+            break;
+        }
+
+        oNode = oNode.parentNode;
+    }
+    _unitStatusChange( oNode, 'Subsection');
 }
 
 function unitStatusChangeUnit(e) {
@@ -378,11 +388,59 @@ function unitStatusChangeUnit(e) {
     _unitStatusChange($(this).parents('li.courseware-unit'), 'Unit');
 }
 
+
+var units = "";
+function recurseDownForUnits(parentElement) {
+    try {
+        for(var i = 0; i < parentElement.childNodes.length; i++) {
+            childElement = parentElement.childNodes[i];
+            recurseDownForUnits(childElement);
+        }
+    }
+    catch(err) {
+        // do nothing on error, just means this node has no children
+    }
+    finally {
+        // do nothing here, just continue even if there is an exception
+    }
+
+    try {
+        alert("parentElement.unit-locator: " + parentElement.unit-locator);
+    }
+    catch(err){
+        alert("nope");
+    }
+    finally {
+
+    }
+
+
+
+
+//    if(parentElement.id === "INDIVIDUAL_UNIT")
+//    {
+//        units += parentElement.outerHTML + "; ";
+//    }
+}
+
+
+
+
+
+
+
 function _unitStatusChange($el, type) {
     var units_found = 0;
     var private_units = 0;
     var public_units = 0;
     var unit_locations_list = '';
+
+
+
+    recurseDownForUnits($el);
+
+
+
 
     for(var i = 0; i < $el.context.children.length; i++) {
         childElement = $el.context.children[i];

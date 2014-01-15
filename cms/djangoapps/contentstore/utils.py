@@ -380,13 +380,6 @@ def get_subsection_units( subsection ):
         unit_locations_string = unit_locations_string + str(unit.location) + ";"
     return unit_locations_string
 
-
-
-
-
-
-
-
 def get_section_unit_counts_private( section ):
     """
     Check all the units belonging to all subsections, returning

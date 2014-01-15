@@ -49,8 +49,8 @@ This def will enumerate through a passed in subsection and list all of the units
             <span data-tooltip="${_("Drag to sort")}" class="drag-handle unit-drag-handle action"><span class="sr"> ${_("Drag to reorder unit")}</span></span>
           </li>
 
-            <a href="#" data-tooltip="${_("Change unit status")}">
-              <i class="${get_unit_state_icon_name( unit )} unit-status-change-unit" >
+            <a href="#" class="INDIVIDUAL_UNIT" data-tooltip="${_("Change unit status")}">
+              <i class="${get_unit_state_icon_name( unit )} unit-status-change-unit" unit-locator="${unit_locator}" >
                 <!-- div elements are invisible containers to hold unit counts and a list of locations -->
                 <div  class='units_found_list'> ${get_unit_location(unit)}</div>
                 <div  class='units_found'> 1 </div>
