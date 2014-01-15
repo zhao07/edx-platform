@@ -181,12 +181,10 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
 
 
            <!--
-                course_dictionary     is a dictionary of sections belonging to this course           {sectionLocator:sectionDictionary}
+                course_dictionary    is a dictionary of sections belonging to this course           {sectionLocator:sectionDictionary}
                 sectionDictionary    each is a dictionary of subsections belonging to this section  {subsectionLocator:subsectionDictionary}
                 subsectionDictionary each is a dictionary of status lists                           {'private':private_list, 'public':public_list, 'draft':draft_list}
            -->
-
-
             <%
                 course_dictionary = {}               # initialize an empty course dictionary
                 private_list = []
@@ -198,37 +196,25 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                     sectionDictionary = {}              # initialize an empty section dictionary
                     course_dictionary.update({section.location:sectionDictionary})      # add this new section dictionary to the course dictionary
                 %>
-                <h1>
-                    Section: ${section.display_name_with_default | h} (${len(course_dictionary)} / ${len(sections)})
-                        % for subsection in section.get_children():
-                            <%
-                                private_list = []
-                                public_list = []
-                                draft_list = []
-                                subsectionDictionary = {'private':private_list, 'public':public_list, 'draft':draft_list}
-                                sectionDictionary.update({subsection.location:subsectionDictionary})    # add it to the section dictionary
-                            %>
-                            <h2>
-                                Subsection: ${subsection.display_name_with_default}  (${len(sectionDictionary)})
-                            </h2>
-                            % for unit in subsection.get_children():
-                                <%
-                                    unit_state = compute_unit_state(unit)
-                                    unit_locator = loc_mapper().translate_location(context_course.location.course_id, unit.location, False, True)
+                % for subsection in section.get_children():
+                    <%
+                        private_list = []
+                        public_list = []
+                        draft_list = []
+                        subsectionDictionary = {'private':private_list, 'public':public_list, 'draft':draft_list}
+                        sectionDictionary.update({subsection.location:subsectionDictionary})    # add it to the section dictionary
+                    %>
+                    % for unit in subsection.get_children():
+                        <%
+                            unit_state = compute_unit_state(unit)
+                            unit_locator = loc_mapper().translate_location(context_course.location.course_id, unit.location, False, True)
 
-                                    if unit_state == 'private': private_list.append(unit_locator)
-                                    if unit_state == 'public': public_list.append(unit_locator)
-                                    if unit_state == 'draft': draft_list.append(unit_locator)
-                                %>
-                                <h3>
-                                    Unit: ${unit.display_name_with_default} (${unit_locator}:${unit_state}) dictionary length: ${len(private_list)}
-                                </h3>
-                            % endfor
-                            <h1>private: ${len(private_list)}</h1>
-                            <h1>public: ${len(public_list)}</h1>
-                            <h1>draft: ${len(draft_list)}</h1>
-                        % endfor
-                </h1>
+                            if unit_state == 'private': private_list.append(unit_locator)
+                            if unit_state == 'public': public_list.append(unit_locator)
+                            if unit_state == 'draft': draft_list.append(unit_locator)
+                        %>
+                    % endfor
+                % endfor
              % endfor
 
 
@@ -305,10 +291,10 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                     <a href="#" data-tooltip="${_('Bulk change unit status')}">
                        <i class="${get_section_unit_states(section)} unit-status-change-section">
                             <!-- div elements are invisible containers to hold unit counts and a list of locations -->
-                            <div  hidden class='public_units'>      ${public_count}         </div>
-                            <div  hidden class='private_units'>     ${private_count}        </div>
-                            <div  hidden class='draft_units'>       ${draft_count}          </div>
-                            <div   class='unit_locator_list'> ${unit_locator_list}    </div>
+                            <div  hidden class='public_count'>      ${public_count}         </div>
+                            <div  hidden class='private_count'>     ${private_count}        </div>
+                            <div  hidden class='draft_count'>       ${draft_count}          </div>
+                            <div  hidden class='unit_locator_list'> ${unit_locator_list}    </div>
                         </i>
                     </a>
 
@@ -412,10 +398,10 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                           <a href="#">
                             <i class="${icon_string} unit-status-change-subsection">
                                 <!-- div elements are invisible containers to hold unit counts and a list of locations -->
-                                <div  hidden class='public_units'>      ${public_count}         </div>
-                                <div  hidden class='private_units'>     ${private_count}        </div>
-                                <div  hidden class='draft_units'>       ${draft_count}          </div>
-                                <div   class='unit_locator_list'> ${unit_locator_list}    </div>
+                                <div  hidden class='public_count'>      ${public_count}         </div>
+                                <div  hidden class='private_count'>     ${private_count}        </div>
+                                <div  hidden class='draft_count'>       ${draft_count}          </div>
+                                <div  hidden class='unit_locator_list'> ${unit_locator_list}    </div>
                             </i>
                           </a>
 

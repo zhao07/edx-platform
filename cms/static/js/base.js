@@ -370,16 +370,6 @@ function unitStatusChangeSection(e) {
 
 function unitStatusChangeSubsection(e) {
     e.preventDefault();
-
-    var oNode = this;
-    while(oNode.parentNode) {                           // walk up the hierarchy looking for a parent of class 'details'
-       alert("oNode.parentNode.className: " + oNode.parentNode.className);
-       if(oNode.parentNode.className == 'details') {
-            break;
-        }
-
-        oNode = oNode.parentNode;
-    }
     _unitStatusChange( oNode, 'Subsection');
 }
 
@@ -387,164 +377,156 @@ function unitStatusChangeUnit(e) {
     e.preventDefault();
     _unitStatusChange($(this).parents('li.courseware-unit'), 'Unit');
 }
-
-
-var units = "";
-function recurseDownForUnits(parentElement) {
-    try {
-        for(var i = 0; i < parentElement.childNodes.length; i++) {
-            childElement = parentElement.childNodes[i];
-            recurseDownForUnits(childElement);
-        }
-    }
-    catch(err) {
-        // do nothing on error, just means this node has no children
-    }
-    finally {
-        // do nothing here, just continue even if there is an exception
-    }
-
-    try {
-        alert("parentElement.unit-locator: " + parentElement.unit-locator);
-    }
-    catch(err){
-        alert("nope");
-    }
-    finally {
-
-    }
-
-
-
-
-//    if(parentElement.id === "INDIVIDUAL_UNIT")
-//    {
-//        units += parentElement.outerHTML + "; ";
+//
+//
+//var units = "";
+//function recurseDownForUnits(parentElement) {
+//    try {
+//        for(var i = 0; i < parentElement.childNodes.length; i++) {
+//            childElement = parentElement.childNodes[i];
+//            recurseDownForUnits(childElement);
+//        }
 //    }
-}
-
-
-
-
+//    catch(err) {
+//        // do nothing on error, just means this node has no children
+//    }
+//    finally {
+//        // do nothing here, just continue even if there is an exception
+//    }
+//
+//    try {
+//        alert("parentElement.unit-locator: " + parentElement.unit-locator);
+//    }
+//    catch(err){
+//        alert("nope");
+//    }
+//    finally {
+//
+//    }
+//
+//
+//
+//
+////    if(parentElement.id === "INDIVIDUAL_UNIT")
+////    {
+////        units += parentElement.outerHTML + "; ";
+////    }
+//}
+//
+//
+//
+//
 
 
 
 function _unitStatusChange($el, type) {
-    var units_found = 0;
-    var private_units = 0;
-    var public_units = 0;
-    var unit_locations_list = '';
-
-
-
-    recurseDownForUnits($el);
-
-
-
+    var public_count = 0;
+    var private_count = 0;
+    var draft_count = 0;
+    var unit_locator_list = '';
 
     for(var i = 0; i < $el.context.children.length; i++) {
         childElement = $el.context.children[i];
 
-        if(childElement.className == "units_found") {
-           units_found = parseInt(childElement.textContent);
+        if(childElement.className == "public_count") {
+           public_count = parseInt(childElement.textContent);
         }
-        if(childElement.className == "private_units") {
-           private_units = parseInt(childElement.textContent);
+        if(childElement.className == "private_count") {
+           private_count = parseInt(childElement.textContent);
         }
-        if(childElement.className == "public_units") {
-           public_units = parseInt(childElement.textContent);
+        if(childElement.className == "draft_count") {
+           draft_count = parseInt(childElement.textContent);
         }
-        if(childElement.className == "units_found_list") {
-           unit_locations_list = childElement.textContent;
+        if(childElement.className == "unit_locator_list") {
+           unit_locator_list = childElement.textContent;
         }
     }
 
-    var changeToPublic = true;
-    var buttonText = "PUBLIC";
-    var promptText =
-        'This section has a mix of ' +
-        public_units.toString() +
-        ' public and ' +
-        private_units.toString() +
-        ' private units. ' +
-        'Are you sure you want to change them all to public?';
-
-    if(units_found == public_units) {
-        if(public_units == 1) {
-            promptText = 'Are you sure you want to change 1 unit to private?';
-        }
-        else {
-            promptText = 'Are you sure you want to change ' + public_units.toString() + ' units to private?';
-        }
-        buttonText = "PRIVATE"
-        changeToPublic = false;
-    }
-
-    if(units_found == private_units) {
-        if(private_units == 1) {
-            promptText = 'Are you sure you want to change 1 unit to public?';
-        }
-        else {
-            promptText = 'Are you sure you want to change ' + private_units.toString() + ' units to public?';
-        }
-        buttonText = "PUBLIC"
-        changeToPublic = true;
-    }
-
-    var confirm = new PromptView.Warning({
-        title: gettext('Change Unit Status (' + type + ')'),
-        message: gettext(promptText),
-        actions: {
-            primary: {
-                text: gettext('Yes, change to ' + buttonText),
-                click: function(view) {
-                    view.hide();
-
-                    changeUnitVisibilityStatus($el, changeToPublic, unit_locations_list);
-                }
-            },
-            secondary: {
-                text: gettext('Cancel'),
-                click: function(view) {
-                    view.hide();
+    if(draft_count > 0) {                   // if there are any units with 'draft' status
+        var draftWarning = new PromptView.Warning({
+            title: gettext('At least one draft'),
+            message: gettext('One or more units are in "draft" mode, disallowing bulk status updating.'),
+            actions: {
+                primary: {
+                    text: gettext('OK'),
+                    click: function(view) {
+                        view.hide();
+                    }
                 }
             }
+        });
+        draftWarning.show();
+    }
+    else {                                  // else there are no units with 'draft' status
+        var changeToPublic = true;
+        var buttonText = "PUBLIC";
+        var promptText =
+            'This section has a mix of ' +
+            public_units.toString() +
+            ' public and ' +
+            private_units.toString() +
+            ' private units. ' +
+            'Change them all to public?';
+
+        if(units_found == public_units) {
+            if(public_units == 1) {
+                promptText = 'Change 1 unit to private?';
+            }
+            else {
+                promptText = 'Change ' + public_units.toString() + ' units to private?';
+            }
+            buttonText = "PRIVATE"
+            changeToPublic = false;
         }
-    });
-    confirm.show();
+
+        if(units_found == private_units) {
+            if(private_units == 1) {
+                promptText = 'Change 1 unit to public?';
+            }
+            else {
+                promptText = 'Change ' + private_units.toString() + ' units to public?';
+            }
+            buttonText = "PUBLIC"
+            changeToPublic = true;
+        }
+
+        var confirm = new PromptView.Warning({
+            title: gettext('Change Unit Status (' + type + ')'),
+            message: gettext(promptText),
+            actions: {
+                primary: {
+                    text: gettext('Yes, change to ' + buttonText),
+                    click: function(view) {
+                        view.hide();
+                        changeUnitVisibilityStatus($el, changeToPublic, unit_locator_list);
+                    }
+                },
+                secondary: {
+                    text: gettext('Cancel'),
+                    click: function(view) {
+                        view.hide();
+                    }
+                }
+            }
+        });
+        confirm.show();
+    }
 }
 
-function changeUnitVisibilityStatus( $el, toPublic, unit_locations_list ) {
+function changeUnitVisibilityStatus( $el, toPublic, unit_locator_list ) {
     var action = 'make_public';         // assume the change will be to PUBLIC
     var visibility = 'public';          // assume the change will be to PUBLIC
-
-
-
-//    var locator = $el.data('locator');
-//    var url = ModuleUtils.getUpdateUrl(locator);
-//      var url = "StanfordUniversity.Test202.2014/branch/draft/block/vertical080";
-//      var url = ModuleUtils.getUpdateUrl();
-//    var url = "/xblock/StanfordUniversity.Test202.2014"
-    var locator = $el.data('locator');
-    var url = ModuleUtils.getUpdateUrl(locator)
 
     if(!toPublic) {                 // if we guessed wrong
         action = 'make_private';
         visibility = 'private';
     }
 
-    var updating = new NotificationView.Mini({
-        title: gettext('Updating&hellip;')
-    });
-    updating.show();                            // slide up a card saying "Updating..."
+//    var updating = new NotificationView.Mini({
+//        title: gettext('Updating&hellip;')
+//    });
+//    updating.show();                            // slide up a card saying "Updating..."
 
-
-//    var locations = unit_locations_list.split(";");
-//    for (var i=0; i<locations.length; i++)
-//      {
-//        url = "/xblock/" + locations[i];
-//        $.postJSON(url, {publish: action} );
-//      }
 
 
     $.postJSON(url, {publish: action} );
