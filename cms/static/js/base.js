@@ -462,29 +462,29 @@ function _unitStatusChange($el, type) {
         var buttonText = "PUBLIC";
         var promptText =
             'This section has a mix of ' +
-            public_units.toString() +
+            public_count.toString() +
             ' public and ' +
-            private_units.toString() +
+            private_count.toString() +
             ' private units. ' +
             'Change them all to public?';
 
-        if(units_found == public_units) {
-            if(public_units == 1) {
+        if((public_count > 0) && (private_count == 0))  {
+            if(public_count == 1) {
                 promptText = 'Change 1 unit to private?';
             }
             else {
-                promptText = 'Change ' + public_units.toString() + ' units to private?';
+                promptText = 'Change ' + public_count.toString() + ' units to private?';
             }
             buttonText = "PRIVATE"
             changeToPublic = false;
         }
 
-        if(units_found == private_units) {
-            if(private_units == 1) {
+        if((public_count == 0) && (private_count > 0))  {
+            if(private_count == 1) {
                 promptText = 'Change 1 unit to public?';
             }
             else {
-                promptText = 'Change ' + private_units.toString() + ' units to public?';
+                promptText = 'Change ' + private_count.toString() + ' units to public?';
             }
             buttonText = "PUBLIC"
             changeToPublic = true;
@@ -498,7 +498,7 @@ function _unitStatusChange($el, type) {
                     text: gettext('Yes, change to ' + buttonText),
                     click: function(view) {
                         view.hide();
-                        changeUnitVisibilityStatus($el, changeToPublic, unit_locator_list);
+                        changeUnitVisibilityStatus(changeToPublic, unit_locator_list);
                     }
                 },
                 secondary: {
@@ -513,23 +513,18 @@ function _unitStatusChange($el, type) {
     }
 }
 
-function changeUnitVisibilityStatus( $el, toPublic, unit_locator_list ) {
+function changeUnitVisibilityStatus( toPublic, unit_locator_list ) {
     var action = 'make_public';         // assume the change will be to PUBLIC
-    var visibility = 'public';          // assume the change will be to PUBLIC
 
     if(!toPublic) {                 // if we guessed wrong
         action = 'make_private';
-        visibility = 'private';
     }
 
-//    var updating = new NotificationView.Mini({
-//        title: gettext('Updating&hellip;')
-//    });
-//    updating.show();                            // slide up a card saying "Updating..."
-
-
-
-    $.postJSON(url, {publish: action} );
+    unit_locator_array = unit_locator_list.split(";");
+    for(i=0; i<unit_locator_array.length; i++) {
+        var xblockURL = "/xblock/" + unit_locator_array[i].trim();
+        $.postJSON(xblockURL, {publish: action} );
+    }
 }
 
 
