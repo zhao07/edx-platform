@@ -1,5 +1,12 @@
 <%! from django.utils.translation import ugettext as _ %>
 <%! from django.core.urlresolvers import reverse %>
+
+<%! from contentstore.utils import ALL_PUBLIC_ICON_STRING  %>
+<%! from contentstore.utils import ALL_PRIVATE_ICON_STRING %>
+
+
+
+
 <%! from contentstore.utils import compute_unit_state %>
 <%! from contentstore.utils import get_unit_state_icon_name %>
 <%! from contentstore.utils import get_unit_location %>
@@ -49,13 +56,32 @@ This def will enumerate through a passed in subsection and list all of the units
             <span data-tooltip="${_("Drag to sort")}" class="drag-handle unit-drag-handle action"><span class="sr"> ${_("Drag to reorder unit")}</span></span>
           </li>
 
-            <a href="#" class="INDIVIDUAL_UNIT" data-tooltip="${_("Change unit status")}">
-              <i class="${get_unit_state_icon_name( unit )} unit-status-change-unit" unit-locator="${unit_locator}" >
+            <%
+                public_count = 0
+                private_count = 0
+                draft_count = 0
+                icon_string = MIXED_STATE_ICON_STRING
+                state = compute_unit_state(unit)
+
+                if state == "public":
+                    public_count = 1
+                    icon_string = ALL_PUBLIC_ICON_STRING
+
+                if state == "private":
+                    private_count = 1
+                    icon_string = ALL_PRIVATE_ICON_STRING
+
+                if state == "draft":
+                    draft_count = 1
+                    icon_string = ALL_PRIVATE_ICON_STRING
+            %>
+            <a href="#" data-tooltip="${_("Change unit status")}">
+              <i class="${icon_string} unit-status-change-unit">
                 <!-- div elements are invisible containers to hold unit counts and a list of locations -->
-                <div  class='units_found_list'> ${get_unit_location(unit)}</div>
-                <div  class='units_found'> 1 </div>
-                <div  class='private_units'> ${get_unit_is_private(unit)}</div>
-                <div  class='public_units'> ${get_unit_is_public(unit)}</div>
+                <div  hidden class='public_units'>      ${public_count}         </div>
+                <div  hidden class='private_units'>     ${private_count}        </div>
+                <div  hidden class='draft_units'>       ${draft_count}          </div>
+                <div   class='unit_locator_list'> ${unit_locator}         </div>
               </i>
             </a>
 

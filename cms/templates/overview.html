@@ -6,6 +6,11 @@
   from django.core.urlresolvers import reverse
   from xmodule.modulestore.django import loc_mapper
 
+  from contentstore.utils import ALL_PUBLIC_ICON_STRING
+  from contentstore.utils import ALL_PRIVATE_ICON_STRING
+  from contentstore.utils import NO_UNITS_ICON_STRING
+  from contentstore.utils import MIXED_STATE_ICON_STRING
+
   from contentstore.utils import get_subsection_state
   from contentstore.utils import get_section_unit_states
   from contentstore.utils import get_section_unit_counts_found
@@ -175,57 +180,56 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
 
 
 
+           <!--
+                course_dictionary     is a dictionary of sections belonging to this course           {sectionLocator:sectionDictionary}
+                sectionDictionary    each is a dictionary of subsections belonging to this section  {subsectionLocator:subsectionDictionary}
+                subsectionDictionary each is a dictionary of status lists                           {'private':private_list, 'public':public_list, 'draft':draft_list}
+           -->
 
 
-                    <%
-                        section_index = 1
-                        section_units_private_dictionary = {}
-                        section_units_public_dictionary = {}
-                        section_units_draft_dictionary = {}
-                   %>
-                    % for section in sections:
-                        <%
-                            section_units_private_dictionary.clear()
-                            section_units_public_dictionary.clear()
-                            section_units_draft_dictionary.clear()
-                       %>
-                        <h1>
-                            Section: ${section.display_name_with_default | h} (${section_index} of ${len(sections)})
-                                % for subsection in section.get_children():
-                                    <h2>
-                                        Subsection: ${subsection.display_name_with_default}
-                                    </h2>
-                                    % for unit in subsection.get_children():
-                                        <%
-                                            unit_state = compute_unit_state(unit)
+            <%
+                course_dictionary = {}               # initialize an empty course dictionary
+                private_list = []
+                public_list = []
+                draft_list = []
+            %>
+            % for section in sections:
+                <%
+                    sectionDictionary = {}              # initialize an empty section dictionary
+                    course_dictionary.update({section.location:sectionDictionary})      # add this new section dictionary to the course dictionary
+                %>
+                <h1>
+                    Section: ${section.display_name_with_default | h} (${len(course_dictionary)} / ${len(sections)})
+                        % for subsection in section.get_children():
+                            <%
+                                private_list = []
+                                public_list = []
+                                draft_list = []
+                                subsectionDictionary = {'private':private_list, 'public':public_list, 'draft':draft_list}
+                                sectionDictionary.update({subsection.location:subsectionDictionary})    # add it to the section dictionary
+                            %>
+                            <h2>
+                                Subsection: ${subsection.display_name_with_default}  (${len(sectionDictionary)})
+                            </h2>
+                            % for unit in subsection.get_children():
+                                <%
+                                    unit_state = compute_unit_state(unit)
+                                    unit_locator = loc_mapper().translate_location(context_course.location.course_id, unit.location, False, True)
 
-
-                                            x = {'frog':'prince'}
-                                            section_units_private_dictionary.update(x)
-                                            #from pdb import set_trace; set_trace()
-
-
-
-                                            if unit_state == 'private': section_units_private_dictionary.update({unit.location:unit_state})
-                                            if unit_state == 'public': section_units_public_dictionary.update({unit.location:unit_state})
-                                            if unit_state == 'draft': section_units_draft_dictionary.update({unit.location:unit_state})
-
-                                            unit_locator = loc_mapper().translate_location(context_course.location.course_id, unit.location, False, True)
-                                        %>
-                                        <h3>
-                                            Unit: ${unit.display_name_with_default} (${unit_locator}:${unit_state}) dictionary length: ${len(section_units_private_dictionary)}
-                                        </h3>
-                                    % endfor
-                                % endfor
-                        </h1>
-                        <%
-                            section_index += 1
-                        %>
-
-                        <h1>private: ${len(section_units_private_dictionary)}</h1>
-                        <h1>public: ${len(section_units_public_dictionary)}</h1>
-                        <h1>draft: ${len(section_units_draft_dictionary)}</h1>
-                     % endfor
+                                    if unit_state == 'private': private_list.append(unit_locator)
+                                    if unit_state == 'public': public_list.append(unit_locator)
+                                    if unit_state == 'draft': draft_list.append(unit_locator)
+                                %>
+                                <h3>
+                                    Unit: ${unit.display_name_with_default} (${unit_locator}:${unit_state}) dictionary length: ${len(private_list)}
+                                </h3>
+                            % endfor
+                            <h1>private: ${len(private_list)}</h1>
+                            <h1>public: ${len(public_list)}</h1>
+                            <h1>draft: ${len(draft_list)}</h1>
+                        % endfor
+                </h1>
+             % endfor
 
 
 
@@ -265,15 +269,47 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
 
 
 
+                    <%
+                      public_count = 0
+                      private_count = 0
+                      draft_count = 0
+                      section_dictionary = course_dictionary[section.location]
+                      for subsection in section.get_children():
+                          subsection_dictionary = section_dictionary[subsection.location]
 
+                          public_list = subsection_dictionary['public']
+                          private_list = subsection_dictionary['private']
+                          draft_list = subsection_dictionary['draft']
+
+                          public_count += len(public_list)
+                          private_count += len(private_list)
+                          draft_count += len(draft_list)
+
+                      unit_locator_list = ""
+                      icon_string = NO_UNITS_ICON_STRING
+                      if (public_count == 0) and ((private_count > 0) or (draft_count > 0)):
+                          icon_string = ALL_PRIVATE_ICON_STRING
+                          for unit_locator in private_list:
+                              unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
+
+                      if (public_count > 0) and ((private_count == 0) and (draft_count == 0)):
+                          icon_string = ALL_PUBLIC_ICON_STRING
+                          for unit_locator in public_list:
+                              unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
+
+                      if (public_count > 0) and ((private_count > 0) or (draft_count > 0)):
+                          icon_string = MIXED_STATE_ICON_STRING
+                          for unit_locator in private_list:
+                              unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
+                    %>
                     <a href="#" data-tooltip="${_('Bulk change unit status')}">
-                      <i class="${get_section_unit_states(section)} unit-status-change-section">
+                       <i class="${get_section_unit_states(section)} unit-status-change-section">
                             <!-- div elements are invisible containers to hold unit counts and a list of locations -->
-                            <div hidden class='units_found_list'> ${get_section_units(section)}</div>
-                            <div hidden class='units_found'> ${get_section_unit_counts_found(section)}</div>
-                            <div hidden class='private_units'> ${get_section_unit_counts_private(section)}</div>
-                            <div hidden class='public_units'> ${get_section_unit_counts_public(section)}</div>
-                      </i>
+                            <div  hidden class='public_units'>      ${public_count}         </div>
+                            <div  hidden class='private_units'>     ${private_count}        </div>
+                            <div  hidden class='draft_units'>       ${draft_count}          </div>
+                            <div   class='unit_locator_list'> ${unit_locator_list}    </div>
+                        </i>
                     </a>
 
 
@@ -346,26 +382,42 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                             </span>
                           </a>
 
+                          <%
+                            subsection_dictionary = section_dictionary[subsection.location]
+                            public_list = subsection_dictionary['public']
+                            private_list = subsection_dictionary['private']
+                            draft_list = subsection_dictionary['draft']
 
+                            public_count = len(public_list)
+                            private_count = len(private_list)
+                            draft_count = len(draft_list)
 
+                            unit_locator_list = ""
+                            icon_string = NO_UNITS_ICON_STRING
+                            if (public_count == 0) and ((private_count > 0) or (draft_count > 0)):
+                                icon_string = ALL_PRIVATE_ICON_STRING
+                                for unit_locator in private_list:
+                                    unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
 
+                            if (public_count > 0) and ((private_count == 0) and (draft_count == 0)):
+                                icon_string = ALL_PUBLIC_ICON_STRING
+                                for unit_locator in public_list:
+                                    unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
 
-
+                            if (public_count > 0) and ((private_count > 0) or (draft_count > 0)):
+                                icon_string = MIXED_STATE_ICON_STRING
+                                for unit_locator in private_list:
+                                    unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
+                          %>
                           <a href="#">
-                            <i class="${get_subsection_state(subsection)} unit-status-change-subsection">
-                                  <!-- div elements are invisible containers to hold unit counts and a list of locations -->
-                                  <div hidden class='units_found_list'> ${get_subsection_units(subsection)}</div>
-                                  <div hidden class='units_found'> ${get_subsection_total_units_count(subsection)}</div>
-                                  <div hidden class='private_units'> ${get_subsection_private_units_count(subsection)}</div>
-                                  <div hidden class='public_units'> ${get_subsection_public_units_count(subsection)}</div>
+                            <i class="${icon_string} unit-status-change-subsection">
+                                <!-- div elements are invisible containers to hold unit counts and a list of locations -->
+                                <div  hidden class='public_units'>      ${public_count}         </div>
+                                <div  hidden class='private_units'>     ${private_count}        </div>
+                                <div  hidden class='draft_units'>       ${draft_count}          </div>
+                                <div   class='unit_locator_list'> ${unit_locator_list}    </div>
                             </i>
                           </a>
-
-
-
-
-
-
 
 
 
