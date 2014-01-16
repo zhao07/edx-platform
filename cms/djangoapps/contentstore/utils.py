@@ -276,257 +276,257 @@ def remove_extra_panel_tab(tab_type, course):
 
 
 
-#________________________________________________________
-#________________________________________________________
+##________________________________________________________
+##________________________________________________________
+##
+## Support for bulk unit status change
+##
 #
-# Support for bulk unit status change
+#def get_unit_state_icon_name( unit ):
+#    """
+#    Check the supplied unit's public/private/draft state, returning
+#    a string describing the icon style for the unit
+#    @param unit: A unit to look up in the dictionary of unit/states
+#    @return: A string indicating one of three states--mixed, all public, all private.
+#    """
+#    return_string = MIXED_STATE_ICON_STRING
+#    state = compute_unit_state(unit)
 #
-
-def get_unit_state_icon_name( unit ):
-    """
-    Check the supplied unit's public/private/draft state, returning
-    a string describing the icon style for the unit
-    @param unit: A unit to look up in the dictionary of unit/states
-    @return: A string indicating one of three states--mixed, all public, all private.
-    """
-    return_string = MIXED_STATE_ICON_STRING
-    state = compute_unit_state(unit)
-
-    if state == "public":
-        return_string = ALL_PUBLIC_ICON_STRING
-
-    if (state == "private") or (state == "draft"):
-        return_string = ALL_PRIVATE_ICON_STRING
-
-    return return_string
-
-def get_unit_location(unit):
-    #from pdb import set_trace; set_trace()
-    return str(unit.location).split("//")[1]
-
-def get_unit_is_private(unit):
-    count = 0
-    state = compute_unit_state(unit)
-    if (state == "private") or (state == "draft"):
-        count = 1
-    return count
-
-
-def get_unit_is_public(unit):
-    count = 0
-    state = compute_unit_state(unit)
-    if (state == "public"):
-        count = 1
-    return count
-
-def _get_subsection_state(subsection):
-    """
-    Check the indicated subsection's child units, returning
-    a set of lists of units in each of the following
-    categories:
-        public      -- units with status public
-        private     -- unit status is private
-        found       -- each unit found adds one count
-
-    @param subsection: the subsection whose units are to be analyzed
-    """
-    assert unit_stateById.__sizeof__() > 0  # be sure the dictionary of unit/state has been created
-
-    unit_count = 0
-    subsection_status_string = MIXED_STATE_ICON_STRING
-    unit_public_count = 0
-    unit_count = 0
-    found_items_total = []                            # all units
-
-    for unit in subsection.get_children():
-        found_items_total.append(unit)
-        if unit_stateById[ unit.location.name ] == "public":
-            unit_public_count += 1
-        unit_count += 1
-
-    if unit_count == 0:
-        subsection_status_string = NO_UNITS_ICON_STRING
-    else:
-        if unit_count == unit_public_count :
-            subsection_status_string = ALL_PUBLIC_ICON_STRING
-
-        if unit_public_count == 0:
-            subsection_status_string = ALL_PRIVATE_ICON_STRING
-
-    return unit_count, found_items_total, unit_public_count, subsection_status_string
-
-def get_subsection_state( subsection ):
-    unit_count, found_items_total, unit_public_count, subsection_status_string = _get_subsection_state(subsection)
-    return subsection_status_string
-
-def get_subsection_public_units_count( subsection ):
-    unit_count, found_items_total, unit_public_count, subsection_status_string = _get_subsection_state(subsection)
-    return str(unit_public_count)
-
-def get_subsection_private_units_count( subsection ):
-    unit_count, found_items_total, unit_public_count, subsection_status_string = _get_subsection_state(subsection)
-    private_units_count = unit_count - unit_public_count
-    return str(private_units_count)
-
-def get_subsection_total_units_count( subsection ):
-    unit_count, found_items_total, unit_public_count, subsection_status_string = _get_subsection_state(subsection)
-    return str(unit_count)
-
-def get_subsection_units( subsection ):
-    unit_count, found_items_total, unit_public_count, subsection_status_string = _get_subsection_state(subsection)
-
-    unit_locations_string = ""
-    for unit in found_items_total:
-        unit_locations_string = unit_locations_string + str(unit.location) + ";"
-    return unit_locations_string
-
-def get_section_unit_counts_private( section ):
-    """
-    Check all the units belonging to all subsections, returning
-    just the count of the number of private units
-
-    @param section: the section whose units are to be analyzed
-    @return: a string -- number of private units found
-
-    NOTE: this function assumes the 'unit_stateById' dictionary has been
-    populated before it is called (see 'get_section_unit_states' below)
-    """
-    assert unit_stateById.__sizeof__() > 0  # be sure the dictionary of unit/state has been created
-    found_items_public, found_items_private, found_items_total = _get_section_units( section )
-    return str(len(found_items_private))
-
-def get_section_unit_counts_public( section ):
-    """
-    Check all the units belonging to all subsections, returning
-    just the count of the number of public units
-
-    @param section: the section whose units are to be analyzed
-    @return: a string -- number of public units found
-
-    NOTE: this function assumes the 'unit_stateById' dictionary has been
-    populated before it is called (see 'get_section_unit_states' below)
-    """
-    assert unit_stateById.__sizeof__() > 0  # be sure the dictionary of unit/state has been created
-    found_items_public, found_items_private, found_items_total = _get_section_units( section )
-    return str(len(found_items_public))
-
-def get_section_unit_counts_found( section ):
-    """
-    Check all the units belonging to all subsections, returning
-    just the count of the number of found units
-
-    @param section: the section whose units are to be analyzed
-    @return: a string -- number of units found
-
-    NOTE: this function assumes the 'unit_stateById' dictionary has been
-    populated before it is called (see 'get_section_unit_states' below)
-    """
-    assert unit_stateById.__sizeof__() > 0  # be sure the dictionary of unit/state has been created
-    found_items_public, found_items_private, found_items_total = _get_section_units( section )
-    return str(len(found_items_total))
-
-
-# experimental
-def get_section_units( section ):
-    """
-    Check all the units belonging to all subsections, returning
-    just the count of the number of found units
-
-    @param section: the section whose units are to be analyzed
-    @return: a string -- number of units found
-
-    NOTE: this function assumes the 'unit_stateById' dictionary has been
-    populated before it is called (see 'get_section_unit_states' below)
-    """
-    assert unit_stateById.__sizeof__() > 0  # be sure the dictionary of unit/state has been created
-    found_items_public, found_items_private, found_items_total = _get_section_units( section )
-
-    unit_locations_string = ""
-    for unit in found_items_total:
-        unit_locations_string = unit_locations_string + str(unit.location) + ";"
-
-    return unit_locations_string
-
-
-
-
-
-
-def _get_section_units( section ):
-    """
-    Check all the units belonging to all subsections, returning
-    a set of lists of units in each of the following
-    categories:
-        public      -- units with status public
-        private     -- unit status is private
-        found       -- each unit found adds one count
-
-    @param section: the section whose units are to be analyzed
-    @return: 3 lists -- public, private, and found units
-
-    NOTE: this function assumes the 'unit_stateById' dictionary has been
-    populated before it is called (see 'get_section_unit_states' below)
-    """
-    assert unit_stateById.__sizeof__() > 0  # be sure the dictionary of unit/state has been created
-
-    found_items_private = []                          # private units
-    found_items_public = []                           # public units
-    found_items_total = []                            # all units
-
-    for subsection in section.get_children():
-      for unit in subsection.get_children():
-        found_items_total.append(unit)
-        state = compute_unit_state(unit)
-        unit_stateById[ unit.location.name ] = state
-
-        if state == "public":
-            found_items_public.append(unit)
-
-        if (state == "private") or (state == "draft"):
-            found_items_private.append(unit)
-
-    return found_items_public, found_items_private, found_items_total
-
-
-def get_section_unit_states( section ):
-    """
-    Check all the units belonging to all subsections, returning
-    a string describing the style for the icon to show. Note that
-    a dictionary of unit/state entries is created by this function
-    to be used by other functions found in this file. Thus, this
-    function must be run first, before those other functions can
-    be safely called.
-    """
-    return_string = MIXED_STATE_ICON_STRING
-    found_items_private = 0                           # counts the number of private units
-    found_items_public = 0                            # counts the number of public units
-    found_items_total = 0                             # counts the total number of units
-
-    for subsection in section.get_children():
-      found_items_private_subsection = 0              # counts the number of private units in this subsection
-      found_items_public_subsection = 0               # counts the number of public units in this subsection
-      found_items_total_subsection = 0                # counts the total number of units in this subsection
-
-      for unit in subsection.get_children():
-        found_items_total_subsection += 1
-        found_items_total += 1
-        state = compute_unit_state(unit)
-        unit_stateById[ unit.location.name ] = state
-
-        if state == "public":
-            found_items_public += 1
-            found_items_public_subsection += 1
-
-        if (state == "private") or (state == "draft"):
-            found_items_private += 1
-            found_items_private_subsection += 1
-
-    if found_items_public == found_items_total:
-        return_string = ALL_PUBLIC_ICON_STRING
-
-    if found_items_public == 0:
-        return_string = ALL_PRIVATE_ICON_STRING
-
-    return return_string + " unit-status-section-icon-adjustment"
-
-
+#    if state == "public":
+#        return_string = ALL_PUBLIC_ICON_STRING
+#
+#    if (state == "private") or (state == "draft"):
+#        return_string = ALL_PRIVATE_ICON_STRING
+#
+#    return return_string
+#
+#def get_unit_location(unit):
+#    #from pdb import set_trace; set_trace()
+#    return str(unit.location).split("//")[1]
+#
+#def get_unit_is_private(unit):
+#    count = 0
+#    state = compute_unit_state(unit)
+#    if (state == "private") or (state == "draft"):
+#        count = 1
+#    return count
+#
+#
+#def get_unit_is_public(unit):
+#    count = 0
+#    state = compute_unit_state(unit)
+#    if (state == "public"):
+#        count = 1
+#    return count
+#
+#def _get_subsection_state(subsection):
+#    """
+#    Check the indicated subsection's child units, returning
+#    a set of lists of units in each of the following
+#    categories:
+#        public      -- units with status public
+#        private     -- unit status is private
+#        found       -- each unit found adds one count
+#
+#    @param subsection: the subsection whose units are to be analyzed
+#    """
+#    assert unit_stateById.__sizeof__() > 0  # be sure the dictionary of unit/state has been created
+#
+#    unit_count = 0
+#    subsection_status_string = MIXED_STATE_ICON_STRING
+#    unit_public_count = 0
+#    unit_count = 0
+#    found_items_total = []                            # all units
+#
+#    for unit in subsection.get_children():
+#        found_items_total.append(unit)
+#        if unit_stateById[ unit.location.name ] == "public":
+#            unit_public_count += 1
+#        unit_count += 1
+#
+#    if unit_count == 0:
+#        subsection_status_string = NO_UNITS_ICON_STRING
+#    else:
+#        if unit_count == unit_public_count :
+#            subsection_status_string = ALL_PUBLIC_ICON_STRING
+#
+#        if unit_public_count == 0:
+#            subsection_status_string = ALL_PRIVATE_ICON_STRING
+#
+#    return unit_count, found_items_total, unit_public_count, subsection_status_string
+#
+#def get_subsection_state( subsection ):
+#    unit_count, found_items_total, unit_public_count, subsection_status_string = _get_subsection_state(subsection)
+#    return subsection_status_string
+#
+#def get_subsection_public_units_count( subsection ):
+#    unit_count, found_items_total, unit_public_count, subsection_status_string = _get_subsection_state(subsection)
+#    return str(unit_public_count)
+#
+#def get_subsection_private_units_count( subsection ):
+#    unit_count, found_items_total, unit_public_count, subsection_status_string = _get_subsection_state(subsection)
+#    private_units_count = unit_count - unit_public_count
+#    return str(private_units_count)
+#
+#def get_subsection_total_units_count( subsection ):
+#    unit_count, found_items_total, unit_public_count, subsection_status_string = _get_subsection_state(subsection)
+#    return str(unit_count)
+#
+#def get_subsection_units( subsection ):
+#    unit_count, found_items_total, unit_public_count, subsection_status_string = _get_subsection_state(subsection)
+#
+#    unit_locations_string = ""
+#    for unit in found_items_total:
+#        unit_locations_string = unit_locations_string + str(unit.location) + ";"
+#    return unit_locations_string
+#
+#def get_section_unit_counts_private( section ):
+#    """
+#    Check all the units belonging to all subsections, returning
+#    just the count of the number of private units
+#
+#    @param section: the section whose units are to be analyzed
+#    @return: a string -- number of private units found
+#
+#    NOTE: this function assumes the 'unit_stateById' dictionary has been
+#    populated before it is called (see 'get_section_unit_states' below)
+#    """
+#    assert unit_stateById.__sizeof__() > 0  # be sure the dictionary of unit/state has been created
+#    found_items_public, found_items_private, found_items_total = _get_section_units( section )
+#    return str(len(found_items_private))
+#
+#def get_section_unit_counts_public( section ):
+#    """
+#    Check all the units belonging to all subsections, returning
+#    just the count of the number of public units
+#
+#    @param section: the section whose units are to be analyzed
+#    @return: a string -- number of public units found
+#
+#    NOTE: this function assumes the 'unit_stateById' dictionary has been
+#    populated before it is called (see 'get_section_unit_states' below)
+#    """
+#    assert unit_stateById.__sizeof__() > 0  # be sure the dictionary of unit/state has been created
+#    found_items_public, found_items_private, found_items_total = _get_section_units( section )
+#    return str(len(found_items_public))
+#
+#def get_section_unit_counts_found( section ):
+#    """
+#    Check all the units belonging to all subsections, returning
+#    just the count of the number of found units
+#
+#    @param section: the section whose units are to be analyzed
+#    @return: a string -- number of units found
+#
+#    NOTE: this function assumes the 'unit_stateById' dictionary has been
+#    populated before it is called (see 'get_section_unit_states' below)
+#    """
+#    assert unit_stateById.__sizeof__() > 0  # be sure the dictionary of unit/state has been created
+#    found_items_public, found_items_private, found_items_total = _get_section_units( section )
+#    return str(len(found_items_total))
+#
+#
+## experimental
+#def get_section_units( section ):
+#    """
+#    Check all the units belonging to all subsections, returning
+#    just the count of the number of found units
+#
+#    @param section: the section whose units are to be analyzed
+#    @return: a string -- number of units found
+#
+#    NOTE: this function assumes the 'unit_stateById' dictionary has been
+#    populated before it is called (see 'get_section_unit_states' below)
+#    """
+#    assert unit_stateById.__sizeof__() > 0  # be sure the dictionary of unit/state has been created
+#    found_items_public, found_items_private, found_items_total = _get_section_units( section )
+#
+#    unit_locations_string = ""
+#    for unit in found_items_total:
+#        unit_locations_string = unit_locations_string + str(unit.location) + ";"
+#
+#    return unit_locations_string
+#
+#
+#
+#
+#
+#
+#def _get_section_units( section ):
+#    """
+#    Check all the units belonging to all subsections, returning
+#    a set of lists of units in each of the following
+#    categories:
+#        public      -- units with status public
+#        private     -- unit status is private
+#        found       -- each unit found adds one count
+#
+#    @param section: the section whose units are to be analyzed
+#    @return: 3 lists -- public, private, and found units
+#
+#    NOTE: this function assumes the 'unit_stateById' dictionary has been
+#    populated before it is called (see 'get_section_unit_states' below)
+#    """
+#    assert unit_stateById.__sizeof__() > 0  # be sure the dictionary of unit/state has been created
+#
+#    found_items_private = []                          # private units
+#    found_items_public = []                           # public units
+#    found_items_total = []                            # all units
+#
+#    for subsection in section.get_children():
+#      for unit in subsection.get_children():
+#        found_items_total.append(unit)
+#        state = compute_unit_state(unit)
+#        unit_stateById[ unit.location.name ] = state
+#
+#        if state == "public":
+#            found_items_public.append(unit)
+#
+#        if (state == "private") or (state == "draft"):
+#            found_items_private.append(unit)
+#
+#    return found_items_public, found_items_private, found_items_total
+#
+#
+#def get_section_unit_states( section ):
+#    """
+#    Check all the units belonging to all subsections, returning
+#    a string describing the style for the icon to show. Note that
+#    a dictionary of unit/state entries is created by this function
+#    to be used by other functions found in this file. Thus, this
+#    function must be run first, before those other functions can
+#    be safely called.
+#    """
+#    return_string = MIXED_STATE_ICON_STRING
+#    found_items_private = 0                           # counts the number of private units
+#    found_items_public = 0                            # counts the number of public units
+#    found_items_total = 0                             # counts the total number of units
+#
+#    for subsection in section.get_children():
+#      found_items_private_subsection = 0              # counts the number of private units in this subsection
+#      found_items_public_subsection = 0               # counts the number of public units in this subsection
+#      found_items_total_subsection = 0                # counts the total number of units in this subsection
+#
+#      for unit in subsection.get_children():
+#        found_items_total_subsection += 1
+#        found_items_total += 1
+#        state = compute_unit_state(unit)
+#        unit_stateById[ unit.location.name ] = state
+#
+#        if state == "public":
+#            found_items_public += 1
+#            found_items_public_subsection += 1
+#
+#        if (state == "private") or (state == "draft"):
+#            found_items_private += 1
+#            found_items_private_subsection += 1
+#
+#    if found_items_public == found_items_total:
+#        return_string = ALL_PUBLIC_ICON_STRING
+#
+#    if found_items_public == 0:
+#        return_string = ALL_PRIVATE_ICON_STRING
+#
+#    return return_string + " unit-status-section-icon-adjustment"
+#
+#

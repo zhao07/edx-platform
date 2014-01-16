@@ -10,17 +10,6 @@
   from contentstore.utils import ALL_PRIVATE_ICON_STRING
   from contentstore.utils import NO_UNITS_ICON_STRING
   from contentstore.utils import MIXED_STATE_ICON_STRING
-
-  from contentstore.utils import get_subsection_state
-  from contentstore.utils import get_section_unit_states
-  from contentstore.utils import get_section_unit_counts_found
-  from contentstore.utils import get_section_units
-  from contentstore.utils import get_section_unit_counts_public
-  from contentstore.utils import get_section_unit_counts_private
-  from contentstore.utils import get_subsection_private_units_count
-  from contentstore.utils import get_subsection_public_units_count
-  from contentstore.utils import get_subsection_units
-  from contentstore.utils import get_subsection_total_units_count
   from contentstore.utils import compute_unit_state
 %>
 
@@ -306,10 +295,10 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                     <a href="#" data-tooltip="${_('Bulk change unit status')}">
                        <i class="${icon_string} unit-status-change-section">
                             <!-- div elements are invisible containers to hold unit counts and a list of locations -->
-                            <div   class='public_count'>      ${public_count}         </div>
-                            <div   class='private_count'>     ${private_count}        </div>
-                            <div   class='draft_count'>       ${draft_count}          </div>
-                            <div   class='unit_locator_list'> ${unit_locator_list}    </div>
+                            <div hidden class='public_count'>      ${public_count}         </div>
+                            <div hidden class='private_count'>     ${private_count}        </div>
+                            <div hidden class='draft_count'>       ${draft_count}          </div>
+                            <div hidden class='unit_locator_list'> ${unit_locator_list}    </div>
                         </i>
                     </a>
 
