@@ -57,6 +57,15 @@ def start_servers()
             )
         end
     end
+
+    BOK_CHOY_STUBS.each do | service, info |
+        Dir.chdir(BOK_CHOY_STUB_DIR) do
+            singleton_process(
+                "python -m stubs.start #{service} #{info[:port]}",
+                logfile=info[:log]
+            )
+        end
+    end
 end
 
 
