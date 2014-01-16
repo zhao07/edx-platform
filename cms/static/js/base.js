@@ -99,7 +99,6 @@ domReady(function() {
     $('.delete-section-button').bind('click', deleteSection);
     $('.delete-subsection-button').bind('click', deleteSubsection);
 
-    $('.unit-status-change-course').bind('click', unitStatusChangeCourse);
     $('.unit-status-change-section').bind('click', unitStatusChangeSection);
     $('.unit-status-change-subsection').bind('click', unitStatusChangeSubsection);
     $('.unit-status-change-unit').bind('click', unitStatusChangeUnit);
@@ -348,76 +347,23 @@ function cancelSetSectionScheduleDate(e) {
     window.deleteSection = deleteSection;
 
 
-
-
-
-
-
-
-
 //________________________________________________ Unit Status Change
 //
 
-function unitStatusChangeCourse(e) {
-    e.preventDefault();
-    _unitStatusChange($(this).parents('section.branch'), 'Course');
-}
-
 function unitStatusChangeSection(e) {
     e.preventDefault();
-    _unitStatusChange($(this).parents('section.branch'), 'Section');
+    _unitStatusChange($(this).parents('section-item '), 'Section');
 }
 
 function unitStatusChangeSubsection(e) {
     e.preventDefault();
-    _unitStatusChange( oNode, 'Subsection');
+    _unitStatusChange($(this).parents('courseware-subsection'), 'Subsection');
 }
 
 function unitStatusChangeUnit(e) {
     e.preventDefault();
     _unitStatusChange($(this).parents('li.courseware-unit'), 'Unit');
 }
-//
-//
-//var units = "";
-//function recurseDownForUnits(parentElement) {
-//    try {
-//        for(var i = 0; i < parentElement.childNodes.length; i++) {
-//            childElement = parentElement.childNodes[i];
-//            recurseDownForUnits(childElement);
-//        }
-//    }
-//    catch(err) {
-//        // do nothing on error, just means this node has no children
-//    }
-//    finally {
-//        // do nothing here, just continue even if there is an exception
-//    }
-//
-//    try {
-//        alert("parentElement.unit-locator: " + parentElement.unit-locator);
-//    }
-//    catch(err){
-//        alert("nope");
-//    }
-//    finally {
-//
-//    }
-//
-//
-//
-//
-////    if(parentElement.id === "INDIVIDUAL_UNIT")
-////    {
-////        units += parentElement.outerHTML + "; ";
-////    }
-//}
-//
-//
-//
-//
-
-
 
 function _unitStatusChange($el, type) {
     var public_count = 0;
@@ -443,9 +389,14 @@ function _unitStatusChange($el, type) {
     }
 
     if(draft_count > 0) {                   // if there are any units with 'draft' status
+        var messageText = 'One unit is ';
+        if(draft_count > 1) {
+            messageText = draft_count.toString() + " units are "
+        }
+        messageText += 'in "draft" mode, disallowing bulk status updating.'
         var draftWarning = new PromptView.Warning({
-            title: gettext('At least one draft'),
-            message: gettext('One or more units are in "draft" mode, disallowing bulk status updating.'),
+            title: gettext('Bulk status update is not allowed'),
+            message: gettext(messageText),
             actions: {
                 primary: {
                     text: gettext('OK'),
@@ -522,8 +473,11 @@ function changeUnitVisibilityStatus( toPublic, unit_locator_list ) {
 
     unit_locator_array = unit_locator_list.split(";");
     for(i=0; i<unit_locator_array.length; i++) {
-        var xblockURL = "/xblock/" + unit_locator_array[i].trim();
-        $.postJSON(xblockURL, {publish: action} );
+        var clean_locator = unit_locator_array[i].trim();
+        if(clean_locator.length > 0) {
+            var xblockURL = "/xblock/" + clean_locator;
+            $.postJSON(xblockURL, {publish: action} );
+        }
     }
 }
 
