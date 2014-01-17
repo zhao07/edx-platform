@@ -18,13 +18,13 @@ from xmodule.modulestore.store_utilities import delete_course
 from xmodule.course_module import CourseDescriptor
 from xmodule.modulestore.draft import DIRECT_ONLY_CATEGORIES
 
-unit_stateById = {}              # dictionary of unit states: key=ID, value=stateString
 
-# These constant strings are used by the unit status mechanism (see overview.html and
+# These constant strings are used by the unit status mechanism (see overview.html and units.html)
 MIXED_STATE_ICON_STRING = "icon-adjust       unit-status-mixed-state"
 ALL_PUBLIC_ICON_STRING  = "icon-circle       unit-status-all-public"
 ALL_PRIVATE_ICON_STRING = "icon-circle-blank unit-status-all-private"
 NO_UNITS_ICON_STRING = ""
+
 
 log = logging.getLogger(__name__)
 
@@ -274,4 +274,3 @@ def remove_extra_panel_tab(tab_type, course):
         course_tabs = [ct for ct in course_tabs if ct != tab_panel]
         changed = True
     return changed, course_tabs
-
