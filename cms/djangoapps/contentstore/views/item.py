@@ -79,20 +79,8 @@ def xblock_handler(request, tag=None, package_id=None, branch=None, version_guid
                 :boilerplate: template name for populating fields, optional
               The locator (and old-style id) for the created xblock (minus children) is returned.
     """
-
-    print("\n\nxblock_handler (these elements are enough): " + str(package_id) + ", " + str(block) + ", " + str(request.json.get('publish')) + "\n\n")
-    #from pdb import set_trace; set_trace()
-
     if package_id is not None:
         locator = BlockUsageLocator(package_id=package_id, branch=branch, version_guid=version_guid, block_id=block)
-
-
-
-
-        print("\n\nlocator: " + str(locator) + "\n\n")
-
-
-
         if not has_access(request.user, locator):
             raise PermissionDenied()
         old_location = loc_mapper().translate_locator_to_location(locator)
