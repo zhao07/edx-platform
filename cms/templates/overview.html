@@ -161,20 +161,13 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
             %>
             <article class="courseware-overview" data-locator="${course_locator}">
 
-
-
-
-
-
-
-
-
-           <!--
-                course_dictionary    is a dictionary of sections belonging to this course           {sectionLocator:sectionDictionary}
-                sectionDictionary    each is a dictionary of subsections belonging to this section  {subsectionLocator:subsectionDictionary}
-                subsectionDictionary each is a dictionary of status lists                           {'private':private_list, 'public':public_list, 'draft':draft_list}
-           -->
             <%
+                #___________________________________________________________________________________________
+                # Construct a set of dictionies/lists to capture the public/private/draft status of the
+                # units in the entire course. These will be used to determine 1) the icon to show the
+                # user, and 2) the fully specified locator strings for each of the units when the user
+                # requests a change in status.
+                #
                 course_dictionary = {}               # initialize an empty course dictionary
                 private_list = []
                 public_list = []
@@ -206,21 +199,6 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                 % endfor
              % endfor
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
               % for section in sections:
               <%
                 section_locator = loc_mapper().translate_location(
@@ -240,9 +218,6 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                   <div class="item-actions">
 
                     <ul class="actions-list">
-
-
-
 
                     <%
                       #___________________________________________________________________________________________
@@ -301,22 +276,6 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                             <div hidden class='unit_locator_list'> ${unit_locator_list}    </div>
                         </i>
                     </a>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
                       <li class="actions-item pubdate">
                         <div class="section-published-date">
@@ -377,10 +336,6 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                             </span>
                           </a>
 
-
-
-
-
                           <%
                             #___________________________________________________________________________
                             # Calculate the overall status of a subsection by walking through all units
@@ -423,10 +378,6 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                                 <div  hidden class='unit_locator_list'> ${unit_locator_list}    </div>
                             </i>
                           </a>
-
-
-
-
 
                         </div>
 
@@ -518,7 +469,4 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
       </form>
     </div>
   </div>
-
-
-
 </%block>

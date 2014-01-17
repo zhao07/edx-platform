@@ -20,6 +20,7 @@ from xmodule.modulestore.draft import DIRECT_ONLY_CATEGORIES
 
 unit_stateById = {}              # dictionary of unit states: key=ID, value=stateString
 
+# These constant strings are used by the unit status mechanism (see overview.html and
 MIXED_STATE_ICON_STRING = "icon-adjust       unit-status-mixed-state"
 ALL_PUBLIC_ICON_STRING  = "icon-circle       unit-status-all-public"
 ALL_PRIVATE_ICON_STRING = "icon-circle-blank unit-status-all-private"
