@@ -1,6 +1,8 @@
 <%inherit file="base.html" />
 <%!
   import logging
+  import datetime
+
   from xmodule.util import date_utils
   from django.utils.translation import ugettext as _
   from django.core.urlresolvers import reverse
@@ -10,6 +12,11 @@
   from contentstore.utils import ALL_PRIVATE_ICON_STRING
   from contentstore.utils import NO_UNITS_ICON_STRING
   from contentstore.utils import MIXED_STATE_ICON_STRING
+  from contentstore.utils import PUBLIC_RELEASED
+  from contentstore.utils import NOT_ALL_PUBLIC_RELEASED
+  from contentstore.utils import PUBLIC_NOT_RELEASED
+  from contentstore.utils import NOT_ALL_PUBLIC_NOT_RELEASED
+
   from contentstore.utils import compute_unit_state
 %>
 
@@ -168,10 +175,12 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                 # user, and 2) the fully specified locator strings for each of the units when the user
                 # requests a change in status.
                 #
-                course_dictionary = {}               # initialize an empty course dictionary
+                unit_to_publish_date_dict = {}
+                course_dictionary = {}              # initialize an empty course dictionary
                 private_list = []
                 public_list = []
                 draft_list = []
+                now = datetime.datetime.today()     # grab a snapshot of the current date and time for comparisons
             %>
             % for section in sections:
                 <%
@@ -190,6 +199,8 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                         <%
                             unit_state = compute_unit_state(unit)
                             unit_locator = loc_mapper().translate_location(context_course.location.course_id, unit.location, False, True)
+
+                            unit_to_publish_date_dict.update({unit_locator:unit.published_date})    # record the published date, if any
 
                             if unit_state == 'private': private_list.append(unit_locator)
                             if unit_state == 'public': public_list.append(unit_locator)
@@ -221,7 +232,7 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
 
                     <%
                       #___________________________________________________________________________________________
-                      # Calculate the overall status of a section by walking through all units of all subsections
+                      # Calculate the overall status of a SECTION by walking through all units of all subsections
                       # contained in this section.Record the public, private, and draft counts in the html
                       # for client-side reference. Also, determine from those values which icon to show.
                       #
@@ -243,6 +254,7 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                       unit_locator_list = ""
                       icon_string = NO_UNITS_ICON_STRING
 
+                      # if all units are private or draft
                       if (public_count == 0) and ((private_count > 0) or (draft_count > 0)):
                           icon_string = ALL_PRIVATE_ICON_STRING
                           for subsection in section.get_children():
@@ -251,14 +263,7 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                               for unit_locator in private_list:
                                   unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
 
-                      if (public_count > 0) and ((private_count == 0) and (draft_count == 0)):
-                          icon_string = ALL_PUBLIC_ICON_STRING
-                          for subsection in section.get_children():
-                              subsection_dictionary = section_dictionary[subsection.location]
-                              public_list = subsection_dictionary['public']
-                              for unit_locator in public_list:
-                                  unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
-
+                      # if some public, some private/draft status
                       if (public_count > 0) and ((private_count > 0) or (draft_count > 0)):
                           icon_string = MIXED_STATE_ICON_STRING
                           for subsection in section.get_children():
@@ -266,6 +271,19 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                               private_list = subsection_dictionary['private']
                               for unit_locator in private_list:
                                   unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
+
+                      # if all units are public
+                      if (public_count > 0) and ((private_count == 0) and (draft_count == 0)):
+                          icon_string = ALL_PUBLIC_ICON_STRING
+                          for subsection in section.get_children():
+                              subsection_dictionary = section_dictionary[subsection.location]
+                              public_list = subsection_dictionary['public']
+                              for unit_locator in public_list:
+                                  unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
+                                  unit_publish_date = unit_to_publish_date_dict[unit_locator]
+                                  if unit_publish_date < datetime.datetime.today():
+                                      visible_to_students_string = SOON_VISIBLE_TO_STUDENTS
+
                     %>
                     <a href="#" data-tooltip="${_('Bulk change unit status')}">
                        <i class="${icon_string} unit-status-change-section">
@@ -324,9 +342,6 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                         <span class="section-status-visible-to-all" >.</span>
                         <div class="details">
 
-
-
-
                         <a href="#" data-tooltip="${_('Expand/collapse this subsection')}" class="action expand-collapse expand"><i class="icon-caret-down ui-toggle-expansion"></i><span class="sr">${_('Expand/collapse this subsection')}</span></a>
                           <a href="${subsection_locator.url_reverse('subsection')}"   style="width:400">
                             <span class="subsection-name">
@@ -338,11 +353,28 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
 
                           <%
                             #___________________________________________________________________________
-                            # Calculate the overall status of a subsection by walking through all units
+                            # Calculate the overall status of a SUBSECTION by walking through all units
                             # contained here. Record the public, private, and draft counts in the html
                             # for client-side reference. Also, determine from those values which icon to
                             # show.
                             #
+                            # Color bars to the left of the subsection name are set to indicate the
+                            # public/released status of the entire unit:
+                            #
+                            #	Green Bar	PUBLIC_RELEASED
+				            #               all units are public and released (where released means t
+                            #               he unit has a ‘published_date’ value less than right now, today)
+                            #
+                            #   Yellow Bar	PUBLIC_NOT_RELEASED
+                            #               all units are public but at least one unit has a ‘published_date’
+                            #               value greater than or equal to today
+                            #
+                            #   Gray Bar	NOT_ALL_PUBLIC_RELEASED
+                            #               not all units are public but all are released
+                            #
+                            #   Red Bar		NOT_ALL_PUBLIC_NOT_RELEASED
+                            #               not all units are public AND not all of them are released
+
                             subsection_dictionary = section_dictionary[subsection.location]
                             public_list = subsection_dictionary['public']
                             private_list = subsection_dictionary['private']
@@ -353,24 +385,33 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                             draft_count = len(draft_list)
 
                             unit_locator_list = ""
+                            public_released_string = PUBLIC_RELEASED # assume all are public and released
                             icon_string = NO_UNITS_ICON_STRING
-                            if (public_count == 0) and ((private_count > 0) or (draft_count > 0)):
-                                icon_string = ALL_PRIVATE_ICON_STRING
-                                for unit_locator in private_list:
-                                    unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
 
                             if (public_count > 0) and ((private_count == 0) and (draft_count == 0)):
                                 icon_string = ALL_PUBLIC_ICON_STRING
                                 for unit_locator in public_list:
                                     unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
+                                    if unit.published_date > now:
+                                        public_released_string = PUBLIC_NOT_RELEASED # at least one unit is not released
+                            else:
+                                public_released_string = NOT_ALL_PUBLIC_RELEASED # assume not all are public but released
+                                if (public_count == 0) and ((private_count > 0) or (draft_count > 0)):
+                                    icon_string = ALL_PRIVATE_ICON_STRING
+                                    for unit_locator in private_list:
+                                        unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
+                                        if unit.published_date > now:
+                                            public_released_string = NOT_ALL_PUBLIC_NOT_RELEASED # at least one unit is not released
 
-                            if (public_count > 0) and ((private_count > 0) or (draft_count > 0)):
-                                icon_string = MIXED_STATE_ICON_STRING
-                                for unit_locator in private_list:
-                                    unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
-                          %>
+                                if (public_count > 0) and ((private_count > 0) or (draft_count > 0)):
+                                    icon_string = MIXED_STATE_ICON_STRING
+                                    for unit_locator in private_list:
+                                        unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
+                                        if unit.published_date > now:
+                                           public_released_string = NOT_ALL_PUBLIC_NOT_RELEASED # at least one unit is not released
+                         %>
                           <a href="#">
-                            <i class="${icon_string} unit-status-change-subsection">
+                            <i class="${icon_string} unit-status-change-subsection">${public_released_string}
                                 <!-- div elements are invisible containers to hold unit counts and a list of locations -->
                                 <div  hidden class='public_count'>      ${public_count}         </div>
                                 <div  hidden class='private_count'>     ${private_count}        </div>

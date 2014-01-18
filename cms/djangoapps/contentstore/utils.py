@@ -21,9 +21,14 @@ from xmodule.modulestore.draft import DIRECT_ONLY_CATEGORIES
 
 # These constant strings are used by the unit status mechanism (see overview.html and units.html)
 MIXED_STATE_ICON_STRING = "icon-adjust       unit-status-mixed-state"
-ALL_PUBLIC_ICON_STRING  = "icon-circle       unit-status-all-public"
+ALL_PUBLIC_ICON_STRING = "icon-circle       unit-status-all-public"
 ALL_PRIVATE_ICON_STRING = "icon-circle-blank unit-status-all-private"
 NO_UNITS_ICON_STRING = ""
+PUBLIC_RELEASED = "public-released"
+NOT_ALL_PUBLIC_RELEASED = "not-all-public-released"
+PUBLIC_NOT_RELEASED = "public-not-released"
+NOT_ALL_PUBLIC_NOT_RELEASED = "not-all-public-not-released"
+
 
 
 log = logging.getLogger(__name__)
