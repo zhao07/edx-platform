@@ -1,7 +1,8 @@
 <%inherit file="base.html" />
 <%!
   import logging
-  import datetime
+
+  from django.utils import timezone
 
   from xmodule.util import date_utils
   from django.utils.translation import ugettext as _
@@ -180,7 +181,7 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                 private_list = []
                 public_list = []
                 draft_list = []
-                now = datetime.datetime.today()     # grab a snapshot of the current date and time for comparisons
+                now = timezone.now()                # grab a snapshot of an offset-aware date and time for comparisons
             %>
             % for section in sections:
                 <%
@@ -280,9 +281,6 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                               public_list = subsection_dictionary['public']
                               for unit_locator in public_list:
                                   unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
-                                  unit_publish_date = unit_to_publish_date_dict[unit_locator]
-                                  if unit_publish_date < datetime.datetime.today():
-                                      visible_to_students_string = SOON_VISIBLE_TO_STUDENTS
 
                     %>
                     <a href="#" data-tooltip="${_('Bulk change unit status')}">
@@ -362,18 +360,18 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                             # public/released status of the entire unit:
                             #
                             #	Green Bar	PUBLIC_RELEASED
-				            #               all units are public and released (where released means t
-                            #               he unit has a ‘published_date’ value less than right now, today)
+				            #				all units are public and this subsection is released (where ‘released' means
+                            #				the subsection has a ‘published_date’ value less than right now, today)
                             #
-                            #   Yellow Bar	PUBLIC_NOT_RELEASED
-                            #               all units are public but at least one unit has a ‘published_date’
-                            #               value greater than or equal to today
+                            #	Yellow Bar	PUBLIC_NOT_RELEASED
+                            #				all units are public but this subsection is not released (‘published_date’
+                            #				value greater than or equal to now)
                             #
-                            #   Gray Bar	NOT_ALL_PUBLIC_RELEASED
-                            #               not all units are public but all are released
+                            #	Gray Bar	NOT_ALL_PUBLIC_RELEASED
+                            #				not all units are public but the subsection is released
                             #
-                            #   Red Bar		NOT_ALL_PUBLIC_NOT_RELEASED
-                            #               not all units are public AND not all of them are released
+                            #	Red Bar		NOT_ALL_PUBLIC_NOT_RELEASED
+                            #				not all units are public AND the subsection has not been released
 
                             subsection_dictionary = section_dictionary[subsection.location]
                             public_list = subsection_dictionary['public']
@@ -385,30 +383,39 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                             draft_count = len(draft_list)
 
                             unit_locator_list = ""
-                            public_released_string = PUBLIC_RELEASED # assume all are public and released
+                            public_released_string = ""
                             icon_string = NO_UNITS_ICON_STRING
+
+                            if subsection.published_date == None:    # we can't compare a date against 'None'
+                                subsection.published_date = now
+
+                            #from pdb import set_trace; set_trace()
 
                             if (public_count > 0) and ((private_count == 0) and (draft_count == 0)):
                                 icon_string = ALL_PUBLIC_ICON_STRING
+
+                                if subsection.start < now:
+                                    public_released_string = PUBLIC_RELEASED
+                                else:
+                                    public_released_string = PUBLIC_NOT_RELEASED
+
                                 for unit_locator in public_list:
                                     unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
-                                    if unit.published_date > now:
-                                        public_released_string = PUBLIC_NOT_RELEASED # at least one unit is not released
                             else:
-                                public_released_string = NOT_ALL_PUBLIC_RELEASED # assume not all are public but released
+                                if subsection.start < now:
+                                    public_released_string = NOT_ALL_PUBLIC_RELEASED
+                                else:
+                                    public_released_string = NOT_ALL_PUBLIC_NOT_RELEASED
+
                                 if (public_count == 0) and ((private_count > 0) or (draft_count > 0)):
                                     icon_string = ALL_PRIVATE_ICON_STRING
                                     for unit_locator in private_list:
                                         unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
-                                        if unit.published_date > now:
-                                            public_released_string = NOT_ALL_PUBLIC_NOT_RELEASED # at least one unit is not released
 
                                 if (public_count > 0) and ((private_count > 0) or (draft_count > 0)):
                                     icon_string = MIXED_STATE_ICON_STRING
                                     for unit_locator in private_list:
                                         unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
-                                        if unit.published_date > now:
-                                           public_released_string = NOT_ALL_PUBLIC_NOT_RELEASED # at least one unit is not released
                          %>
                           <a href="#">
                             <i class="${icon_string} unit-status-change-subsection">${public_released_string}
