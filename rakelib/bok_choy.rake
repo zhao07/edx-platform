@@ -30,7 +30,18 @@ BOK_CHOY_SERVERS = {
 }
 
 BOK_CHOY_STUBS = {
-    :xqueue => { :port => 8040, :log => File.join(BOK_CHOY_LOG_DIR, "bok_choy_xqueue.log") }
+
+    :xqueue => {
+        :port => 8040,
+        :log => File.join(BOK_CHOY_LOG_DIR, "bok_choy_xqueue.log"),
+        :config => 'register_submission_url=http://0.0.0.0:8041/test/register_submission'
+    },
+
+    :ora => {
+        :port => 8041,
+        :log => File.join(BOK_CHOY_LOG_DIR, "bok_choy_ora.log"),
+        :config => ''
+    }
 }
 
 # For the time being, stubs are used by both the bok-choy and lettuce acceptance tests
@@ -61,13 +72,12 @@ def start_servers()
     BOK_CHOY_STUBS.each do | service, info |
         Dir.chdir(BOK_CHOY_STUB_DIR) do
             singleton_process(
-                "python -m stubs.start #{service} #{info[:port]}",
+                "python -m stubs.start #{service} #{info[:port]} #{info[:config]}",
                 logfile=info[:log]
             )
         end
     end
 end
-
 
 # Wait until we get a successful response from the servers or time out
 def wait_for_test_servers()
@@ -171,12 +181,6 @@ namespace :'test:bok_choy' do
     desc "Process assets and set up database for bok-choy tests"
     task :setup => [:check_services, :install_prereqs, BOK_CHOY_LOG_DIR] do
 
-        # Clear any test data already in Mongo
-        clear_mongo()
-
-        # Invalidate the cache
-        BOK_CHOY_CACHE.flush()
-
         # HACK: Since the CMS depends on the existence of some database tables
         # that are now in common but used to be in LMS (Role/Permissions for Forums)
         # we need to create/migrate the database tables defined in the LMS.
@@ -200,20 +204,25 @@ namespace :'test:bok_choy' do
         :check_services, BOK_CHOY_LOG_DIR, BOK_CHOY_REPORT_DIR, :clean_reports_dir
     ] do |t, args|
 
+        # Clear any test data already in Mongo or MySQL and invalidate the cache
+        clear_mongo()
+        BOK_CHOY_CACHE.flush()
+        sh(django_admin('lms', 'bok_choy', 'flush', '--noinput'))
+
         # Ensure the test servers are available
-        puts "Starting test servers...".red
+        puts "Starting test servers...".green
         start_servers()
-        puts "Waiting for servers to start...".red
+        puts "Waiting for servers to start...".green
         wait_for_test_servers()
 
         begin
-            puts "Running test suite...".red
+            puts "Running test suite...".green
             run_bok_choy(args.test_spec)
         rescue
             puts "Tests failed!".red
             exit 1
         ensure
-            puts "Cleaning up databases...".red
+            puts "Cleaning up databases...".green
             cleanup()
         end
     end
