@@ -215,22 +215,42 @@
 }
 
 // ====================
-// used by the unit status: adjust the status icon appearance
+// used by the 'unit status' feature: adjust the status icon appearance
 .unit-status-section-icon-adjustment {
   display: inline-block;
 }
 
-// used by the unit status: show the 'private' icon in a specific color
+// used by the 'unit status' feature: show the 'private' icon in a specific color
 .unit-status-all-private {
   color: #ff0018;
 }
 
-// used by the unit status: show the 'public' icon in a specific color
+// used by the 'unit status' feature: show the 'public' icon in a specific color
 .unit-status-all-public {
   color: #5dff2f;
 }
 
-// used by the unit status: show the 'mixed' icon in a specific color
+// used by the 'unit status' feature: show the 'mixed' icon in a specific color
 .unit-status-mixed-state {
   color: #6d6d6d;
+}
+
+// used by the 'unit status' feature: subsection has all public units and is released
+.unit-subsection-status-public-released {
+    color: #5dff2f
+}
+
+// used by the 'unit status' feature: subsection has all public units and is not released
+.unit-subsection-status-public-not-released {
+    color: #ff940f
+}
+
+// used by the 'unit status' feature: subsection has some non-public units and is released
+.unit-subsection-status-not-all-public-released {
+    color: #6d6d6d
+}
+
+// used by the 'unit status' feature: subsection has some non-public units and is not released
+.unit-subsection-status-not-all-public-not-released {
+    color: #ff0018
 }

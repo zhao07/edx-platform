@@ -337,10 +337,13 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                       <%include file="widgets/_ui-dnd-indicator-before.html" />
 
                       <div class="section-item">
-                        <span class="section-status-visible-to-all" >.</span>
-                        <div class="details">
 
-                        <a href="#" data-tooltip="${_('Expand/collapse this subsection')}" class="action expand-collapse expand"><i class="icon-caret-down ui-toggle-expansion"></i><span class="sr">${_('Expand/collapse this subsection')}</span></a>
+                        <div class="details">
+                            <i class="unit-subsection-status-public-released" >XXX</i>
+                          <a href="#" data-tooltip="${_('Expand/collapse this subsection')}" class="action expand-collapse expand">
+                              <i class="icon-caret-down ui-toggle-expansion"></i>
+                              <span class="sr">${_('Expand/collapse this subsection')}</span>
+                          </a>
                           <a href="${subsection_locator.url_reverse('subsection')}"   style="width:400">
                             <span class="subsection-name">
                                 <span class="subsection-name-value">
@@ -388,8 +391,6 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
 
                             if subsection.published_date == None:    # we can't compare a date against 'None'
                                 subsection.published_date = now
-
-                            #from pdb import set_trace; set_trace()
 
                             if (public_count > 0) and ((private_count == 0) and (draft_count == 0)):
                                 icon_string = ALL_PUBLIC_ICON_STRING
