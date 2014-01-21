@@ -222,16 +222,19 @@
 
 // used by the 'unit status' feature: show the 'private' icon in a specific color
 .unit-status-all-private {
+  cursor: pointer;
   color: #ff0018;
 }
 
 // used by the 'unit status' feature: show the 'public' icon in a specific color
 .unit-status-all-public {
+  cursor: pointer;
   color: #5dff2f;
 }
 
 // used by the 'unit status' feature: show the 'mixed' icon in a specific color
 .unit-status-mixed-state {
+  cursor: pointer;
   color: #6d6d6d;
 }
 
