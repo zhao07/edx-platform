@@ -235,22 +235,31 @@
   color: #6d6d6d;
 }
 
-// used by the 'unit status' feature: subsection has all public units and is released
-.unit-subsection-status-public-released {
-    color: #5dff2f
-}
+.unit-subsection-status {
+  stroke-width:2;
+  stroke:rgb(0,0,0);
+  height:27;
+  width:6;
 
-// used by the 'unit status' feature: subsection has all public units and is not released
-.unit-subsection-status-public-not-released {
-    color: #ff940f
-}
 
-// used by the 'unit status' feature: subsection has some non-public units and is released
-.unit-subsection-status-not-all-public-released {
-    color: #6d6d6d
-}
 
-// used by the 'unit status' feature: subsection has some non-public units and is not released
-.unit-subsection-status-not-all-public-not-released {
-    color: #ff0018
+    // subsection has all public units and is released
+    .unit-subsection-status-public-released {
+        fill: rgb(93, 255, 47);
+    }
+
+    // subsection has all public units and is not released
+    .unit-subsection-status-public-not-released {
+        fill: rgb(255, 148, 15);
+    }
+
+    // subsection has some non-public units and is released
+    .unit-subsection-status-not-all-public-released {
+        fill: rgb(0, 0, 0);
+    }
+
+    // subsection has some non-public units and is not released
+    .unit-subsection-status-not-all-public-not-released {
+        fill: rgb(255, 12, 27);
+  }
 }
