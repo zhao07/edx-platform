@@ -18,6 +18,11 @@
   from contentstore.utils import PUBLIC_NOT_RELEASED
   from contentstore.utils import NOT_ALL_PUBLIC_NOT_RELEASED
 
+  from contentstore.views.course import outline_page_initialize
+  from contentstore.views.course import outline_page_analyze_section
+  from contentstore.views.course import outline_page_get_section_icon_string
+  from contentstore.views.course import outline_page_get_subsection_icon_string
+
   from contentstore.utils import compute_unit_state
 %>
 
@@ -170,6 +175,8 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
             <article class="courseware-overview" data-locator="${course_locator}">
 
             <%
+                outline_page_data = outline_page_initialize()   # get a newly initialized (empty) data structure instance
+
                 #___________________________________________________________________________________________
                 # Construct a set of dictionies/lists to capture the public/private/draft status of the
                 # units in the entire course. These will be used to determine 1) the icon to show the
@@ -184,6 +191,15 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                 now = timezone.now()                # grab a snapshot of an offset-aware date and time for comparisons
             %>
             % for section in sections:
+
+                <%
+                    outline_page_analyze_section(section, outline_page_data, context_course)
+                %>
+
+
+
+
+
                 <%
                     sectionDictionary = {}              # initialize an empty section dictionary
                     course_dictionary.update({section.location:sectionDictionary})      # add this new section dictionary to the course dictionary
@@ -237,6 +253,11 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                     <ul class="actions-list">
 
                     <%
+                      icon_string, unit_locator_list = outline_page_get_section_icon_string(section, outline_page_data)
+
+
+
+
                       #___________________________________________________________________________________________
                       # Calculate the overall status of a SECTION by walking through all units of all subsections
                       # contained in this section. Record the public, private, and draft counts in the html
@@ -338,6 +359,8 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                         subsection_locator = loc_mapper().translate_location(
                           context_course.location.course_id, subsection.location, False, True
                         )
+
+                        icon_string, unit_locator_list = outline_page_get_section_icon_string(section, outline_page_data)
                       %>
 
 

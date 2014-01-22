@@ -370,6 +370,7 @@ function _unitStatusChange($el, type) {
     var private_count = 0;
     var draft_count = 0;
     var unit_locator_list = '';
+    var action = "make_public";
 
     for(var i = 0; i < $el.context.children.length; i++) {
         childElement = $el.context.children[i];
@@ -409,7 +410,6 @@ function _unitStatusChange($el, type) {
         draftWarning.show();
     }
     else {                                  // else there are no units with 'draft' status
-        var changeToPublic = true;
         var buttonText = "PUBLIC";
         var promptText =
             'This section has a mix of ' +
@@ -427,7 +427,7 @@ function _unitStatusChange($el, type) {
                 promptText = 'Change ' + public_count.toString() + ' units to private?';
             }
             buttonText = "PRIVATE"
-            changeToPublic = false;
+            action = "make_private";
         }
 
         if((public_count == 0) && (private_count > 0))  {
@@ -438,7 +438,7 @@ function _unitStatusChange($el, type) {
                 promptText = 'Change ' + private_count.toString() + ' units to public?';
             }
             buttonText = "PUBLIC"
-            changeToPublic = true;
+            action = "make_public";
         }
 
         var confirm = new PromptView.Warning({
@@ -449,7 +449,16 @@ function _unitStatusChange($el, type) {
                     text: gettext('Yes, change to ' + buttonText),
                     click: function(view) {
                         view.hide();
-                        changeUnitVisibilityStatus(changeToPublic, unit_locator_list);
+                        var updating = new NotificationView.Mini({
+                            title: gettext('Updating&hellip;')
+                        });
+                        updating.show();
+                        changeUnitVisibilityStatus(action, unit_locator_list);
+                        location.reload(true);   // refresh the page
+
+
+
+
                     }
                 },
                 secondary: {
@@ -464,19 +473,13 @@ function _unitStatusChange($el, type) {
     }
 }
 
-function changeUnitVisibilityStatus( toPublic, unit_locator_list ) {
-    var action = 'make_public';         // assume the change will be to PUBLIC
-
-    if(!toPublic) {                 // if we guessed wrong
-        action = 'make_private';
-    }
-
+function changeUnitVisibilityStatus( action, unit_locator_list ) {
     unit_locator_array = unit_locator_list.split(";");
     for(i=0; i<unit_locator_array.length; i++) {
         var clean_locator = unit_locator_array[i].trim();
         if(clean_locator.length > 0) {
             var xblockURL = "/xblock/" + clean_locator;
-            $.postJSON(xblockURL, {publish: action} );
+            $.postJSON(xblockURL, {publish: action} );   // issue a change message to each unit
         }
     }
 }

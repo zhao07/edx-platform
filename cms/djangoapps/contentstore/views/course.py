@@ -7,6 +7,17 @@ import string  # pylint: disable=W0402
 import re
 import bson
 
+from django.utils import timezone
+
+from contentstore.utils import ALL_PUBLIC_ICON_STRING
+from contentstore.utils import ALL_PRIVATE_ICON_STRING
+from contentstore.utils import NO_UNITS_ICON_STRING
+from contentstore.utils import MIXED_STATE_ICON_STRING
+from contentstore.utils import PUBLIC_RELEASED
+from contentstore.utils import NOT_ALL_PUBLIC_RELEASED
+from contentstore.utils import PUBLIC_NOT_RELEASED
+from contentstore.utils import NOT_ALL_PUBLIC_NOT_RELEASED
+
 from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
 from django_future.csrf import ensure_csrf_cookie
@@ -28,9 +39,14 @@ from xmodule.modulestore.exceptions import (
 from xmodule.modulestore import Location
 
 from contentstore.course_info_model import get_course_updates, update_course_updates, delete_course_update
+
 from contentstore.utils import (
-    get_lms_link_for_item, add_extra_panel_tab, remove_extra_panel_tab,
-    get_modulestore)
+    get_lms_link_for_item,
+    add_extra_panel_tab,
+    remove_extra_panel_tab,
+    get_modulestore,
+    compute_unit_state)
+
 from models.settings.course_details import CourseDetails, CourseSettingsEncoder
 
 from models.settings.course_grading import CourseGradingModel
@@ -811,3 +827,192 @@ def _get_course_creator_status(user):
         course_creator_status = 'granted'
 
     return course_creator_status
+
+class OutlinePageData():
+    unit_to_publish_date_dict = {}
+    course_dictionary = {}              # initialize an empty course dictionary
+    private_list = []
+    public_list = []
+    draft_list = []
+    now = timezone.now()                # grab a snapshot of an offset-aware date and time for comparisons
+
+def outline_page_initialize():
+    """
+    Create a newly initialized instance of our data structure object
+    """
+    return OutlinePageData
+
+def outline_page_analyze_section(section, outline_page_data, context_course):
+    """
+    Given a course section, extract the relevant public/private/draft information about all units in this
+    section. Update the working instance of OutlinePageData accordingly.
+
+        Parameter:  section             an instance of a course's 'Section' object
+        Parameter:  outline_page_data   the working instance of 'OutlinePageData' to be updated with this section's data
+        Parameter:  context_course      ??
+
+        Return:     None
+    """
+    #from pdb import set_trace; set_trace()
+
+    sectionDictionary = {}              # initialize an empty section dictionary
+    outline_page_data.course_dictionary.update({section.location:sectionDictionary})      # add this new section dictionary to the course dictionary
+
+    for subsection in section.get_children():
+        private_list = []
+        public_list = []
+        draft_list = []
+        subsectionDictionary = {'private':private_list, 'public':public_list, 'draft':draft_list}
+        sectionDictionary.update({subsection.location:subsectionDictionary})    # add it to the section dictionary
+
+        for subsection in section.get_children():
+            private_list = []
+            public_list = []
+            draft_list = []
+            subsectionDictionary = {'private':private_list, 'public':public_list, 'draft':draft_list}
+            sectionDictionary.update({subsection.location:subsectionDictionary})    # add it to the section dictionary
+
+            for unit in subsection.get_children():
+                unit_state = compute_unit_state(unit)
+                unit_locator = loc_mapper().translate_location(context_course.location.course_id, unit.location, False, True)
+
+                outline_page_data.unit_to_publish_date_dict.update({unit_locator:unit.published_date})  # publish date
+
+                if unit_state == 'private': private_list.append(unit_locator)
+                if unit_state == 'public': public_list.append(unit_locator)
+                if unit_state == 'draft': draft_list.append(unit_locator)
+
+def outline_page_get_section_icon_string(section, outline_page_data):
+    """
+    Given a course section, use the working instance of OutlinePageData to determine the proper icon display
+    style string.
+
+        Parameter:  section             an instance of a course's 'Section' object
+        Parameter:  outline_page_data   the working instance of 'OutlinePageData' to be updated with this section's data
+
+        Return:     icon_string         CSS style name for the icon to represent this section's status
+        Return:     unit_locator_list   a semicolon delimited list of all locator strings for the units in this section
+    """
+    public_count = 0
+    private_count = 0
+    draft_count = 0
+    section_dictionary = outline_page_data.course_dictionary[section.location]
+    for subsection in section.get_children():
+        subsection_dictionary = section_dictionary[subsection.location]
+
+        public_list = subsection_dictionary['public']
+        private_list = subsection_dictionary['private']
+        draft_list = subsection_dictionary['draft']
+
+        public_count += len(public_list)
+        private_count += len(private_list)
+        draft_count += len(draft_list)
+
+    unit_locator_list = ""
+    icon_string = NO_UNITS_ICON_STRING
+
+    # if all units are private or draft
+    if (public_count == 0) and ((private_count > 0) or (draft_count > 0)):
+        icon_string = ALL_PRIVATE_ICON_STRING
+        for subsection in section.get_children():
+            subsection_dictionary = section_dictionary[subsection.location]
+            private_list = subsection_dictionary['private']
+            for unit_locator in private_list:
+                unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
+
+    # if some public, some private/draft status
+    if (public_count > 0) and ((private_count > 0) or (draft_count > 0)):
+        icon_string = MIXED_STATE_ICON_STRING
+        for subsection in section.get_children():
+            subsection_dictionary = section_dictionary[subsection.location]
+            private_list = subsection_dictionary['private']
+            for unit_locator in private_list:
+                unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
+
+    # if all units are public
+    if (public_count > 0) and ((private_count == 0) and (draft_count == 0)):
+        icon_string = ALL_PUBLIC_ICON_STRING
+        for subsection in section.get_children():
+            subsection_dictionary = section_dictionary[subsection.location]
+            public_list = subsection_dictionary['public']
+            for unit_locator in public_list:
+                unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
+
+    return icon_string, unit_locator_list
+
+def outline_page_get_subsection_icon_string(subsection, outline_page_data):
+    """
+    Given a course subsection, use the working instance of OutlinePageData to determine the proper icon display
+    style string.
+
+        Parameter:  subsection          an instance of a course's 'Subsection' object
+        Parameter:  outline_page_data   the working instance of 'OutlinePageData' to be updated with this section's data
+
+        Return:     icon_string         CSS style name for the icon to represent this section's status
+        Return:     unit_locator_list   a semicolon delimited list of all locator strings for the units in this section
+    """
+    subsection_dictionary = outline_page_data.section_dictionary[subsection.location]
+    public_list = subsection_dictionary['public']
+    private_list = subsection_dictionary['private']
+    draft_list = subsection_dictionary['draft']
+
+    public_count = len(public_list)
+    private_count = len(private_list)
+    draft_count = len(draft_list)
+
+    unit_locator_list = ""
+    public_released_string = ""
+    icon_string = NO_UNITS_ICON_STRING
+
+    if subsection.published_date == None:    # we can't compare a date against 'None'
+        subsection.published_date = outline_page_data.now
+
+    if (public_count > 0) and ((private_count == 0) and (draft_count == 0)):
+        icon_string = ALL_PUBLIC_ICON_STRING
+
+        if subsection.start < outline_page_data.now:
+            public_released_string = PUBLIC_RELEASED
+        else:
+            public_released_string = PUBLIC_NOT_RELEASED
+
+        for unit_locator in public_list:
+            unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
+    else:
+        if subsection.start < outline_page_data.now:
+            public_released_string = NOT_ALL_PUBLIC_RELEASED
+        else:
+            public_released_string = NOT_ALL_PUBLIC_NOT_RELEASED
+
+        if (public_count == 0) and ((private_count > 0) or (draft_count > 0)):
+            icon_string = ALL_PRIVATE_ICON_STRING
+            for unit_locator in private_list:
+                unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
+
+        if (public_count > 0) and ((private_count > 0) or (draft_count > 0)):
+            icon_string = MIXED_STATE_ICON_STRING
+            for unit_locator in private_list:
+                unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
+
+    return icon_string, unit_locator_list
+
+def outline_page_get_unit_icon_string(unit):
+    """
+    Determine the proper icon display style string for the given unit.
+
+        Parameter:  unit                an instance of a course's 'Subsection' object
+
+        Return:     icon_string         CSS style name for the icon to represent this section's status
+     """
+    icon_string = ""
+    state = compute_unit_state(unit)
+
+    if state == "public":
+        icon_string = ALL_PUBLIC_ICON_STRING
+
+    if state == "private":
+        icon_string = ALL_PRIVATE_ICON_STRING
+
+    if state == "draft":
+        icon_string = ALL_PRIVATE_ICON_STRING
+
+    return icon_string

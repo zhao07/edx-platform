@@ -4,6 +4,7 @@
 <%! from contentstore.utils import ALL_PUBLIC_ICON_STRING  %>
 <%! from contentstore.utils import ALL_PRIVATE_ICON_STRING %>
 
+<%! from contentstore.views.course import outline_page_get_unit_icon_string %>
 
 
 <%! from contentstore.utils import compute_unit_state %>
@@ -55,6 +56,8 @@ This def will enumerate through a passed in subsection and list all of the units
 
 
             <%
+                icon_string = outline_page_get_unit_icon_string(unit)
+
                 #___________________________________________________________________________
                 # Determine the status of a single unit. Record the public, private, and
                 # draft counts in the html for client-side reference. Notice that by
@@ -66,8 +69,12 @@ This def will enumerate through a passed in subsection and list all of the units
                 public_count = 0
                 private_count = 0
                 draft_count = 0
-                icon_string = ALL_PUBLIC_ICON_STRING
+                icon_string = ""
                 state = compute_unit_state(unit)
+
+                if state == "public":
+                    public_count = 1
+                    icon_string = ALL_PUBLIC_ICON_STRING
 
                 if state == "private":
                     private_count = 1
