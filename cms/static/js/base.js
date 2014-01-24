@@ -452,13 +452,9 @@ function _unitStatusChange($el, type) {
                         var updating = new NotificationView.Mini({
                             title: gettext('Updating&hellip;')
                         });
-                        updating.show();
+//                        updating.show();
                         changeUnitVisibilityStatus(action, unit_locator_list);
-                        location.reload(true);   // refresh the page
-
-
-
-
+//                        location.reload(true);   // refresh the page
                     }
                 },
                 secondary: {

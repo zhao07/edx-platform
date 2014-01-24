@@ -174,11 +174,11 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
             %>
             <article class="courseware-overview" data-locator="${course_locator}">
               <%
-                 outline_page_data = outline_page_initialize()   # get a newly initialized (empty) data structure instance
+                 outline_page_initialize()   # create a newly initialized (empty) data structure instance
               %>
               % for section in sections:     # run through all the sections, analyzing and building data structure
                  <%
-                    outline_page_analyze_section(section, outline_page_data, context_course)
+                    outline_page_analyze_section(section, context_course)
                  %>
               % endfor
 
@@ -203,7 +203,7 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                     <ul class="actions-list">
 
                     <%
-                      statusDictionary = outline_page_get_section_icon_string(section, outline_page_data)
+                      statusDictionary = outline_page_get_section_icon_string(section)
                     %>
 
                       <li class="actions-item pubdate">
@@ -252,7 +252,7 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                         subsection_locator = loc_mapper().translate_location(
                           context_course.location.course_id, subsection.location, False, True
                         )
-                        statusDictionary = outline_page_get_section_icon_string(section, outline_page_data)
+                        statusDictionary = outline_page_get_section_icon_string(section)
                       %>
 
                     <li class="courseware-subsection collapsed id-holder is-draggable is-collapsible "

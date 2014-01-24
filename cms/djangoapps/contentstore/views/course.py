@@ -831,30 +831,32 @@ def _get_course_creator_status(user):
 class OutlinePageData():
     unit_to_publish_date_dict = {}
     course_dictionary = {}              # initialize an empty course dictionary
+    unit_to_unit_locator = {}           # dictionary lookup for all units in the course:  key=unit, value=locator
     private_list = []
     public_list = []
     draft_list = []
     now = timezone.now()                # grab a snapshot of an offset-aware date and time for comparisons
 
+__OutlinePageData = OutlinePageData
+
 def outline_page_initialize():
     """
     Create a newly initialized instance of our data structure object
     """
-    return OutlinePageData
+    course.location__OutlinePageData = OutlinePageData
 
-def outline_page_analyze_section(section, outline_page_data, context_course):
+def outline_page_analyze_section(section, context_course):
     """
     Given a course section, extract the relevant public/private/draft information about all units in this
-    section. Update the working instance of OutlinePageData accordingly.
+    section. Update the local, class instance of __OutlinePageData accordingly.
 
         Parameter:  section             an instance of a course's 'Section' object
-        Parameter:  outline_page_data   the working instance of 'OutlinePageData' to be updated with this section's data
         Parameter:  context_course      ??
 
         Return:     None
     """
     section_dictionary = {}              # initialize an empty section dictionary
-    outline_page_data.course_dictionary.update({section.location:section_dictionary})      # add this new section dictionary to the course dictionary
+    __OutlinePageData.course_dictionary.update({section.location:section_dictionary})      # add this new section dictionary to the course dictionary
 
     for subsection in section.get_children():
         private_list = []
@@ -873,20 +875,22 @@ def outline_page_analyze_section(section, outline_page_data, context_course):
             for unit in subsection.get_children():
                 unit_state = compute_unit_state(unit)
                 unit_locator = loc_mapper().translate_location(context_course.location.course_id, unit.location, False, True)
-
-                outline_page_data.unit_to_publish_date_dict.update({unit_locator:unit.published_date})  # publish date
+                __OutlinePageData.unit_to_unit_locator.update({unit:unit_locator})  # every unit into this dictionary
+                __OutlinePageData.unit_to_publish_date_dict.update({unit_locator:unit.published_date})  # publish date
 
                 if unit_state == 'private': private_list.append(unit_locator)
                 if unit_state == 'public': public_list.append(unit_locator)
                 if unit_state == 'draft': draft_list.append(unit_locator)
 
-def outline_page_get_section_icon_string(section, outline_page_data):
+def outline_page_get_section_icon_string(section):
     """
     Given a course section, use the working instance of OutlinePageData to determine the proper icon display
     style string.
 
+    Note that this function assumes the local, class instance __OutlinePageData has been initialized with the
+    data structures for the entire course before being called.
+
         Parameter:  section             an instance of a course's 'Section' object
-        Parameter:  outline_page_data   the working instance of 'OutlinePageData' to be updated with this section's data
 
         Return:     a dictionary containg the following entries:
                         icon_string         CSS style name for the icon to represent this section's status
@@ -898,7 +902,7 @@ def outline_page_get_section_icon_string(section, outline_page_data):
     public_count = 0
     private_count = 0
     draft_count = 0
-    section_dictionary = outline_page_data.course_dictionary[section.location]
+    section_dictionary = __OutlinePageData.course_dictionary[section.location]
     for subsection in section.get_children():
         subsection_dictionary = section_dictionary[subsection.location]
 
@@ -948,13 +952,12 @@ def outline_page_get_section_icon_string(section, outline_page_data):
         'draft_count':draft_count
     }
 
-def outline_page_get_subsection_icon_string(subsection, outline_page_data):
+def outline_page_get_subsection_icon_string(subsection):
     """
     Given a course subsection, use the working instance of OutlinePageData to determine the proper icon display
     style string.
 
         Parameter:  subsection          an instance of a course's 'Subsection' object
-        Parameter:  outline_page_data   the working instance of 'OutlinePageData' to be updated with this section's data
 
         Return:     a dictionary containg the following entries:
                         icon_string         CSS style name for the icon to represent this section's status
@@ -963,7 +966,7 @@ def outline_page_get_subsection_icon_string(subsection, outline_page_data):
                         private_count       number of private units found
                         draft_count         number of draft units found
     """
-    subsection_dictionary = outline_page_data.section_dictionary[subsection.location]
+    subsection_dictionary = __OutlinePageData.section_dictionary[subsection.location]
     public_list = subsection_dictionary['public']
     private_list = subsection_dictionary['private']
     draft_list = subsection_dictionary['draft']
@@ -972,16 +975,17 @@ def outline_page_get_subsection_icon_string(subsection, outline_page_data):
     private_count = len(private_list)
     draft_count = len(draft_list)
 
+    public_released_string = ""
     unit_locator_list = ""
     icon_string = NO_UNITS_ICON_STRING
 
     if subsection.published_date is None:    # we can't compare a date against 'None'
-        subsection.published_date = outline_page_data.now
+        subsection.published_date = __OutlinePageData.now
 
-    if (public_count > 0) and ((private_count == 0) and (draft_count == 0)):
+    if (public_count > 0) and (private_count == 0) and (draft_count == 0):
         icon_string = ALL_PUBLIC_ICON_STRING
 
-        if subsection.start < outline_page_data.now:
+        if subsection.start < __OutlinePageData.now:
             public_released_string = PUBLIC_RELEASED
         else:
             public_released_string = PUBLIC_NOT_RELEASED
@@ -989,17 +993,17 @@ def outline_page_get_subsection_icon_string(subsection, outline_page_data):
         for unit_locator in public_list:
             unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
     else:
-        if subsection.start < outline_page_data.now:
+        if subsection.start < __OutlinePageData.now:
             public_released_string = NOT_ALL_PUBLIC_RELEASED
         else:
             public_released_string = NOT_ALL_PUBLIC_NOT_RELEASED
 
-        if (public_count == 0) and ((private_count > 0) or (draft_count > 0)):
+        if (public_count == 0) and (private_count > 0) or (draft_count > 0):
             icon_string = ALL_PRIVATE_ICON_STRING
             for unit_locator in private_list:
                 unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
 
-        if (public_count > 0) and ((private_count > 0) or (draft_count > 0)):
+        if (public_count > 0) and (private_count > 0) or (draft_count > 0):
             icon_string = MIXED_STATE_ICON_STRING
             for unit_locator in private_list:
                 unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
@@ -1009,7 +1013,8 @@ def outline_page_get_subsection_icon_string(subsection, outline_page_data):
         'unit_locator_list':unit_locator_list,
         'public_count':public_count,
         'private_count':private_count,
-        'draft_count':draft_count
+        'draft_count':draft_count,
+        'public_released_string':public_released_string,
     }
 
 def outline_page_get_unit_icon_string(unit):
@@ -1029,6 +1034,8 @@ def outline_page_get_unit_icon_string(unit):
     draft_count = 0
     icon_string = ""
 
+    unit_locator_string = str(__OutlinePageData.unit_to_unit_locator[unit])
+
     state = compute_unit_state(unit)
 
     if state == "public":
@@ -1045,6 +1052,7 @@ def outline_page_get_unit_icon_string(unit):
 
     return {
         'icon_string':icon_string,
+        'unit_locator_list':unit_locator_string,
         'public_count':public_count,
         'private_count':private_count,
         'draft_count':draft_count

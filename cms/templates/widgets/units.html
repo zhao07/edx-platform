@@ -46,32 +46,23 @@ This def will enumerate through a passed in subsection and list all of the units
       <div class="item-actions">
         <ul class="actions-list">
           <li class="actions-item delete">
-            <a href="#" data-tooltip="${_("Delete this unit")}" class="delete-unit-button action" data-locator="${unit_locator}"><i class="icon-trash"></i><span class="sr">${_("Delete unit")}</span></a>
+            <a href="#" data-tooltip="${_('Delete this unit')}" class="delete-unit-button action" data-locator="${unit_locator}"><i class="icon-trash"></i><span class="sr">${_("Delete unit")}</span></a>
           </li>
           <li class="actions-item drag">
-            <span data-tooltip="${_("Drag to sort")}" class="drag-handle unit-drag-handle action"><span class="sr"> ${_("Drag to reorder unit")}</span></span>
+            <span data-tooltip="${_('Drag to sort')}" class="drag-handle unit-drag-handle action"><span class="sr"> ${_("Drag to reorder unit")}</span></span>
           </li>
             <%
                 statusDictionary = outline_page_get_unit_icon_string(unit)
-                icon_string = statusDictionary['icon_string']
-                public_count = statusDictionary['public_count']
-                private_count = statusDictionary['private_count']
-                draft_count  = statusDictionary['draft_count']
             %>
             <a href="#" data-tooltip="${_('Change unit status')}">
-              <i class="${icon_string} unit-status-change-unit">
+              <i class="${statusDictionary['icon_string']} unit-status-change-unit">
                 <!-- div elements are invisible containers to hold unit counts and a list of locations -->
-                <div   class='public_count'>      ${public_count}         </div>
-                <div   class='private_count'>     ${private_count}        </div>
-                <div   class='draft_count'>       ${draft_count}          </div>
+                <div  hidden class='public_count'>      ${statusDictionary['public_count']}         </div>
+                <div  hidden class='private_count'>     ${statusDictionary['private_count']}        </div>
+                <div  hidden class='draft_count'>       ${statusDictionary['draft_count']}          </div>
+                <div  hidden class='unit_locator_list'> ${statusDictionary['unit_locator_list']}    </div>
               </i>
             </a>
-
-
-
-
-
-
         </ul>
       </div>
       % endif
