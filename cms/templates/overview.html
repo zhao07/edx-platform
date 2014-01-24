@@ -173,54 +173,14 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
               )
             %>
             <article class="courseware-overview" data-locator="${course_locator}">
-
-            <%
-                outline_page_data = outline_page_initialize()   # get a newly initialized (empty) data structure instance
-                unit_to_publish_date_dict = {}
-                course_dictionary = {}              # initialize an empty course dictionary
-                private_list = []
-                public_list = []
-                draft_list = []
-                now = timezone.now()                # grab a snapshot of an offset-aware date and time for comparisons
-            %>
-            % for section in sections:
-
-                <%
+              <%
+                 outline_page_data = outline_page_initialize()   # get a newly initialized (empty) data structure instance
+              %>
+              % for section in sections:     # run through all the sections, analyzing and building data structure
+                 <%
                     outline_page_analyze_section(section, outline_page_data, context_course)
-                %>
-
-
-                <%
-                    sectionDictionary = {}              # initialize an empty section dictionary
-                    course_dictionary.update({section.location:sectionDictionary})      # add this new section dictionary to the course dictionary
-                %>
-                % for subsection in section.get_children():
-                    <%
-                        private_list = []
-                        public_list = []
-                        draft_list = []
-                        subsectionDictionary = {'private':private_list, 'public':public_list, 'draft':draft_list}
-                        sectionDictionary.update({subsection.location:subsectionDictionary})    # add it to the section dictionary
-                    %>
-                    % for unit in subsection.get_children():
-                        <%
-                            unit_state = compute_unit_state(unit)
-                            unit_locator = loc_mapper().translate_location(context_course.location.course_id, unit.location, False, True)
-
-                            unit_to_publish_date_dict.update({unit_locator:unit.published_date})    # record the published date, if any
-
-                            if unit_state == 'private': private_list.append(unit_locator)
-                            if unit_state == 'public': public_list.append(unit_locator)
-                            if unit_state == 'draft': draft_list.append(unit_locator)
-                        %>
-                    % endfor
-                % endfor
-            % endfor
-
-
-
-
-
+                 %>
+              % endfor
 
               % for section in sections:
               <%
@@ -245,7 +205,6 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                     <%
                       statusDictionary = outline_page_get_section_icon_string(section, outline_page_data)
                     %>
-
 
                       <li class="actions-item pubdate">
                         <div class="section-published-date">
