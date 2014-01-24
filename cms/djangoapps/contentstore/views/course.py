@@ -853,24 +853,22 @@ def outline_page_analyze_section(section, outline_page_data, context_course):
 
         Return:     None
     """
-    #from pdb import set_trace; set_trace()
-
-    sectionDictionary = {}              # initialize an empty section dictionary
-    outline_page_data.course_dictionary.update({section.location:sectionDictionary})      # add this new section dictionary to the course dictionary
+    section_dictionary = {}              # initialize an empty section dictionary
+    outline_page_data.course_dictionary.update({section.location:section_dictionary})      # add this new section dictionary to the course dictionary
 
     for subsection in section.get_children():
         private_list = []
         public_list = []
         draft_list = []
-        subsectionDictionary = {'private':private_list, 'public':public_list, 'draft':draft_list}
-        sectionDictionary.update({subsection.location:subsectionDictionary})    # add it to the section dictionary
+        subsection_dictionary = {'private':private_list, 'public':public_list, 'draft':draft_list}
+        section_dictionary.update({subsection.location:subsection_dictionary})    # add it to the section dictionary
 
         for subsection in section.get_children():
             private_list = []
             public_list = []
             draft_list = []
-            subsectionDictionary = {'private':private_list, 'public':public_list, 'draft':draft_list}
-            sectionDictionary.update({subsection.location:subsectionDictionary})    # add it to the section dictionary
+            subsection_dictionary = {'private':private_list, 'public':public_list, 'draft':draft_list}
+            section_dictionary.update({subsection.location:subsection_dictionary})    # add it to the section dictionary
 
             for unit in subsection.get_children():
                 unit_state = compute_unit_state(unit)
@@ -890,8 +888,12 @@ def outline_page_get_section_icon_string(section, outline_page_data):
         Parameter:  section             an instance of a course's 'Section' object
         Parameter:  outline_page_data   the working instance of 'OutlinePageData' to be updated with this section's data
 
-        Return:     icon_string         CSS style name for the icon to represent this section's status
-        Return:     unit_locator_list   a semicolon delimited list of all locator strings for the units in this section
+        Return:     a dictionary containg the following entries:
+                        icon_string         CSS style name for the icon to represent this section's status
+                        unit_locator_list   a semicolon delimited list of all locator strings for the units in this section
+                        public_count        number of public units found
+                        private_count       number of private units found
+                        draft_count         number of draft units found
     """
     public_count = 0
     private_count = 0
@@ -938,7 +940,13 @@ def outline_page_get_section_icon_string(section, outline_page_data):
             for unit_locator in public_list:
                 unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
 
-    return icon_string, unit_locator_list
+    return {
+        'icon_string':icon_string,
+        'unit_locator_list':unit_locator_list,
+        'public_count':public_count,
+        'private_count':private_count,
+        'draft_count':draft_count
+    }
 
 def outline_page_get_subsection_icon_string(subsection, outline_page_data):
     """
@@ -948,8 +956,12 @@ def outline_page_get_subsection_icon_string(subsection, outline_page_data):
         Parameter:  subsection          an instance of a course's 'Subsection' object
         Parameter:  outline_page_data   the working instance of 'OutlinePageData' to be updated with this section's data
 
-        Return:     icon_string         CSS style name for the icon to represent this section's status
-        Return:     unit_locator_list   a semicolon delimited list of all locator strings for the units in this section
+        Return:     a dictionary containg the following entries:
+                        icon_string         CSS style name for the icon to represent this section's status
+                        unit_locator_list   a semicolon delimited list of all locator strings for the units in this section
+                        public_count        number of public units found
+                        private_count       number of private units found
+                        draft_count         number of draft units found
     """
     subsection_dictionary = outline_page_data.section_dictionary[subsection.location]
     public_list = subsection_dictionary['public']
@@ -961,10 +973,9 @@ def outline_page_get_subsection_icon_string(subsection, outline_page_data):
     draft_count = len(draft_list)
 
     unit_locator_list = ""
-    public_released_string = ""
     icon_string = NO_UNITS_ICON_STRING
 
-    if subsection.published_date == None:    # we can't compare a date against 'None'
+    if subsection.published_date is None:    # we can't compare a date against 'None'
         subsection.published_date = outline_page_data.now
 
     if (public_count > 0) and ((private_count == 0) and (draft_count == 0)):
@@ -993,7 +1004,13 @@ def outline_page_get_subsection_icon_string(subsection, outline_page_data):
             for unit_locator in private_list:
                 unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
 
-    return icon_string, unit_locator_list
+    return {
+        'icon_string':icon_string,
+        'unit_locator_list':unit_locator_list,
+        'public_count':public_count,
+        'private_count':private_count,
+        'draft_count':draft_count
+    }
 
 def outline_page_get_unit_icon_string(unit):
     """
@@ -1001,18 +1018,34 @@ def outline_page_get_unit_icon_string(unit):
 
         Parameter:  unit                an instance of a course's 'Subsection' object
 
-        Return:     icon_string         CSS style name for the icon to represent this section's status
+        Return:     a dictionary containg the following entries:
+                        icon_string         CSS style name for the icon to represent this section's status
+                        public_count        number of public units found
+                        private_count       number of private units found
+                        draft_count         number of draft units found
      """
+    public_count = 0
+    private_count = 0
+    draft_count = 0
     icon_string = ""
+
     state = compute_unit_state(unit)
 
     if state == "public":
+        public_count = 1
         icon_string = ALL_PUBLIC_ICON_STRING
 
     if state == "private":
+        private_count = 1
         icon_string = ALL_PRIVATE_ICON_STRING
 
     if state == "draft":
+        draft_count = 1
         icon_string = ALL_PRIVATE_ICON_STRING
 
-    return icon_string
+    return {
+        'icon_string':icon_string,
+        'public_count':public_count,
+        'private_count':private_count,
+        'draft_count':draft_count
+    }

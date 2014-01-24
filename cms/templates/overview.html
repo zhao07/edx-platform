@@ -253,8 +253,12 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                     <ul class="actions-list">
 
                     <%
-                      icon_string, unit_locator_list = outline_page_get_section_icon_string(section, outline_page_data)
-
+                      statusDictionary = outline_page_get_section_icon_string(section, outline_page_data)
+                      icon_string = statusDictionary['icon_string']
+                      unit_locator_list = statusDictionary['unit_locator_list']
+                      public_count = statusDictionary['public_count']
+                      private_count = statusDictionary['private_count']
+                      draft_count  = statusDictionary['draft_count']
 
 
 
@@ -360,7 +364,12 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                           context_course.location.course_id, subsection.location, False, True
                         )
 
-                        icon_string, unit_locator_list = outline_page_get_section_icon_string(section, outline_page_data)
+                        statusDictionary = outline_page_get_section_icon_string(section, outline_page_data)
+                        icon_string = statusDictionary['icon_string']
+                        unit_locator_list = statusDictionary['unit_locator_list']
+                        public_count = statusDictionary['public_count']
+                        private_count = statusDictionary['private_count']
+                        draft_count  = statusDictionary['draft_count']
                       %>
 
 
