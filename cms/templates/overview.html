@@ -193,7 +193,10 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                 <%include file="widgets/_ui-dnd-indicator-before.html" />
 
                 <header class="section">
-                  <a href="#" data-tooltip="${_('Expand/collapse this section')}" class="action expand-collapse collapse"><i class="icon-caret-down ui-toggle-expansion"></i><span class="sr">${_('Expand/collapse this section')}</span></a>
+                  <a href="#" data-tooltip="${_('Expand/collapse this section')}" class="action expand-collapse collapse">
+                      <i class="icon-caret-down ui-toggle-expansion"></i>
+                      <span class="sr">${_('Expand/collapse this section')}</span>
+                  </a>
 
                   <div class="item-details" data-locator="${section_locator}">
                     <h3 class="section-name" data-name="${section.display_name_with_default | h}"></h3>
@@ -263,7 +266,6 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                       <div class="section-item">
 
                         <div class="details">
-
 
                           <a href="#" data-tooltip="${_('Expand/collapse this subsection')}" class="action expand-collapse expand">
                               <i class="icon-caret-down ui-toggle-expansion"></i>

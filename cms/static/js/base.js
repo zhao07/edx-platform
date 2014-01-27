@@ -390,14 +390,15 @@ function _unitStatusChange($el, type) {
     }
 
     if(draft_count > 0) {                   // if there are any units with 'draft' status
-        var messageText = 'One unit is ';
+        var messageText = ' unit is ';
         if(draft_count > 1) {
-            messageText = draft_count.toString() + " units are "
+            messageText = "  units are "
         }
         messageText += 'in "draft" mode, disallowing bulk status updating.'
+        messageText = draft_count.toString() + gettext(messageText);
         var draftWarning = new PromptView.Warning({
-            title: gettext('Bulk status update is not allowed'),
-            message: gettext(messageText),
+            title: 'Bulk status update is not allowed',
+            message: messageText,
             actions: {
                 primary: {
                     text: gettext('OK'),
@@ -410,40 +411,38 @@ function _unitStatusChange($el, type) {
         draftWarning.show();
     }
     else {                                  // else there are no units with 'draft' status
-        var buttonText = "PUBLIC";
+        var buttonText = gettext("PUBLIC");
         var promptText =
-            'This section has a mix of ' +
-            public_count.toString() +
-            ' public and ' +
-            private_count.toString() +
-            ' private units. ' +
-            'Change them all to public?';
+            'This section has a mix of {public_count} public and {private_count} private units. Change them all to public?';
 
         if((public_count > 0) && (private_count == 0))  {
             if(public_count == 1) {
-                promptText = 'Change 1 unit to private?';
+                promptText = 'Change {public_count} unit to private?';
             }
             else {
-                promptText = 'Change ' + public_count.toString() + ' units to private?';
+                promptText = 'Change {public_count} units to private?';
             }
-            buttonText = "PRIVATE"
+            buttonText = gettext("PRIVATE");
             action = "make_private";
         }
 
         if((public_count == 0) && (private_count > 0))  {
             if(private_count == 1) {
-                promptText = 'Change 1 unit to public?';
+                promptText = 'Change {private_count} unit to public?';
             }
             else {
-                promptText = 'Change ' + private_count.toString() + ' units to public?';
+                promptText = 'Change {private_count} units to public?';
             }
-            buttonText = "PUBLIC"
             action = "make_public";
         }
 
+        var translatedText = gettext(promptText);       // translate the static string (before substitution)
+        translatedText = translatedText.replace('{public_count}', public_count.toString())
+        translatedText = translatedText.replace('{private_count}', private_count.toString())
+
         var confirm = new PromptView.Warning({
-            title: gettext('Change Unit Status (' + type + ')'),
-            message: gettext(promptText),
+            title: gettext('Change Unit Status (') + type + ')',
+            message: translatedText,
             actions: {
                 primary: {
                     text: gettext('Yes, change to ' + buttonText),
@@ -452,7 +451,7 @@ function _unitStatusChange($el, type) {
                         var updating = new NotificationView.Mini({
                             title: gettext('Updating&hellip;')
                         });
-//                        updating.show();
+                        updating.show();
                         changeUnitVisibilityStatus(action, unit_locator_list);
 //                        location.reload(true);   // refresh the page
                     }

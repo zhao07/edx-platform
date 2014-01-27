@@ -996,12 +996,12 @@ def outline_page_get_subsection_icon_string(subsection):
         else:
             public_released_string = NOT_ALL_PUBLIC_NOT_RELEASED
 
-        if (public_count == 0) and (private_count > 0) or (draft_count > 0):
+        if (public_count == 0) and ((private_count > 0) or (draft_count > 0)):
             icon_string = ALL_PRIVATE_ICON_STRING
             for unit_locator in private_list:
                 unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
 
-        if (public_count > 0) and (private_count > 0) or (draft_count > 0):
+        if (public_count > 0) and ((private_count > 0) or (draft_count > 0)):
             icon_string = MIXED_STATE_ICON_STRING
             for unit_locator in private_list:
                 unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
