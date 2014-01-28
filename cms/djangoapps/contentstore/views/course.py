@@ -9,6 +9,8 @@ import bson
 
 from django.utils import timezone
 
+from contentstore.views.item import xblock_handler
+
 from contentstore.utils import ALL_PUBLIC_ICON_STRING
 from contentstore.utils import ALL_PRIVATE_ICON_STRING
 from contentstore.utils import NO_UNITS_ICON_STRING
@@ -1068,6 +1070,11 @@ def change_unit_visibility_status_handler(request, tid=None, tag=None, package_i
     POST or PUT
         change the visibility status of the set of units whose location strings are supplied in the message
     """
-    from pdb import set_trace; set_trace()
-    return JsonResponse()
+    statusCode = 200            # assume everything will go well
+    tokens = string.split(string.replace(request.path_info, "/unitstatus/", ""), ";")
+    for locator_string in tokens:
+        locator_object = BlockUsageLocator(locator_string)
+        #from pdb import set_trace; set_trace()
+        xblock_handler(request=request, package_id=locator_object.package_id, branch=locator_object.branch)
+    return JsonResponse(status=statusCode)
 

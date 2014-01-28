@@ -240,6 +240,7 @@ class DraftModuleStore(MongoModuleStore):
         """
         Save a current draft to the underlying modulestore
         """
+        #from pudb import set_trace; set_trace()
         try:
             original_published = super(DraftModuleStore, self).get_item(location)
         except ItemNotFoundError:
@@ -268,6 +269,7 @@ class DraftModuleStore(MongoModuleStore):
         """
         Turn the published version into a draft, removing the published version
         """
+        from pudb import set_trace; set_trace()
         self.convert_to_draft(location)
         super(DraftModuleStore, self).delete_item(location)
 

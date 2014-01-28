@@ -83,6 +83,7 @@ urlpatterns += patterns(
     url(r'(?ix)^settings/advanced/{}$'.format(parsers.URL_RE_SOURCE), 'advanced_settings_handler'),
     url(r'(?ix)^textbooks/{}$'.format(parsers.URL_RE_SOURCE), 'textbooks_list_handler'),
     url(r'(?ix)^textbooks/{}/(?P<tid>\d[^/]*)$'.format(parsers.URL_RE_SOURCE), 'textbooks_detail_handler'),
+    url(r'(?ix)^unitstatus/[^ ]+{}$'.format(parsers.URL_RE_SOURCE), 'change_unit_visibility_status_handler'),
 )
 
 js_info_dict = {

@@ -79,6 +79,8 @@ def xblock_handler(request, tag=None, package_id=None, branch=None, version_guid
                 :boilerplate: template name for populating fields, optional
               The locator (and old-style id) for the created xblock (minus children) is returned.
     """
+    #from pdb import set_trace; set_trace()
+
     if package_id is not None:
         locator = BlockUsageLocator(package_id=package_id, branch=branch, version_guid=version_guid, block_id=block)
         if not has_access(request.user, locator):
@@ -148,6 +150,8 @@ def _save_item(request, usage_loc, item_location, data=None, children=None, meta
 
     The item_location is still the old-style location whereas usage_loc is a BlockUsageLocator
     """
+    from pdb import set_trace; set_trace()
+
     store = get_modulestore(item_location)
 
     try:

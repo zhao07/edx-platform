@@ -2,19 +2,6 @@ define(["domReady", "jquery", "jquery.ui", "underscore", "gettext", "js/views/fe
     "js/utils/cancel_on_escape", "js/utils/get_date", "js/utils/module"],
     function (domReady, $, ui, _, gettext, NotificationView, PromptView, Draggabilly, CancelOnEscape, DateUtils, ModuleUtils) {
 
-
-
-
-
-
-
-
-
-
-
-        //________________________________________________ Unit Status Change
-        //
-
         function unitStatusChangeSection(e) {
             e.preventDefault();
             _unitStatusChange($(this).parents('section-item '), 'Section');
@@ -27,7 +14,7 @@ define(["domReady", "jquery", "jquery.ui", "underscore", "gettext", "js/views/fe
 
         function unitStatusChangeUnit(e) {
             e.preventDefault();
-            //    _unitStatusChange($(this).parents('li.courseware-unit'), 'Unit');
+            _unitStatusChange($(this).parents('li.courseware-unit'), 'Unit');
         }
 
         function _unitStatusChange($el, type) {
@@ -117,8 +104,8 @@ define(["domReady", "jquery", "jquery.ui", "underscore", "gettext", "js/views/fe
                                     title: gettext('Updating&hellip;')
                                 });
                                 updating.show();
-                                changeUnitVisibilityStatus(action, unit_locator_list);
-                                //                        location.reload(true);   // refresh the page
+                                var endpointURL = '/unitstatus/' + unit_locator_list.toString().trim();
+                                $.postJSON(endpointURL, {publish: action});   // issue a change message to each unit
                             }
                         },
                         secondary: {
@@ -133,17 +120,16 @@ define(["domReady", "jquery", "jquery.ui", "underscore", "gettext", "js/views/fe
             }
         }
 
-        function changeUnitVisibilityStatus(action, unit_locator_list) {
-            unit_locator_array = unit_locator_list.split(";");
-            for (i = 0; i < unit_locator_array.length; i++) {
-                var clean_locator = unit_locator_array[i].trim();
-                if (clean_locator.length > 0) {
-                    var xblockURL = "/xblock/" + clean_locator;
-                    $.postJSON(xblockURL, {publish: action});   // issue a change message to each unit
-                }
-            }
-        }
-
+//        function changeUnitVisibilityStatus(action, unit_locator_list) {
+//            unit_locator_array = unit_locator_list.split(";");
+//            for (i = 0; i < unit_locator_array.length; i++) {
+//                var clean_locator = unit_locator_array[i].trim();
+//                if (clean_locator.length > 0) {
+//                    var xblockURL = "/unitstatus/" + clean_locator;
+//                    $.postJSON(xblockURL, {publish: action});   // issue a change message to each unit
+//                }
+//            }
+//        }
 
         var modalSelector = '.edit-section-publish-settings';
 
