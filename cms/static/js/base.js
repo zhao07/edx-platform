@@ -99,9 +99,9 @@ domReady(function() {
     $('.delete-section-button').bind('click', deleteSection);
     $('.delete-subsection-button').bind('click', deleteSubsection);
 
-    $('.unit-status-change-section').bind('click', unitStatusChangeSection);
-    $('.unit-status-change-subsection').bind('click', unitStatusChangeSubsection);
-    $('.unit-status-change-unit').bind('click', unitStatusChangeUnit);
+//    $('.unit-status-change-section').bind('click', unitStatusChangeSection);
+//    $('.unit-status-change-subsection').bind('click', unitStatusChangeSubsection);
+//    $('.unit-status-change-unit').bind('click', unitStatusChangeUnit);
 
     $('.sync-date').bind('click', syncReleaseDate);
 
@@ -346,150 +346,150 @@ function cancelSetSectionScheduleDate(e) {
 
     window.deleteSection = deleteSection;
 
-
-//________________________________________________ Unit Status Change
 //
-
-function unitStatusChangeSection(e) {
-    e.preventDefault();
-    _unitStatusChange($(this).parents('section-item '), 'Section');
-}
-
-function unitStatusChangeSubsection(e) {
-    e.preventDefault();
-    _unitStatusChange($(this).parents('courseware-subsection'), 'Subsection');
-}
-
-function unitStatusChangeUnit(e) {
-    e.preventDefault();
-    _unitStatusChange($(this).parents('li.courseware-unit'), 'Unit');
-}
-
-function _unitStatusChange($el, type) {
-    var public_count = 0;
-    var private_count = 0;
-    var draft_count = 0;
-    var unit_locator_list = '';
-    var action = "make_public";
-
-    for(var i = 0; i < $el.context.children.length; i++) {
-        childElement = $el.context.children[i];
-
-        if(childElement.className == "public_count") {
-           public_count = parseInt(childElement.textContent);
-        }
-        if(childElement.className == "private_count") {
-           private_count = parseInt(childElement.textContent);
-        }
-        if(childElement.className == "draft_count") {
-           draft_count = parseInt(childElement.textContent);
-        }
-        if(childElement.className == "unit_locator_list") {
-           unit_locator_list = childElement.textContent;
-        }
-    }
-
-    if(draft_count > 0) {                   // if there are any units with 'draft' status
-        var messageText = ' unit is ';
-        if(draft_count > 1) {
-            messageText = "  units are "
-        }
-        messageText += 'in "draft" mode, disallowing bulk status updating.'
-        messageText = draft_count.toString() + gettext(messageText);
-        var draftWarning = new PromptView.Warning({
-            title: 'Bulk status update is not allowed',
-            message: messageText,
-            actions: {
-                primary: {
-                    text: gettext('OK'),
-                    click: function(view) {
-                        view.hide();
-                    }
-                }
-            }
-        });
-        draftWarning.show();
-    }
-    else {                                  // else there are no units with 'draft' status
-        var buttonText = gettext("PUBLIC");
-        var promptText =
-            'This section has a mix of {public_count} public and {private_count} private units. Change them all to public?';
-
-        if((public_count > 0) && (private_count == 0))  {
-            if(public_count == 1) {
-                promptText = 'Change {public_count} unit to private?';
-            }
-            else {
-                promptText = 'Change {public_count} units to private?';
-            }
-            buttonText = gettext("PRIVATE");
-            action = "make_private";
-        }
-
-        if((public_count == 0) && (private_count > 0))  {
-            if(private_count == 1) {
-                promptText = 'Change {private_count} unit to public?';
-            }
-            else {
-                promptText = 'Change {private_count} units to public?';
-            }
-            action = "make_public";
-        }
-
-        var translatedText = gettext(promptText);       // translate the static string (before substitution)
-        translatedText = translatedText.replace('{public_count}', public_count.toString())
-        translatedText = translatedText.replace('{private_count}', private_count.toString())
-
-        var confirm = new PromptView.Warning({
-            title: gettext('Change Unit Status (') + type + ')',
-            message: translatedText,
-            actions: {
-                primary: {
-                    text: gettext('Yes, change to ' + buttonText),
-                    click: function(view) {
-                        view.hide();
-                        var updating = new NotificationView.Mini({
-                            title: gettext('Updating&hellip;')
-                        });
-                        updating.show();
-                        changeUnitVisibilityStatus(action, unit_locator_list);
-//                        location.reload(true);   // refresh the page
-                    }
-                },
-                secondary: {
-                    text: gettext('Cancel'),
-                    click: function(view) {
-                        view.hide();
-                    }
-                }
-            }
-        });
-        confirm.show();
-    }
-}
-
-function changeUnitVisibilityStatus( action, unit_locator_list ) {
-    unit_locator_array = unit_locator_list.split(";");
-    for(i=0; i<unit_locator_array.length; i++) {
-        var clean_locator = unit_locator_array[i].trim();
-        if(clean_locator.length > 0) {
-            var xblockURL = "/xblock/" + clean_locator;
-            $.postJSON(xblockURL, {publish: action} );   // issue a change message to each unit
-        }
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+////________________________________________________ Unit Status Change
+////
+//
+//function unitStatusChangeSection(e) {
+//    e.preventDefault();
+//    _unitStatusChange($(this).parents('section-item '), 'Section');
+//}
+//
+//function unitStatusChangeSubsection(e) {
+//    e.preventDefault();
+//    _unitStatusChange($(this).parents('courseware-subsection'), 'Subsection');
+//}
+//
+//function unitStatusChangeUnit(e) {
+//    e.preventDefault();
+//    _unitStatusChange($(this).parents('li.courseware-unit'), 'Unit');
+//}
+//
+//function _unitStatusChange($el, type) {
+//    var public_count = 0;
+//    var private_count = 0;
+//    var draft_count = 0;
+//    var unit_locator_list = '';
+//    var action = "make_public";
+//
+//    for(var i = 0; i < $el.context.children.length; i++) {
+//        childElement = $el.context.children[i];
+//
+//        if(childElement.className == "public_count") {
+//           public_count = parseInt(childElement.textContent);
+//        }
+//        if(childElement.className == "private_count") {
+//           private_count = parseInt(childElement.textContent);
+//        }
+//        if(childElement.className == "draft_count") {
+//           draft_count = parseInt(childElement.textContent);
+//        }
+//        if(childElement.className == "unit_locator_list") {
+//           unit_locator_list = childElement.textContent;
+//        }
+//    }
+//
+//    if(draft_count > 0) {                   // if there are any units with 'draft' status
+//        var messageText = ' unit is ';
+//        if(draft_count > 1) {
+//            messageText = "  units are "
+//        }
+//        messageText += 'in "draft" mode, disallowing bulk status updating.'
+//        messageText = draft_count.toString() + gettext(messageText);
+//        var draftWarning = new PromptView.Warning({
+//            title: 'Bulk status update is not allowed',
+//            message: messageText,
+//            actions: {
+//                primary: {
+//                    text: gettext('OK'),
+//                    click: function(view) {
+//                        view.hide();
+//                    }
+//                }
+//            }
+//        });
+//        draftWarning.show();
+//    }
+//    else {                                  // else there are no units with 'draft' status
+//        var buttonText = gettext("PUBLIC");
+//        var promptText =
+//            'This section has a mix of {public_count} public and {private_count} private units. Change them all to public?';
+//
+//        if((public_count > 0) && (private_count == 0))  {
+//            if(public_count == 1) {
+//                promptText = 'Change {public_count} unit to private?';
+//            }
+//            else {
+//                promptText = 'Change {public_count} units to private?';
+//            }
+//            buttonText = gettext("PRIVATE");
+//            action = "make_private";
+//        }
+//
+//        if((public_count == 0) && (private_count > 0))  {
+//            if(private_count == 1) {
+//                promptText = 'Change {private_count} unit to public?';
+//            }
+//            else {
+//                promptText = 'Change {private_count} units to public?';
+//            }
+//            action = "make_public";
+//        }
+//
+//        var translatedText = gettext(promptText);       // translate the static string (before substitution)
+//        translatedText = translatedText.replace('{public_count}', public_count.toString())
+//        translatedText = translatedText.replace('{private_count}', private_count.toString())
+//
+//        var confirm = new PromptView.Warning({
+//            title: gettext('Change Unit Status (') + type + ')',
+//            message: translatedText,
+//            actions: {
+//                primary: {
+//                    text: gettext('Yes, change to ' + buttonText),
+//                    click: function(view) {
+//                        view.hide();
+//                        var updating = new NotificationView.Mini({
+//                            title: gettext('Updating&hellip;')
+//                        });
+//                        updating.show();
+//                        changeUnitVisibilityStatus(action, unit_locator_list);
+////                        location.reload(true);   // refresh the page
+//                    }
+//                },
+//                secondary: {
+//                    text: gettext('Cancel'),
+//                    click: function(view) {
+//                        view.hide();
+//                    }
+//                }
+//            }
+//        });
+//        confirm.show();
+//    }
+//}
+//
+//function changeUnitVisibilityStatus( action, unit_locator_list ) {
+//    unit_locator_array = unit_locator_list.split(";");
+//    for(i=0; i<unit_locator_array.length; i++) {
+//        var clean_locator = unit_locator_array[i].trim();
+//        if(clean_locator.length > 0) {
+//            var xblockURL = "/xblock/" + clean_locator;
+//            $.postJSON(xblockURL, {publish: action} );   // issue a change message to each unit
+//        }
+//    }
+//}
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 }); // end require()

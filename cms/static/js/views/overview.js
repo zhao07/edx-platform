@@ -1,11 +1,153 @@
-define(["domReady", "jquery", "jquery.ui", "underscore", "gettext", "js/views/feedback_notification", "draggabilly",
+define(["domReady", "jquery", "jquery.ui", "underscore", "gettext", "js/views/feedback_notification", "js/views/feedback_prompt", "draggabilly",
     "js/utils/cancel_on_escape", "js/utils/get_date", "js/utils/module"],
-    function (domReady, $, ui, _, gettext, NotificationView, Draggabilly, CancelOnEscape,
-              DateUtils, ModuleUtils) {
+    function (domReady, $, ui, _, gettext, NotificationView, PromptView, Draggabilly, CancelOnEscape, DateUtils, ModuleUtils) {
+
+
+
+
+
+
+
+
+
+
+
+        //________________________________________________ Unit Status Change
+        //
+
+        function unitStatusChangeSection(e) {
+            e.preventDefault();
+            _unitStatusChange($(this).parents('section-item '), 'Section');
+        }
+
+        function unitStatusChangeSubsection(e) {
+            e.preventDefault();
+            _unitStatusChange($(this).parents('courseware-subsection'), 'Subsection');
+        }
+
+        function unitStatusChangeUnit(e) {
+            e.preventDefault();
+            //    _unitStatusChange($(this).parents('li.courseware-unit'), 'Unit');
+        }
+
+        function _unitStatusChange($el, type) {
+            var public_count = 0;
+            var private_count = 0;
+            var draft_count = 0;
+            var unit_locator_list = '';
+            var action = "make_public";
+
+            for (var i = 0; i < $el.context.children.length; i++) {
+                childElement = $el.context.children[i];
+
+                if (childElement.className == "public_count") {
+                    public_count = parseInt(childElement.textContent);
+                }
+                if (childElement.className == "private_count") {
+                    private_count = parseInt(childElement.textContent);
+                }
+                if (childElement.className == "draft_count") {
+                    draft_count = parseInt(childElement.textContent);
+                }
+                if (childElement.className == "unit_locator_list") {
+                    unit_locator_list = childElement.textContent;
+                }
+            }
+
+            if (draft_count > 0) {                   // if there are any units with 'draft' status
+                var messageText = ' unit is ';
+                if (draft_count > 1) {
+                    messageText = "  units are "
+                }
+                messageText += 'in "draft" mode, disallowing bulk status updating.'
+                messageText = draft_count.toString() + gettext(messageText);
+                var draftWarning = new PromptView.Warning({
+                    title: 'Bulk status update is not allowed',
+                    message: messageText,
+                    actions: {
+                        primary: {
+                            text: gettext('OK'),
+                            click: function (view) {
+                                view.hide();
+                            }
+                        }
+                    }
+                });
+                draftWarning.show();
+            }
+            else {                                  // else there are no units with 'draft' status
+                var buttonText = gettext("PUBLIC");
+                var promptText =
+                    'This section has a mix of {public_count} public and {private_count} private units. Change them all to public?';
+
+                if ((public_count > 0) && (private_count == 0)) {
+                    if (public_count == 1) {
+                        promptText = 'Change {public_count} unit to private?';
+                    }
+                    else {
+                        promptText = 'Change {public_count} units to private?';
+                    }
+                    buttonText = gettext("PRIVATE");
+                    action = "make_private";
+                }
+
+                if ((public_count == 0) && (private_count > 0)) {
+                    if (private_count == 1) {
+                        promptText = 'Change {private_count} unit to public?';
+                    }
+                    else {
+                        promptText = 'Change {private_count} units to public?';
+                    }
+                    action = "make_public";
+                }
+
+                var translatedText = gettext(promptText);       // translate the static string (before substitution)
+                translatedText = translatedText.replace('{public_count}', public_count.toString())
+                translatedText = translatedText.replace('{private_count}', private_count.toString())
+
+                var confirm = new PromptView.Warning({
+                    title: gettext('Change Unit Status (') + type + ')',
+                    message: translatedText,
+                    actions: {
+                        primary: {
+                            text: gettext('Yes, change to ' + buttonText),
+                            click: function (view) {
+                                view.hide();
+                                var updating = new NotificationView.Mini({
+                                    title: gettext('Updating&hellip;')
+                                });
+                                updating.show();
+                                changeUnitVisibilityStatus(action, unit_locator_list);
+                                //                        location.reload(true);   // refresh the page
+                            }
+                        },
+                        secondary: {
+                            text: gettext('Cancel'),
+                            click: function (view) {
+                                view.hide();
+                            }
+                        }
+                    }
+                });
+                confirm.show();
+            }
+        }
+
+        function changeUnitVisibilityStatus(action, unit_locator_list) {
+            unit_locator_array = unit_locator_list.split(";");
+            for (i = 0; i < unit_locator_array.length; i++) {
+                var clean_locator = unit_locator_array[i].trim();
+                if (clean_locator.length > 0) {
+                    var xblockURL = "/xblock/" + clean_locator;
+                    $.postJSON(xblockURL, {publish: action});   // issue a change message to each unit
+                }
+            }
+        }
+
 
         var modalSelector = '.edit-section-publish-settings';
 
-        var toggleSections = function(e) {
+        var toggleSections = function (e) {
             e.preventDefault();
 
             var $section = $('.courseware-section');
@@ -29,7 +171,7 @@ define(["domReady", "jquery", "jquery.ui", "underscore", "gettext", "js/views/fe
             }
         };
 
-        var toggleSubmodules = function(e) {
+        var toggleSubmodules = function (e) {
             e.preventDefault();
             $(this).toggleClass('expand').toggleClass('collapse');
             $(this).closest('.is-collapsible, .window').toggleClass('collapsed');
@@ -86,8 +228,8 @@ define(["domReady", "jquery", "jquery.ui", "underscore", "gettext", "js/views/fe
                         'start': datetime
                     }
                 })
-            }).success(function() {
-                    var pad2 = function(number) {
+            }).success(function () {
+                    var pad2 = function (number) {
                         // pad a number to two places: useful for formatting months, days, hours, etc
                         // when displaying a date/time
                         return (number < 10 ? '0' : '') + number;
@@ -145,7 +287,7 @@ define(["domReady", "jquery", "jquery.ui", "underscore", "gettext", "js/views/fe
                     'display_name': display_name
                 },
 
-                function(data) {
+                function (data) {
                     if (data.locator != undefined) location.reload();
                 });
         };
@@ -195,7 +337,7 @@ define(["domReady", "jquery", "jquery.ui", "underscore", "gettext", "js/views/fe
                     'display_name': display_name
                 },
 
-                function(data) {
+                function (data) {
                     if (data.locator != undefined) {
                         location.reload();
                     }
@@ -234,14 +376,14 @@ define(["domReady", "jquery", "jquery.ui", "underscore", "gettext", "js/views/fe
                     // position of the container
                     var parentList = container.parents(ele.data('parent-location-selector')).first();
                     if (parentList.hasClass('collapsed')) {
-                        var parentListTop =  parentList.offset().top;
+                        var parentListTop = parentList.offset().top;
                         // To make it easier to drop subsections into collapsed sections (which have
                         // a lot of visual padding around them), allow a fudge factor around the
                         // parent element.
                         var collapseFudge = 10;
                         if (Math.abs(eleY - parentListTop) < collapseFudge ||
                             (eleY > parentListTop &&
-                             eleYEnd - collapseFudge <= parentListTop + parentList.height())
+                                eleYEnd - collapseFudge <= parentListTop + parentList.height())
                             ) {
                             return {
                                 ele: container,
@@ -307,9 +449,9 @@ define(["domReady", "jquery", "jquery.ui", "underscore", "gettext", "js/views/fe
                                     // Dragging up into end of list.
                                     if (j == siblings.length - 1 && yChange < 0 && Math.abs(eleY - siblingYEnd) <= fudge) {
                                         return {
-                                                ele: $sibling,
-                                                attachMethod: 'after'
-                                            };
+                                            ele: $sibling,
+                                            attachMethod: 'after'
+                                        };
                                     }
                                     // Dragging up or down into beginning of list.
                                     else if (j == 0 && Math.abs(eleY - siblingY) <= fudge) {
@@ -547,9 +689,9 @@ define(["domReady", "jquery", "jquery.ui", "underscore", "gettext", "js/views/fe
             }
         };
 
-        domReady(function() {
+        domReady(function () {
             // toggling overview section details
-            $(function() {
+            $(function () {
                 if ($('.courseware-section').length > 0) {
                     $('.toggle-button-sections').addClass('is-shown');
                 }
@@ -564,6 +706,10 @@ define(["domReady", "jquery", "jquery.ui", "underscore", "gettext", "js/views/fe
 
             $('.new-courseware-section-button').bind('click', addNewSection);
             $('.new-subsection-item').bind('click', addNewSubsection);
+
+            $('.unit-status-change-section').bind('click', unitStatusChangeSection);
+            $('.unit-status-change-subsection').bind('click', unitStatusChangeSubsection);
+            $('.unit-status-change-unit').bind('click', unitStatusChangeUnit);
 
             // Section
             overviewDragger.makeDraggable(
@@ -593,3 +739,9 @@ define(["domReady", "jquery", "jquery.ui", "underscore", "gettext", "js/views/fe
             saveSetSectionScheduleDate: saveSetSectionScheduleDate
         };
     });
+
+
+
+
+
+
