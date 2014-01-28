@@ -386,3 +386,41 @@ def _get_module_info(usage_loc, rewrite_static_links=True):
         'data': data,
         'metadata': own_metadata(module)
     }
+
+
+
+
+
+
+
+
+@login_required
+@require_http_methods(("POST", "PUT"))
+@expect_json
+def change_unit_visibility_status_handler(request, tid=None, tag=None, package_id=None, branch=None, version_guid=None, block=None):
+    """
+    JSON API endpoint for modifying the visiblity status (public/private) of a set of units
+
+    POST or PUT
+        change the visibility status of the set of units whose location strings are supplied in the message
+    """
+    from pdb import set_trace; set_trace()
+
+
+    statusCode = 200            # assume everything will go well
+    tokens = string.split(string.replace(request.path_info, "/unitstatus/", ""), ";")
+    for locator_string in tokens:
+        locator_object = BlockUsageLocator(locator_string)
+
+#_save_item(request, usage_loc, item_location, data=None, children=None, metadata=None, nullout=None,
+#               grader_type=None, publish=None):
+
+
+
+        #xblock_handler(request=request, package_id=locator_object.package_id, branch=locator_object.branch)
+
+
+
+    return JsonResponse(status=statusCode)
+
+
