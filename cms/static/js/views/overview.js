@@ -105,7 +105,8 @@ define(["domReady", "jquery", "jquery.ui", "underscore", "gettext", "js/views/fe
                                 });
                                 updating.show();
                                 var endpointURL = '/unitstatus/' + unit_locator_list.toString().trim();
-                                $.postJSON(endpointURL, {publish: action});   // issue a change message to each unit
+                                $.postJSON(endpointURL, {publish: action});
+                                location.reload(true);   // refresh the page
                             }
                         },
                         secondary: {
@@ -119,17 +120,6 @@ define(["domReady", "jquery", "jquery.ui", "underscore", "gettext", "js/views/fe
                 confirm.show();
             }
         }
-
-//        function changeUnitVisibilityStatus(action, unit_locator_list) {
-//            unit_locator_array = unit_locator_list.split(";");
-//            for (i = 0; i < unit_locator_array.length; i++) {
-//                var clean_locator = unit_locator_array[i].trim();
-//                if (clean_locator.length > 0) {
-//                    var xblockURL = "/unitstatus/" + clean_locator;
-//                    $.postJSON(xblockURL, {publish: action});   // issue a change message to each unit
-//                }
-//            }
-//        }
 
         var modalSelector = '.edit-section-publish-settings';
 

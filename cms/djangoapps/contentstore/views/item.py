@@ -34,7 +34,7 @@ from preview import handler_prefix, get_preview_html
 from edxmako.shortcuts import render_to_response, render_to_string
 from models.settings.course_grading import CourseGradingModel
 
-__all__ = ['orphan_handler', 'xblock_handler']
+__all__ = ['orphan_handler', 'xblock_handler', 'change_unit_visibility_status_handler']
 
 log = logging.getLogger(__name__)
 
@@ -387,13 +387,6 @@ def _get_module_info(usage_loc, rewrite_static_links=True):
         'metadata': own_metadata(module)
     }
 
-
-
-
-
-
-
-
 @login_required
 @require_http_methods(("POST", "PUT"))
 @expect_json
@@ -404,23 +397,20 @@ def change_unit_visibility_status_handler(request, tid=None, tag=None, package_i
     POST or PUT
         change the visibility status of the set of units whose location strings are supplied in the message
     """
-    from pdb import set_trace; set_trace()
 
 
     statusCode = 200            # assume everything will go well
-    tokens = string.split(string.replace(request.path_info, "/unitstatus/", ""), ";")
+    tokens = str.split(str.replace(str(request.path_info), "/unitstatus/", ""), ";")
     for locator_string in tokens:
         locator_object = BlockUsageLocator(locator_string)
-
-#_save_item(request, usage_loc, item_location, data=None, children=None, metadata=None, nullout=None,
-#               grader_type=None, publish=None):
-
-
-
-        #xblock_handler(request=request, package_id=locator_object.package_id, branch=locator_object.branch)
-
-
-
-    return JsonResponse(status=statusCode)
+        old_location = loc_mapper().translate_locator_to_location(locator_string)
+        publish = request.json.get('publish')
+        json_response = _save_item(
+            request=request,
+            usage_loc=locator_object,
+            item_location=old_location,
+            publish=publish
+        )
+    return json_response
 
 

@@ -269,7 +269,6 @@ class DraftModuleStore(MongoModuleStore):
         """
         Turn the published version into a draft, removing the published version
         """
-        from pudb import set_trace; set_trace()
         self.convert_to_draft(location)
         super(DraftModuleStore, self).delete_item(location)
 

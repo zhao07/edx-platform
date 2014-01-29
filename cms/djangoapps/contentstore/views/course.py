@@ -9,8 +9,6 @@ import bson
 
 from django.utils import timezone
 
-from contentstore.views.item import xblock_handler
-
 from contentstore.utils import ALL_PUBLIC_ICON_STRING
 from contentstore.utils import ALL_PRIVATE_ICON_STRING
 from contentstore.utils import NO_UNITS_ICON_STRING
@@ -75,8 +73,7 @@ __all__ = ['course_info_handler', 'course_handler', 'course_info_update_handler'
            'settings_handler',
            'grading_handler',
            'advanced_settings_handler',
-           'textbooks_list_handler', 'textbooks_detail_handler',
-           'change_unit_visibility_status_handler']
+           'textbooks_list_handler', 'textbooks_detail_handler']
 
 
 def _get_locator_and_course(package_id, branch, version_guid, block_id, user, depth=0):
@@ -758,7 +755,6 @@ def textbooks_detail_handler(request, tid, tag=None, package_id=None, branch=Non
     DELETE
         json: remove textbook
     """
-    from pdb import set_trace; set_trace()
     __, course = _get_locator_and_course(
         package_id, branch, version_guid, block, request.user
     )
@@ -1061,20 +1057,4 @@ def outline_page_get_unit_icon_string(unit):
         'draft_count':draft_count
     }
 
-@login_required
-@require_http_methods(("POST", "PUT"))
-def change_unit_visibility_status_handler(request, tid=None, tag=None, package_id=None, branch=None, version_guid=None, block=None):
-    """
-    JSON API endpoint for modifying the visiblity status (public/private) of a set of units
-
-    POST or PUT
-        change the visibility status of the set of units whose location strings are supplied in the message
-    """
-    statusCode = 200            # assume everything will go well
-    tokens = string.split(string.replace(request.path_info, "/unitstatus/", ""), ";")
-    for locator_string in tokens:
-        locator_object = BlockUsageLocator(locator_string)
-        #from pdb import set_trace; set_trace()
-        xblock_handler(request=request, package_id=locator_object.package_id, branch=locator_object.branch)
-    return JsonResponse(status=statusCode)
 
