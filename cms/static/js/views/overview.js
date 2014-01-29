@@ -2,21 +2,38 @@ define(["domReady", "jquery", "jquery.ui", "underscore", "gettext", "js/views/fe
     "js/utils/cancel_on_escape", "js/utils/get_date", "js/utils/module"],
     function (domReady, $, ui, _, gettext, NotificationView, PromptView, Draggabilly, CancelOnEscape, DateUtils, ModuleUtils) {
 
+        // This wrapper sets up the decision logic with a pointer to a section and
+        // provides a string indicator to that effect for the presentation to the user
         function unitStatusChangeSection(e) {
             e.preventDefault();
             _unitStatusChange($(this).parents('section-item '), 'Section');
         }
 
+        // This wrapper sets up the decision logic with a pointer to a subsection and
+        // provides a string indicator to that effect for the presentation to the user
         function unitStatusChangeSubsection(e) {
             e.preventDefault();
             _unitStatusChange($(this).parents('courseware-subsection'), 'Subsection');
         }
 
-        function unitStatusChangeUnit(e) {
+        // This wrapper sets up the decision logic with a pointer to a unit and
+        // provides a string indicator to that effect for the presentation to the user
+       function unitStatusChangeUnit(e) {
             e.preventDefault();
             _unitStatusChange($(this).parents('li.courseware-unit'), 'Unit');
         }
 
+        // Given a pointer to a section/subsection/unit, grab the counts of public/private/draft units
+        // in the set (information which was encoded into the HTML page by the server in the form of a
+        // set of hidden <div> elements.
+        //
+        // Once those counts are known, provide a confirmation dialog
+        // to the user. If the operation is confirmed, construct a json message identifying all the
+        // units to affect and issue that message to the 'unitstatus' endpoint for processing.
+        //
+        // (Note that all unit locator strings are sent without trying to filter for just those which will
+        // be *chnaged* by this operation.)
+        //
         function _unitStatusChange($el, type) {
             var public_count = 0;
             var private_count = 0;
