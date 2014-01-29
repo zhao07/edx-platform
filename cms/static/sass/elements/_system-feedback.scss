@@ -187,30 +187,20 @@
 // prompts
 .wrapper-prompt {
   @extend %ui-depth5;
-  @include transition(all $tmg-f3 ease-in-out  0s);
+  @include transition(all $tmg-f3 ease-in-out 0s);
   position: fixed;
   top: 0;
   background: $black-t0;
   width: 100%;
   height: 100%;
-  text-align: center;
-
-  &:before {
-    content: '';
-    display: inline-block;
-    height: 100%;
-    vertical-align: middle;
-    margin-right: -0.25em; /* Adjusts for spacing */
-  }
 
   .prompt {
-    border-radius: ($baseline/5);
-    box-shadow: 0 0 3px $shadow-d1;
-    display: inline-block;
-    vertical-align: middle;
+    @extend %ui-center-vertical;
     width: $baseline*17.5;
+    margin: 0 auto;
+    border-radius: ($baseline/5);
     border: 4px solid $black;
-    text-align: left;
+    box-shadow: 0 0 3px $shadow-d1;
 
     .copy {
       border-top: 4px solid $blue;

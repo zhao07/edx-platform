@@ -79,6 +79,12 @@
 %ui-depth4 { z-index: 10000; }
 %ui-depth5 { z-index: 100000; }
 
+// extends - UI - alignment
+%ui-center-vertical {
+  @include transform(translateY(-50%));
+  position: relative;
+  top: 50%;
+}
 
 // extends - UI - utility - nth-type style clearing
 %wipe-first-child {
