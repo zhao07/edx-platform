@@ -24,12 +24,10 @@ MIXED_STATE_ICON_STRING = "icon-adjust       unit-status-mixed-state"
 ALL_PUBLIC_ICON_STRING = "icon-circle       unit-status-all-public"
 ALL_PRIVATE_ICON_STRING = "icon-circle-blank unit-status-all-private"
 NO_UNITS_ICON_STRING = ""
-PUBLIC_RELEASED = "  unit-subsection-status-public-released"
-NOT_ALL_PUBLIC_RELEASED = "   unit-subsection-status-not-public-released"
-PUBLIC_NOT_RELEASED = "  unit-subsection-status-public-not-released"
-NOT_ALL_PUBLIC_NOT_RELEASED = "  unit-subsection-status-not-all-public-not-released"
-
-
+PUBLIC_RELEASED = "#5DFF2F"
+NOT_ALL_PUBLIC_RELEASED = "#6D6D6D"
+PUBLIC_NOT_RELEASED = "#F5EA37"
+NOT_ALL_PUBLIC_NOT_RELEASED = "#FF0000"
 
 log = logging.getLogger(__name__)
 

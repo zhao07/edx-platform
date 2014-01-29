@@ -258,6 +258,11 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                         statusDictionary = outline_page_get_subsection_icon_string(subsection)
                       %>
 
+
+
+
+
+
                     <li class="courseware-subsection collapsed id-holder is-draggable is-collapsible "
                         data-parent="${section_locator}" data-locator="${subsection_locator}">
 
@@ -266,6 +271,18 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                       <div class="section-item">
 
                         <div class="details">
+
+
+<canvas id="canvas_${subsection_locator}" width="5" height="12" style="border:1px solid #000000;">
+</canvas>
+    <script>
+        var c=document.getElementById("canvas_${subsection_locator}");
+        var ctx=c.getContext("2d");
+        ctx.fillStyle="${statusDictionary['public_released_string']} ";
+        ctx.fillRect(0,0,20,20);
+    </script>
+
+
 
                           <a href="#" data-tooltip="${_('Expand/collapse this subsection')}" class="action expand-collapse expand">
                               <i class="icon-caret-down ui-toggle-expansion"></i>
@@ -282,6 +299,10 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
 
                         <div class="item-actions">
 
+
+
+
+
                           <ul class="actions-list">
                             <li class="actions-item grades">
                               <div class="gradable-status" data-initial-status="${subsection.format if subsection.format is not None else _('Not Graded')}"></div>
@@ -296,10 +317,10 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                             <li class="actions-item">
                                 <i class="${statusDictionary['icon_string']} unit-status-change-subsection">
                                     <!-- div elements are invisible containers to hold unit counts and a list of locations -->
-                                    <div  hidden class='public_count'>      ${statusDictionary['public_count']}         </div>
-                                    <div  hidden class='private_count'>     ${statusDictionary['private_count']}        </div>
-                                    <div  hidden class='draft_count'>       ${statusDictionary['draft_count']}          </div>
-                                    <div  hidden class='unit_locator_list'> ${statusDictionary['unit_locator_list']}    </div>
+                                    <div  hidden class='public_count'>           ${statusDictionary['public_count']}              </div>
+                                    <div  hidden class='private_count'>          ${statusDictionary['private_count']}             </div>
+                                    <div  hidden class='draft_count'>            ${statusDictionary['draft_count']}               </div>
+                                    <div  hidden class='unit_locator_list'>      ${statusDictionary['unit_locator_list']}         </div>
                                 </i>
                             </li>
                           </ul>
