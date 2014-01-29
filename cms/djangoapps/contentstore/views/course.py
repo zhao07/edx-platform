@@ -973,10 +973,8 @@ def outline_page_get_subsection_icon_string(subsection):
     private_count = len(private_list)
     draft_count = len(draft_list)
 
-    public_released_string = ""
     unit_locator_list = ""
     icon_string = NO_UNITS_ICON_STRING
-    delimiter = ""
     if subsection.published_date is None:    # we can't compare a date against 'None'
         subsection.published_date = __outline_page_data.now
 
@@ -988,10 +986,8 @@ def outline_page_get_subsection_icon_string(subsection):
         else:
             public_released_string = PUBLIC_NOT_RELEASED
 
-        delimiter = ""
         for unit_locator in public_list:
-            unit_locator_list = delimiter + unit_locator_list + str(unit_locator)
-            delimiter = ";"
+            unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
     else:
         if subsection.start < __outline_page_data.now:
             public_released_string = NOT_ALL_PUBLIC_RELEASED
@@ -1000,17 +996,13 @@ def outline_page_get_subsection_icon_string(subsection):
 
         if (public_count == 0) and ((private_count > 0) or (draft_count > 0)):
             icon_string = ALL_PRIVATE_ICON_STRING
-            delimiter = ""
             for unit_locator in private_list:
-                unit_locator_list = delimiter + unit_locator_list + str(unit_locator)
-                delimiter = ";"
+                unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
 
         if (public_count > 0) and ((private_count > 0) or (draft_count > 0)):
             icon_string = MIXED_STATE_ICON_STRING
-            delimiter = ""
             for unit_locator in private_list:
-                unit_locator_list = delimiter + unit_locator_list + str(unit_locator)
-                delimiter = ";"
+                unit_locator_list = unit_locator_list + str(unit_locator) + ";\n"
 
     return {
         'icon_string':icon_string,
