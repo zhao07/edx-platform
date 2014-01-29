@@ -92,6 +92,11 @@ define(["domReady", "jquery", "jquery.ui", "underscore", "gettext", "js/views/fe
                 translatedText = translatedText.replace('{public_count}', public_count.toString())
                 translatedText = translatedText.replace('{private_count}', private_count.toString())
 
+                function successCallback () {
+                     console.log('successCallback -- refresh the page');
+                     location.reload(true);   // refresh the page
+                };
+
                 var confirm = new PromptView.Warning({
                     title: gettext('Change Unit Status (') + type + ')',
                     message: translatedText,
@@ -105,8 +110,8 @@ define(["domReady", "jquery", "jquery.ui", "underscore", "gettext", "js/views/fe
                                 });
                                 updating.show();
                                 var endpointURL = '/unitstatus/' + unit_locator_list.toString().trim();
-                                $.postJSON(endpointURL, {publish: action});
-                                location.reload(true);   // refresh the page
+                                console.log('About to send json message...');
+                                $.postJSON(endpointURL, {publish: action}, successCallback);
                             }
                         },
                         secondary: {
