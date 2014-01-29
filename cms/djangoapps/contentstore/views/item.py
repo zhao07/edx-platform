@@ -393,10 +393,8 @@ def change_unit_visibility_status_handler(request, tid=None, tag=None, package_i
     POST or PUT
         change the visibility status of the set of units whose location strings are supplied in the message
     """
-
-
-    statusCode = 200            # assume everything will go well
     tokens = str.split(str.replace(str(request.path_info), "/unitstatus/", ""), ";")
+    from pdb import set_trace; set_trace()
     for locator_string in tokens:
         locator_object = BlockUsageLocator(locator_string)
         old_location = loc_mapper().translate_locator_to_location(locator_string)
