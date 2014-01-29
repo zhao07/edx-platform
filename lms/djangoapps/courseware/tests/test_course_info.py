@@ -18,16 +18,24 @@ class CourseInfoTestCase(LoginEnrollmentTestCase, ModuleStoreTestCase):
             category="course_info", parent_location=self.course.location,
             data="OOGIE BLOOGIE", display_name="updates"
         )
+        self.xml_data = "course info 463139"
+        self.xml_course_id = 'edX/detached_pages/2014'
+        self.params = [
+            (self.course.id, "OOGIE BLOOGIE"),
+            (self.xml_course_id, self.xml_data)
+        ]
 
     def test_logged_in(self):
         self.setup_user()
-        url = reverse('info', args=[self.course.id])
-        resp = self.client.get(url)
-        self.assertEqual(resp.status_code, 200)
-        self.assertIn("OOGIE BLOOGIE", resp.content)
+        for course_id, data in self.params:
+            url = reverse('info', args=[course_id])
+            resp = self.client.get(url)
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn(data, resp.content)
 
     def test_anonymous_user(self):
-        url = reverse('info', args=[self.course.id])
-        resp = self.client.get(url)
-        self.assertEqual(resp.status_code, 200)
-        self.assertNotIn("OOGIE BLOOGIE", resp.content)
+        for course_id, data in self.params:
+            url = reverse('info', args=[course_id])
+            resp = self.client.get(url)
+            self.assertEqual(resp.status_code, 200)
+            self.assertNotIn(data, resp.content)

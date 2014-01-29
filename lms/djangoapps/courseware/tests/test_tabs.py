@@ -155,19 +155,29 @@ class StaticTabDateTestCase(LoginEnrollmentTestCase, ModuleStoreTestCase):
             category="static_tab", parent_location=self.course.location,
             data="OOGIE BLOOGIE", display_name="new_tab"
         )
+        self.xml_data = "static 463139"
+        self.xml_name = "Empty"
+        self.xml_course_id = 'edX/detached_pages/2014'
+        self.params = [
+            (self.course.id, "OOGIE BLOOGIE", "new_tab"),
+            (self.xml_course_id, self.xml_data, "Empty")
+        ]
+
 
     def test_logged_in(self):
         self.setup_user()
-        url = reverse('static_tab', args=[self.course.id, 'new_tab'])
-        resp = self.client.get(url)
-        self.assertEqual(resp.status_code, 200)
-        self.assertIn("OOGIE BLOOGIE", resp.content)
+        for course_id, data, name in self.params:
+            url = reverse('static_tab', args=[course_id, name])
+            resp = self.client.get(url)
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn(data, resp.content)
 
     def test_anonymous_user(self):
-        url = reverse('static_tab', args=[self.course.id, 'new_tab'])
-        resp = self.client.get(url)
-        self.assertEqual(resp.status_code, 200)
-        self.assertIn("OOGIE BLOOGIE", resp.content)
+        for course_id, data, name in self.params:
+            url = reverse('static_tab', args=[course_id, name])
+            resp = self.client.get(url)
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn(data, resp.content)
 
 
 class TextbooksTestCase(TestCase):
