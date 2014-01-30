@@ -215,6 +215,10 @@ class StubOraHandler(StubHttpRequestHandler):
         Query counts of submitted, required, graded, and available peer essays
         for a problem location.
 
+        This will send an error response if the problem has not
+        been registered at the given `location`.  This allows us
+        to ignore problems that are self- or ai-graded.
+
         Method: GET
 
         Params:
@@ -229,7 +233,11 @@ class StubOraHandler(StubHttpRequestHandler):
             - count_available (int)
         """
         student = self._student('GET')
-        if student is None:
+        location = self.get_params.get('location')
+
+        # Do not return data if we're missing the student param
+        # or the problem has not yet been registered.
+        if student is None or location not in self.server.problems:
             self._error_response()
 
         else:
@@ -367,6 +375,11 @@ class StubOraHandler(StubHttpRequestHandler):
         In tests, this end-point gets called by the XQueue stub when it receives new submissions,
         much like ORA discovers locations when students submit peer-graded problems to the XQueue.
 
+        Since the LMS sends *all* open-ended problems to the XQueue (including self- and ai-graded),
+        we have to ignore everything except peer-graded problems.  We do so by looking
+        for the text 'peer' in the problem's name.  This is a little bit of a hack,
+        but it makes the implementation much simpler.
+
         Method: POST
 
         Params:
@@ -392,8 +405,16 @@ class StubOraHandler(StubHttpRequestHandler):
             name = payload.get('problem_id')
 
             if location is not None and name is not None:
-                self.server.register_problem(location, name)
-                self.send_response(200)
+
+                if "peer" in name.lower():
+                    self.server.register_problem(location, name)
+                    self.send_response(200)
+
+                else:
+                    self.log_message(
+                        "Problem '{0}' does not have 'peer' in its name.  Ignoring...".format(name)
+                    )
+                    self.send_response(200)
             else:
                 self.log_message(
                     "Grader payload should contain 'location' and 'problem_id' keys: {0}".format(payload)

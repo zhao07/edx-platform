@@ -173,7 +173,9 @@ class StubXQueueHandler(StubHttpRequestHandler):
 
             else:
 
-                # TODO -- comment encodings here
+                # Retrieve the grader payload, which should be a JSON-encoded dict.
+                # We pass the payload directly to the service we are notifying, without
+                # inspecting the contents.
                 grader_payload = xqueue_body.get('grader_payload')
 
                 if grader_payload is not None:
@@ -183,7 +185,6 @@ class StubXQueueHandler(StubHttpRequestHandler):
                             "Could register submission at URL '{0}'.  Status was {1}".format(
                                 url, response.status_code))
 
-
                 else:
                     self.log_message(
                         "XQueue body is missing 'grader_payload' key: '{0}'".format(xqueue_body)
@@ -191,7 +192,7 @@ class StubXQueueHandler(StubHttpRequestHandler):
 
     def _is_grade_request(self):
         """
-        TODO
+        Return a boolean indicating whether the requested URL indicates a submission.
         """
         return 'xqueue/submit' in self.path
 
@@ -218,4 +219,3 @@ class StubXQueueService(StubHttpService):
             key:val for key, val in self.config.iteritems()
             if key not in self.NON_QUEUE_CONFIG_KEYS
         }.items()
-

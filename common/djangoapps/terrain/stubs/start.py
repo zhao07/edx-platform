@@ -53,11 +53,14 @@ def get_args():
 
 def _parse_config_args(args):
     """
-    TODO
+    Parse stub configuration arguments, which are strings of the form "KEY=VAL".
+    `args` is a list of arguments from the command line.
+    Any argument that does not match the "KEY=VAL" format will be logged and skipped.
+
+    Returns a dictionary with the configuration keys and values.
     """
-    # Configuration values are of the form KEY=VAL
     config_dict = dict()
-    for config_str in sys.argv[3:]:
+    for config_str in args:
         try:
             components = config_str.split('=')
             if len(components) >= 2:
