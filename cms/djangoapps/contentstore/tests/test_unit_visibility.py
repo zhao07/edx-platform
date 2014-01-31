@@ -2,9 +2,6 @@ import json
 import sys
 from mock import Mock, patch
 from django.test.utils import override_settings
-from django.test import TestCase
-from django.core import management
-from django.core.urlresolvers import reverse
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 from courseware.tests.tests import TEST_DATA_MONGO_MODULESTORE
@@ -14,170 +11,195 @@ from xmodule.modulestore.django import modulestore
 
 
 @override_settings(MODULESTORE=TEST_DATA_MONGO_MODULESTORE)
-class TestGetProblemGradeDistribution(ModuleStoreTestCase):
+class TestUnitVisibility(ModuleStoreTestCase):
     """
-    Tests needed:
-      - simple test, make sure output correct
-      - test when a problem has two max_grade's, should just take the larger value
+    This test exercises the 'unit visibility' feature code. The feature is primarily visible when
+    a course overview/outline view is opened in the Studio tool. The main functional elements are these:
+
+        * Where units are shown on the page, one new visual element has been added
+            - An icon to the far right in the unit's presentation block
+                This icon indicates the public/private state of the unit.
+
+                The user may click on the icon to request a toggle of the public/private state. Before
+                the change is made a confirmation dialog is presented to the user. Either the user
+                confirms the action or cancels the dialog, aborting the requested operation.
+
+        * Where subsections are shown on the page, two new visual elements have been added
+            - An icon to the far right in the unit's presentation block
+                This icon indicates the public/private state of the units assigned to the subsection.
+                Here there are three possible states for the icon to display: all units public, all units
+                private, or a mix of the two.
+
+                The user may click on the icon to request a change of state for all the assigned units. All
+                public changes to all private (and vice versa). When there is a mix of public/private, the
+                only available change is to make all units public.
+
+                Before the change is made a confirmation dialog is presented to the user. Either the user
+                confirms the action or cancels the dialog, aborting the requested operation.
+
+            - A colored bar to the far left of the subsection's name
+                This bar indicates the public/published state of the subsection. There are four possible
+                states:
+                    All public units and publication date > NOW
+                    All public units and publication date < NOW
+                    Some non-public units and publication date > NOW
+                    Some non-public units and publication date < NOW
+
+        * Where units are shown on the page, one new visual element has been added
+            - An icon to the far right in the unit's presentation block
+                This icon indicates the public/private state of the units assigned to the section.
+                Here there are three possible states for the icon to display: all units public, all units
+                private, or a mix of the two.
+
+                The user may click on the icon to request a toggle of the public/private state. Before
+                the change is made a confirmation dialog is presented to the user. Either the user
+                confirms the action or cancels the dialog, aborting the requested operation.
+
+    The test situation for this test (established at setup time) is a simple course with only two sections, Dog and Cat.
+    Each section has two subsections and each of those, in turn, have two units. This is the schematic representation
+    of the course:
+
+        Course
+            Section: Dog
+                Subsection: Best Friend
+                    Unit_1a
+                    Unit_1b
+                Subsection: Loyal Companion
+                    Unit_2a
+                    Unit_2b
+
+            Section: Cat
+                Subsection: Aloof
+                    Unit_3a
+                    Unit_3b
+                Subsection: Opportunistic Companion
+                    Unit_4a
+                    Unit_4b
     """
-
-    _unit_1 = None
-
     def setUp(self):
-
-        #self.instructor = AdminFactory.create()
-        #self.client.login(username=self.instructor.username, password='test')
-        #self.attempts = 3
+        # ______________________________________ Course
         self.course = CourseFactory.create()
+        sys.stdout.write(str("\ncourse: " + str(self.course.location) + "\n"))
 
-        section = ItemFactory.create(
+        # ______________________________________ Sections
+        self.section_dog = ItemFactory.create(
             parent_location=self.course.location,
             category="chapter",
-            display_name="test factory section",
+            display_name="Dog",
         )
-        sub_section = ItemFactory.create(
-            parent_location=section.location,
-            category="sequential",
-        )
+        sys.stdout.write(str("\n    section_dog: " + str(self.section_dog.location) + "\n"))
 
-        self._unit_1 = ItemFactory.create(
-            parent_location=sub_section.location,
-            category="vertical",
-            metadata={'graded': True, 'format': 'Homework'}
+        self.section_cat = ItemFactory.create(
+            parent_location=self.course.location,
+            category="chapter",
+            display_name="Cat",
         )
-        sys.stdout.write(str("\n_unit_1: " + str(self._unit_1.location) + "\n"))
+        sys.stdout.write(str("\n    section_cat: " + str(self.section_cat.location) + "\n"))
+
+        # ______________________________________ Subsections
+        self.sub_section_best_friend = ItemFactory.create(
+            parent_location=self.section_dog.location,
+            category="sequential",
+            display_name="Best Friend",
+        )
+        sys.stdout.write(str("\n        sub_section_best_friend: " + str(self.sub_section_best_friend.location) + "\n"))
+
+        self.sub_section_loyal_companion = ItemFactory.create(
+            parent_location=self.section_dog.location,
+            category="sequential",
+            display_name="Loyal Companion",
+        )
+        sys.stdout.write(str("\n        sub_section_loyal_companion: " + str(self.sub_section_loyal_companion.location) + "\n"))
+
+        self.sub_section_aloof = ItemFactory.create(
+            parent_location=self.section_cat.location,
+            category="sequential",
+            display_name="Aloof",
+        )
+        sys.stdout.write(str("\n        sub_section_aloof: " + str(self.sub_section_aloof.location) + "\n"))
+
+        self.sub_section_opportunistic_companion = ItemFactory.create(
+            parent_location=self.section_cat.location,
+            category="sequential",
+            display_name="Opportunistic Companion",
+        )
+        sys.stdout.write(str("\n        sub_section_opportunistic_companion: " + str(self.sub_section_opportunistic_companion.location) + "\n"))
+
+        # ______________________________________ Units
+        self.unit_1a = ItemFactory.create(
+            parent_location=self.sub_section_best_friend.location,
+            category="vertical",
+            display_name="Unit 1a",
+
+        )
+        sys.stdout.write(str("\n                unit_1a: " + str(self.unit_1a.location) + "\n"))
+
+        self.unit_1b = ItemFactory.create(
+            parent_location=self.sub_section_best_friend.location,
+            category="vertical",
+            display_name="Unit 1b",
+
+        )
+        sys.stdout.write(str("\n                unit_1b: " + str(self.unit_1b.location) + "\n"))
+
+        self.unit_2a = ItemFactory.create(
+            parent_location=self.sub_section_loyal_companion.location,
+            category="vertical",
+            display_name="Unit 2a",
+
+        )
+        sys.stdout.write(str("\n                unit_2a: " + str(self.unit_2a.location) + "\n"))
+
+        self.unit_2b = ItemFactory.create(
+            parent_location=self.sub_section_loyal_companion.location,
+            category="vertical",
+            display_name="Unit 2b",
+
+        )
+        sys.stdout.write(str("\n                unit_2b: " + str(self.unit_2b.location) + "\n"))
+
+        self.unit_3a = ItemFactory.create(
+            parent_location=self.sub_section_aloof.location,
+            category="vertical",
+            display_name="Unit 3a",
+
+        )
+        sys.stdout.write(str("\n                unit_3a: " + str(self.unit_3a.location) + "\n"))
+
+        self.unit_3b = ItemFactory.create(
+            parent_location=self.sub_section_aloof.location,
+            category="vertical",
+            display_name="Unit 3b",
+
+        )
+        sys.stdout.write(str("\n                unit_3b: " + str(self.unit_3b.location) + "\n"))
+
+        self.unit_4a = ItemFactory.create(
+            parent_location=self.sub_section_opportunistic_companion.location,
+            category="vertical",
+            display_name="Unit 4a",
+
+        )
+        sys.stdout.write(str("\n                unit_4a: " + str(self.unit_4a.location) + "\n"))
+
+        self.unit_4b = ItemFactory.create(
+            parent_location=self.sub_section_opportunistic_companion.location,
+            category="vertical",
+            display_name="Unit 4b",
+
+        )
+        sys.stdout.write(str("\n                unit_4b: " + str(self.unit_4b.location) + "\n"))
 
 
     def test_get_unit_by_locator(self, draft=False):
         '''
         Attempt to reference a single unit
         '''
-        sys.stdout.write(str("\n_unit_1a: " + str(self._unit_1.location) + "\n"))
+        #sys.stdout.write(str("\nunit_1a: " + str(self.unit_1a.location) + "\n"))
 
         store = modulestore('direct')
-        unit = store.get_item(self._unit_1.location)
+        unit = store.get_item(self.unit_1a.location)
 
-        self.assertEquals(1, 1)
-
-
+        self.assertEquals(1, 0)
 
 
-        #self.users = [UserFactory.create() for _ in xrange(USER_COUNT)]
-        #
-        #for user in self.users:
-        #    CourseEnrollmentFactory.create(user=user, course_id=self.course.id)
-        #
-        #for i in xrange(USER_COUNT - 1):
-        #    category = "problem"
-        #    item = ItemFactory.create(
-        #        parent_location=unit.location,
-        #        category=category,
-        #        data=StringResponseXMLFactory().build_xml(answer='foo'),
-        #        metadata={'rerandomize': 'always'}
-        #    )
-        #
-        #    for j, user in enumerate(self.users):
-        #        StudentModuleFactory.create(
-        #            grade=1 if i < j else 0,
-        #            max_grade=1 if i < j else 0.5,
-        #            student=user,
-        #            course_id=self.course.id,
-        #            module_state_key=Location(item.location).url(),
-        #            state=json.dumps({'attempts': self.attempts}),
-        #        )
-        #
-        #    for j, user in enumerate(self.users):
-        #        StudentModuleFactory.create(
-        #            course_id=self.course.id,
-        #            module_type='sequential',
-        #            module_state_key=Location(item.location).url(),
-        #        )
-
-    #def test_get_problem_grade_distribution(self):
-    #
-    #    prob_grade_distrib = get_problem_grade_distribution(self.course.id)
-    #
-    #    for problem in prob_grade_distrib:
-    #        max_grade = prob_grade_distrib[problem]['max_grade']
-    #        self.assertEquals(1, max_grade)
-    #
-    #def test_get_sequential_open_distibution(self):
-    #
-    #    sequential_open_distrib = get_sequential_open_distrib(self.course.id)
-    #
-    #    for problem in sequential_open_distrib:
-    #        num_students = sequential_open_distrib[problem]
-    #        self.assertEquals(USER_COUNT, num_students)
-    #
-    #def test_get_problemset_grade_distrib(self):
-    #
-    #    prob_grade_distrib = get_problem_grade_distribution(self.course.id)
-    #    probset_grade_distrib = get_problem_set_grade_distrib(self.course.id, prob_grade_distrib)
-    #
-    #    for problem in probset_grade_distrib:
-    #        max_grade = probset_grade_distrib[problem]['max_grade']
-    #        self.assertEquals(1, max_grade)
-    #
-    #        grade_distrib = probset_grade_distrib[problem]['grade_distrib']
-    #        sum_attempts = 0
-    #        for item in grade_distrib:
-    #            sum_attempts += item[1]
-    #        self.assertEquals(USER_COUNT, sum_attempts)
-
-    #def test_get_d3_problem_grade_distrib(self):
-    #
-    #    d3_data = get_d3_problem_grade_distrib(self.course.id)
-    #    for data in d3_data:
-    #        for stack_data in data['data']:
-    #            sum_values = 0
-    #            for problem in stack_data['stackData']:
-    #                sum_values += problem['value']
-    #            self.assertEquals(USER_COUNT, sum_values)
-    #
-    #def test_get_d3_sequential_open_distrib(self):
-    #
-    #    d3_data = get_d3_sequential_open_distrib(self.course.id)
-    #
-    #    for data in d3_data:
-    #        for stack_data in data['data']:
-    #            for problem in stack_data['stackData']:
-    #                value = problem['value']
-    #            self.assertEquals(0, value)
-    #
-    #def test_get_d3_section_grade_distrib(self):
-    #
-    #    d3_data = get_d3_section_grade_distrib(self.course.id, 0)
-    #
-    #    for stack_data in d3_data:
-    #        sum_values = 0
-    #        for problem in stack_data['stackData']:
-    #            sum_values += problem['value']
-    #        self.assertEquals(USER_COUNT, sum_values)
-    #
-    #def test_get_section_display_name(self):
-    #
-    #    section_display_name = get_section_display_name(self.course.id)
-    #    self.assertMultiLineEqual(section_display_name[0], 'test factory section')
-    #
-    #def test_get_array_section_has_problem(self):
-    #
-    #    b_section_has_problem = get_array_section_has_problem(self.course.id)
-    #    self.assertEquals(b_section_has_problem[0], True)
-    #
-    #def test_dashboard(self):
-    #
-    #    url = reverse('instructor_dashboard', kwargs={'course_id': self.course.id})
-    #    response = self.client.post(
-    #        url,
-    #        {
-    #            'idash_mode': 'Metrics'
-    #        }
-    #    )
-    #    self.assertContains(response, '<h2>Course Statistics At A Glance</h2>')
-    #
-    #def test_has_instructor_access_for_class(self):
-    #    """
-    #    Test for instructor access
-    #    """
-    #    #ret_val = has_instructor_access_for_class(self.instructor, self.course.id)
-    #    #self.assertEquals(ret_val, True)
