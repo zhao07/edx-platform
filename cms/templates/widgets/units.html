@@ -52,7 +52,7 @@ This def will enumerate through a passed in subsection and list all of the units
             <span data-tooltip="${_('Drag to sort')}" class="drag-handle unit-drag-handle action"><span class="sr"> ${_("Drag to reorder unit")}</span></span>
           </li>
             <%
-                statusDictionary = outline_page_get_unit_icon_string(unit)
+                statusDictionary = outline_page_get_unit_icon_string(unit, unit_locator)
             %>
             <a href="#" data-tooltip="${_('Change unit status')}">
               <i class="${statusDictionary['icon_string']} unit-status-change-unit">
