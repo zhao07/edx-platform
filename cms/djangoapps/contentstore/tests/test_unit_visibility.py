@@ -1,5 +1,7 @@
 import json
 import sys
+import re
+
 from mock import Mock, patch
 from django.test.utils import override_settings
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
@@ -84,7 +86,7 @@ class TestUnitVisibility(ModuleStoreTestCase):
                     Unit_4b
     """
     def setUp(self):
-        self.create_and_login_user()
+        self._create_and_login_user()
 
         # ______________________________________ Course
         self.course = CourseFactory.create()
@@ -198,10 +200,14 @@ class TestUnitVisibility(ModuleStoreTestCase):
 
         )
         print(str("\n                unit_4b: " + str(self.unit_4b.location)))
-
         print("\n\n")
 
-    def create_and_login_user(self):
+        self._get_html_response()
+
+    def _create_and_login_user(self):
+        '''
+        Create a test user and log the new user into the system
+        '''
         uname = 'testuser'
         email = 'test+courses@edx.org'
         password = 'foo'
@@ -217,35 +223,63 @@ class TestUnitVisibility(ModuleStoreTestCase):
         else:
             print 'Login failed: ' + uname
 
-    #def test_verify_test_course(self):
-    #    '''
-    #    Establish the test course has been created properly
-    #    '''
-    #    print('test_verify_test_course')
-    #    from pdb import set_trace; set_trace()
-    #    store = modulestore('direct')
-    #
-    #    # check the ancestry of each of the units
-    #    unit_1a = store.get_item(self.unit_1a.location)
-    #
-    #
-    #    self.assertEquals(1, 1)
-
-    def test_get_html_response(self):
+    def _get_html_response(self):
+        '''
+        Request the Studio outline view of the course
+        '''
         store = modulestore('direct')
         descriptor = store.get_item(self.course.location)
         locator = loc_mapper().translate_location(self.course.location.course_id, descriptor.location, False, True)
+        url = locator.url().replace('edx:/', 'http://127.0.0.1:8001/course')
 
-        #url = locator.url()
-        #url = 'edx://MITx.999.Robot_Super_Course/branch/draft/block/Robot_Super_Course'
-        url = 'http://127.0.0.1:8001/course/MITx.999.Robot_Super_Course/branch/draft/block/Robot_Super_Course'  # <<<< this works!
+        self.outline_view_html = self.client.get_html(url)
 
-        response = self.client.get_html(url)
-        #from pdb import set_trace; set_trace()
-     #   response = self.client.get_html(locator.url_reverse('xblock'))
-       # response = self.client.get_html(locator.url_reverse('unitstatus'))
-       # response = self.client.get_html('http://127.0.0.1:8001/course/StanfordUniveristy.CS100.Fall2015/branch/draft/block/Fall2015')
-        print '______________________________________________________ ' + url
-        print response
+        #for i in range(0,5):
+        #    print '______________________________________________________ '
+        #print url
+        #print '______________________________________________________ '
+        #print self.outline_view_html
+
+    def test_verify_course_outline(self):
+        #line = "Cats are smarter than dogs but hidden Cats are smarter still"
+        #line = str(self.outline_view_html)
+        #
+        #
+        #
+        #print str(self.outline_view_html)
+        #search_text = str(self.outline_view_html)
+        #search_text = " this is html "
+        #match = re.match(r'(html)', search_text)
+        #if match:
+        #    print 'Match found: ', match.group()
+        #else:
+        #    print 'No match'
+
+        matchObj = re.search( r'(hidden)', str(self.outline_view_html))
+        if matchObj:
+           print "search --> matchObj.groups() : ", matchObj.groups()
+        else:
+           print "No match!!"
+
+
+        #
+        #
+        ##matchObj = re.match( r'(.*) are (.*?) .*', line, re.M|re.I)
+        ##
+        ##if matchObj:
+        ##   print "matchObj.group() : ", matchObj.group()
+        ##   print "matchObj.group(1) : ", matchObj.group(1)
+        ##   print "matchObj.group(2) : ", matchObj.group(2)
+        ##else:
+        ##   print "No match!!"
+        #
+        #oMatch = re.search(r'Bats', line)
+        #if oMatch:
+        #    print "matchObj.groups()", oMatch.groups()
+        #    print "matchObj.group() : ", oMatch.group()
+        #    #print "matchObj.group(0) : ", oMatch.group(0)
+        #    #print "matchObj.group(1) : ", oMatch.group(1)
+        #    #print "matchObj.group(2) : ", oMatch.group(2)
+
 
 
