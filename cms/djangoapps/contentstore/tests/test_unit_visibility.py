@@ -83,25 +83,6 @@ class TestUnitVisibility(ModuleStoreTestCase):
                     Unit_4a
                     Unit_4b
     """
-    def create_and_login_user(self):
-        """
-
-        """
-        uname = 'testuser'
-        email = 'test+courses@edx.org'
-        password = 'foo'
-
-        self.user = User.objects.create_user(uname, email, password)
-        self.user.is_active = True
-        self.user.is_staff = True
-        self.user.save()
-        self.client = AjaxEnabledTestClient()
-        self.client.login(username=uname, password=password)
-        if self.client.login(username=uname, password=password):
-            print 'Login successful: ' + uname
-        else:
-            print 'Login failed: ' + uname
-
     def setUp(self):
         self.create_and_login_user()
 
@@ -220,6 +201,21 @@ class TestUnitVisibility(ModuleStoreTestCase):
 
         print("\n\n")
 
+    def create_and_login_user(self):
+        uname = 'testuser'
+        email = 'test+courses@edx.org'
+        password = 'foo'
+
+        self.user = User.objects.create_user(uname, email, password)
+        self.user.is_active = True
+        self.user.is_staff = True
+        self.user.save()
+        self.client = AjaxEnabledTestClient()
+
+        if self.client.login(username=uname, password=password):
+            print 'Login successful: ' + uname
+        else:
+            print 'Login failed: ' + uname
 
     #def test_verify_test_course(self):
     #    '''
@@ -237,13 +233,19 @@ class TestUnitVisibility(ModuleStoreTestCase):
 
     def test_get_html_response(self):
         store = modulestore('direct')
-        descriptor = store.get_item(self.unit_1a.location)
+        descriptor = store.get_item(self.course.location)
         locator = loc_mapper().translate_location(self.course.location.course_id, descriptor.location, False, True)
 
-        from pdb import set_trace; set_trace()
+        #url = locator.url()
+        #url = 'edx://MITx.999.Robot_Super_Course/branch/draft/block/Robot_Super_Course'
+        url = 'http://127.0.0.1:8001/course/MITx.999.Robot_Super_Course/branch/draft/block/Robot_Super_Course'  # <<<< this works!
+
+        response = self.client.get_html(url)
+        #from pdb import set_trace; set_trace()
      #   response = self.client.get_html(locator.url_reverse('xblock'))
        # response = self.client.get_html(locator.url_reverse('unitstatus'))
-        response = self.client.get_html('http://127.0.0.1:8001/course/StanfordUniveristy.CS100.Fall2015/branch/draft/block/Fall2015')
+       # response = self.client.get_html('http://127.0.0.1:8001/course/StanfordUniveristy.CS100.Fall2015/branch/draft/block/Fall2015')
+        print '______________________________________________________ ' + url
         print response
 
 
