@@ -8,6 +8,13 @@ from courseware.tests.tests import TEST_DATA_MONGO_MODULESTORE
 from xmodule.modulestore import Location
 from xmodule.course_module import CourseDescriptor
 from xmodule.modulestore.django import modulestore
+from xmodule.modulestore.locator import BlockUsageLocator
+from contentstore.tests.utils import parse_json, AjaxEnabledTestClient
+from xmodule.modulestore.locator import BlockUsageLocator
+from xmodule.modulestore.django import loc_mapper
+from django.contrib.auth.models import User
+from django.test.client import Client
+from django.test.utils import override_settings
 
 
 @override_settings(MODULESTORE=TEST_DATA_MONGO_MODULESTORE)
@@ -76,10 +83,31 @@ class TestUnitVisibility(ModuleStoreTestCase):
                     Unit_4a
                     Unit_4b
     """
+    def create_and_login_user(self):
+        """
+
+        """
+        uname = 'testuser'
+        email = 'test+courses@edx.org'
+        password = 'foo'
+
+        self.user = User.objects.create_user(uname, email, password)
+        self.user.is_active = True
+        self.user.is_staff = True
+        self.user.save()
+        self.client = AjaxEnabledTestClient()
+        self.client.login(username=uname, password=password)
+        if self.client.login(username=uname, password=password):
+            print 'Login successful: ' + uname
+        else:
+            print 'Login failed: ' + uname
+
     def setUp(self):
+        self.create_and_login_user()
+
         # ______________________________________ Course
         self.course = CourseFactory.create()
-        sys.stdout.write(str("\ncourse: " + str(self.course.location) + "\n"))
+        print(str("\ncourse: " + str(self.course.location)))
 
         # ______________________________________ Sections
         self.section_dog = ItemFactory.create(
@@ -87,14 +115,14 @@ class TestUnitVisibility(ModuleStoreTestCase):
             category="chapter",
             display_name="Dog",
         )
-        sys.stdout.write(str("\n    section_dog: " + str(self.section_dog.location) + "\n"))
+        print(str("\n    section_dog: " + str(self.section_dog.location)))
 
         self.section_cat = ItemFactory.create(
             parent_location=self.course.location,
             category="chapter",
             display_name="Cat",
         )
-        sys.stdout.write(str("\n    section_cat: " + str(self.section_cat.location) + "\n"))
+        print(str("\n    section_cat: " + str(self.section_cat.location)))
 
         # ______________________________________ Subsections
         self.sub_section_best_friend = ItemFactory.create(
@@ -102,28 +130,28 @@ class TestUnitVisibility(ModuleStoreTestCase):
             category="sequential",
             display_name="Best Friend",
         )
-        sys.stdout.write(str("\n        sub_section_best_friend: " + str(self.sub_section_best_friend.location) + "\n"))
+        print(str("\n        sub_section_best_friend: " + str(self.sub_section_best_friend.location)))
 
         self.sub_section_loyal_companion = ItemFactory.create(
             parent_location=self.section_dog.location,
             category="sequential",
             display_name="Loyal Companion",
         )
-        sys.stdout.write(str("\n        sub_section_loyal_companion: " + str(self.sub_section_loyal_companion.location) + "\n"))
+        print(str("\n        sub_section_loyal_companion: " + str(self.sub_section_loyal_companion.location)))
 
         self.sub_section_aloof = ItemFactory.create(
             parent_location=self.section_cat.location,
             category="sequential",
             display_name="Aloof",
         )
-        sys.stdout.write(str("\n        sub_section_aloof: " + str(self.sub_section_aloof.location) + "\n"))
+        print(str("\n        sub_section_aloof: " + str(self.sub_section_aloof.location)))
 
         self.sub_section_opportunistic_companion = ItemFactory.create(
             parent_location=self.section_cat.location,
             category="sequential",
             display_name="Opportunistic Companion",
         )
-        sys.stdout.write(str("\n        sub_section_opportunistic_companion: " + str(self.sub_section_opportunistic_companion.location) + "\n"))
+        print(str("\n        sub_section_opportunistic_companion: " + str(self.sub_section_opportunistic_companion.location)))
 
         # ______________________________________ Units
         self.unit_1a = ItemFactory.create(
@@ -132,7 +160,7 @@ class TestUnitVisibility(ModuleStoreTestCase):
             display_name="Unit 1a",
 
         )
-        sys.stdout.write(str("\n                unit_1a: " + str(self.unit_1a.location) + "\n"))
+        print(str("\n                unit_1a: " + str(self.unit_1a.location)))
 
         self.unit_1b = ItemFactory.create(
             parent_location=self.sub_section_best_friend.location,
@@ -140,7 +168,7 @@ class TestUnitVisibility(ModuleStoreTestCase):
             display_name="Unit 1b",
 
         )
-        sys.stdout.write(str("\n                unit_1b: " + str(self.unit_1b.location) + "\n"))
+        print(str("\n                unit_1b: " + str(self.unit_1b.location)))
 
         self.unit_2a = ItemFactory.create(
             parent_location=self.sub_section_loyal_companion.location,
@@ -148,7 +176,7 @@ class TestUnitVisibility(ModuleStoreTestCase):
             display_name="Unit 2a",
 
         )
-        sys.stdout.write(str("\n                unit_2a: " + str(self.unit_2a.location) + "\n"))
+        print(str("\n                unit_2a: " + str(self.unit_2a.location)))
 
         self.unit_2b = ItemFactory.create(
             parent_location=self.sub_section_loyal_companion.location,
@@ -156,7 +184,7 @@ class TestUnitVisibility(ModuleStoreTestCase):
             display_name="Unit 2b",
 
         )
-        sys.stdout.write(str("\n                unit_2b: " + str(self.unit_2b.location) + "\n"))
+        print(str("\n                unit_2b: " + str(self.unit_2b.location)))
 
         self.unit_3a = ItemFactory.create(
             parent_location=self.sub_section_aloof.location,
@@ -164,7 +192,7 @@ class TestUnitVisibility(ModuleStoreTestCase):
             display_name="Unit 3a",
 
         )
-        sys.stdout.write(str("\n                unit_3a: " + str(self.unit_3a.location) + "\n"))
+        print(str("\n                unit_3a: " + str(self.unit_3a.location)))
 
         self.unit_3b = ItemFactory.create(
             parent_location=self.sub_section_aloof.location,
@@ -172,7 +200,7 @@ class TestUnitVisibility(ModuleStoreTestCase):
             display_name="Unit 3b",
 
         )
-        sys.stdout.write(str("\n                unit_3b: " + str(self.unit_3b.location) + "\n"))
+        print(str("\n                unit_3b: " + str(self.unit_3b.location)))
 
         self.unit_4a = ItemFactory.create(
             parent_location=self.sub_section_opportunistic_companion.location,
@@ -180,7 +208,7 @@ class TestUnitVisibility(ModuleStoreTestCase):
             display_name="Unit 4a",
 
         )
-        sys.stdout.write(str("\n                unit_4a: " + str(self.unit_4a.location) + "\n"))
+        print(str("\n                unit_4a: " + str(self.unit_4a.location)))
 
         self.unit_4b = ItemFactory.create(
             parent_location=self.sub_section_opportunistic_companion.location,
@@ -188,18 +216,34 @@ class TestUnitVisibility(ModuleStoreTestCase):
             display_name="Unit 4b",
 
         )
-        sys.stdout.write(str("\n                unit_4b: " + str(self.unit_4b.location) + "\n"))
+        print(str("\n                unit_4b: " + str(self.unit_4b.location)))
+
+        print("\n\n")
 
 
-    def test_get_unit_by_locator(self, draft=False):
-        '''
-        Attempt to reference a single unit
-        '''
-        #sys.stdout.write(str("\nunit_1a: " + str(self.unit_1a.location) + "\n"))
+    #def test_verify_test_course(self):
+    #    '''
+    #    Establish the test course has been created properly
+    #    '''
+    #    print('test_verify_test_course')
+    #    from pdb import set_trace; set_trace()
+    #    store = modulestore('direct')
+    #
+    #    # check the ancestry of each of the units
+    #    unit_1a = store.get_item(self.unit_1a.location)
+    #
+    #
+    #    self.assertEquals(1, 1)
 
+    def test_get_html_response(self):
         store = modulestore('direct')
-        unit = store.get_item(self.unit_1a.location)
+        descriptor = store.get_item(self.unit_1a.location)
+        locator = loc_mapper().translate_location(self.course.location.course_id, descriptor.location, False, True)
 
-        self.assertEquals(1, 0)
+        from pdb import set_trace; set_trace()
+     #   response = self.client.get_html(locator.url_reverse('xblock'))
+       # response = self.client.get_html(locator.url_reverse('unitstatus'))
+        response = self.client.get_html('http://127.0.0.1:8001/course/StanfordUniveristy.CS100.Fall2015/branch/draft/block/Fall2015')
+        print response
 
 
