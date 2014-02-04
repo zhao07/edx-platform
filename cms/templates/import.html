@@ -146,8 +146,8 @@
 <%block name="jsextra">
 <script>
 require(
-        ["js/views/import", "jquery", "gettext", "jquery.fileupload"],
-        function(CourseImport, $, gettext) {
+        ["js/views/import", "jquery", "jquery.fileupload"],
+        function(CourseImport, $) {
 
 var file;
 var bar = $('.progress-bar');
@@ -190,8 +190,16 @@ $('#fileupload').fileupload({
                     CourseImport.stopGetStatus = true;
                     window.onbeforeunload = null;
                     if (xhr.status != 200) {
+                        if (textStatus == "timeout") {
+                          alert(${_("Your browser has timed out, but the server is "
+                            "still processing your import. Please wait several "
+                            "minutes for the import to complete, and then verify "
+                            "that the new content has appeared.")});
+                          return;
+                        }
                         if (!result.responseText) {
-                            alert(gettext("Your import may have failed. Please check your course and try again if necessary."));
+                            alert(${_("Your import may have failed. Please "
+                              "check your course and try again if necessary.")});
                             return;
                         }
                         var serverMsg = $.parseJSON(result.responseText);
