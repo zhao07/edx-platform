@@ -6,11 +6,23 @@ The following sections detail how edX stores Wiki data internally, and is useful
 
 EdX currently uses an external application called Django Wiki for Wiki functionality within courses. 
 
+In the data package, wiki data is delivered in two SQL files: 
 
+* The "wiki_article" file includes TBD. The full name of this file also includes the organization and course, and indicates a source of either prod (edX) or edge, in this format: edX-*organization*-*course*-wiki_article-*source*-analytics.sql. 
 
-****************
-wiki_article
-****************
+* The "wiki_articlerevision" file includes TBD. The full name of this file is in this format: edX-*organization*-*course*-wiki_articlerevision-*source*-analytics.sql.
+
+********************************
+Fields in the wiki_article file
+********************************
+
+The header row of the wiki-article file, and a row of sample data, follow.
+
+    id  current_revision_id created modified  owner_id  group_id  group_read  group_write other_read  other_write
+
+    1437  29819 2013-07-17 21:53:57 2014-01-26 14:48:02 NULL  NULL  1 1 1 1 
+
+The table that follows provides a reference to characteristics of each field in this file. A description of each field follows the table. 
 
   .. list-table::
      :widths: 15 15 15 15
@@ -61,21 +73,17 @@ wiki_article
        - NO
        - 
 
-
 `id`
 ----
   The primary key. 
   
-
 `current_revision_id`
 ------------------------------
    The ID of the revision that is displayed for this article.
 
-
 `created`
 ------------
     The date the article was created.
-
 
 `modified`
 ------------
@@ -106,13 +114,17 @@ wiki_article
 ----------------------
     Whether others have read access to the article.
 
+******************************************************
+Fields in the wiki_articlerevision file 
+******************************************************
 
+The header row of the wiki-articlerevision file, and a row of sample data, follow.
 
+    id  revision_number user_message  automatic_log ip_address  user_id modified  created previous_revision_id  deleted locked  article_id  content title
+    
+    17553 1 Course page automatically created.    NULL  NULL  2013-07-17 21:53:57 2013-07-17 21:53:57 NULL  0 0 1437  This is the wiki for **edX**'s _edX Demonstration Course_.  DemoX
 
-
-**********************
-wiki_articlerevision
-**********************
+The table that follows provides a reference to the characteristics of each field in this file. Descriptions of the fields follow the table. 
 
   .. list-table::
      :widths: 15 15 15 15
@@ -179,41 +191,37 @@ wiki_articlerevision
        - NO
        - 
      
-
-
 `id`
 ----
   The primary key. 
-
 
 `revision_number`
 --------------------
    The ID of the revision.
 
-
 `user_message`
 ----------------------
     The message the user added when saving the revision.
 
-
 `automatic_log`
 ----------------------
+    **TBD**
 
-    
+`ip_address`
+----------------------
+    **TBD**
+
 `user_id`
 ------------
     The ID of the user who made the revision.
-
 
 `modified`
 ------------
     The date the article was last modified.
     
-
 `created`
 ------------
     The date the article was created.
-
 
 `previous_revision_id`
 ----------------------
@@ -223,7 +231,6 @@ wiki_articlerevision
 ------------
     Whether or not the revision was deleted.
 
-
 `locked`
 ------------
     Whether or not the revision is locked.
@@ -231,7 +238,6 @@ wiki_articlerevision
 `article_id`
 --------------------
    The ID of the revision that is displayed for this article.
-
 
 `content`
 ------------
