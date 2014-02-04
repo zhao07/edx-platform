@@ -98,8 +98,9 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
           <input type="text" value="${_('New Section Name')}" class="new-section-name" />
           <input type="submit" class="new-section-name-save" data-parent="${parent_locator}"
                  data-category="${new_section_category}" value="${_('Save')}" />
-          <input type="button" class="new-section-name-cancel" value="$(_('Cancel')}" /></h3>
+          <input type="button" class="new-section-name-cancel" value="$(_('Cancel')}" />
         </form>
+        </h3>
       </div>
       <div class="item-actions">
         <a href="#" data-tooltip="${_('Delete this section')}" class="delete-button delete-section-button"><span class="delete-icon"></span></a>
@@ -238,10 +239,10 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                       <li class="actions-item drag">
                           <i class="${statusDictionary['icon_string']} unit-status-change-section">
                             <!-- div elements are invisible containers to hold unit counts and a list of locations -->
-                            <div  hidden class='public_count'>      ${statusDictionary['public_count']}         </div>
-                            <div  hidden class='private_count'>     ${statusDictionary['private_count']}        </div>
-                            <div  hidden class='draft_count'>       ${statusDictionary['draft_count']}          </div>
-                            <div  hidden class='unit_locator_list'> ${statusDictionary['unit_locator_list']}    </div>
+                            <div  hidden="true" class='public_count'>      ${statusDictionary['public_count']}         </div>
+                            <div  hidden="true" class='private_count'>     ${statusDictionary['private_count']}        </div>
+                            <div  hidden="true" class='draft_count'>       ${statusDictionary['draft_count']}          </div>
+                            <div  hidden="true" class='unit_locator_list'> ${statusDictionary['unit_locator_list']}    </div>
                           </i>
                       </li>
                     </ul>
@@ -317,10 +318,10 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                             <li class="actions-item">
                                 <i class="${statusDictionary['icon_string']} unit-status-change-subsection">
                                     <!-- div elements are invisible containers to hold unit counts and a list of locations -->
-                                    <div  hidden class='public_count'>           ${statusDictionary['public_count']}              </div>
-                                    <div  hidden class='private_count'>          ${statusDictionary['private_count']}             </div>
-                                    <div  hidden class='draft_count'>            ${statusDictionary['draft_count']}               </div>
-                                    <div  hidden class='unit_locator_list'>      ${statusDictionary['unit_locator_list']}         </div>
+                                    <div  hidden="true" class='public_count'>           ${statusDictionary['public_count']}              </div>
+                                    <div  hidden="true" class='private_count'>          ${statusDictionary['private_count']}             </div>
+                                    <div  hidden="true" class='draft_count'>            ${statusDictionary['draft_count']}               </div>
+                                    <div  hidden="true" class='unit_locator_list'>      ${statusDictionary['unit_locator_list']}         </div>
                                 </i>
                             </li>
                           </ul>
