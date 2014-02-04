@@ -118,6 +118,7 @@ def expand_checklist_action_url(course_module, checklist):
     urlconf_map = {
         "ManageUsers": "course_team",
         "CourseOutline": "course",
+        "StaticPages": "tabs",
         "SettingsDetails": "settings/details",
         "SettingsGrading": "settings/grading",
     }
