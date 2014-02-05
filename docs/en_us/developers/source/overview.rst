@@ -125,57 +125,9 @@ The following list describes the common libraries in the edX platform.
    -  Capa code is located in ``common/lib/capa``
 
 
-LMS
-~~~
 
-The LMS is a django site, with root in ``lms/``. It runs in many
-different environments--the settings files are in ``lms/envs``.
 
--  We use the Django Auth system, including the is\_staff and
-   is\_superuser flags. User profiles and related code lives in
-   ``lms/djangoapps/student/``. There is support for groups of students
-   (e.g. 'want emails about future courses', 'have unenrolled', etc) in
-   ``lms/djangoapps/student/models.py``.
 
--  ``StudentModule`` -- keeps track of where a particular student is in
-   a module (problem, video, html)--what's their grade, have they
-   started, are they done, etc. [This is only partly implemented so
-   far.]
-
-   -  ``lms/djangoapps/courseware/models.py``
-
--  Core rendering path:
--  ``lms/urls.py`` points to ``courseware.views.index``, which gets
-   module info from the course xml file, pulls list of ``StudentModule``
-   objects for this user (to avoid multiple db hits).
-
--  Calls ``render_accordion`` to render the "accordion"--the display of
-   the course structure.
-
--  To render the current module, calls
-   ``module_render.py:render_x_module()``, which gets the
-   ``StudentModule`` instance, and passes the ``StudentModule`` state
-   and other system context to the module constructor the get an
-   instance of the appropriate module class for this user.
-
--  calls the module's ``.get_html()`` method. If the module has nested
-   submodules, render\_x\_module() will be called again for each.
-
--  ajax calls go to ``module_render.py:handle_xblock_callback()``, which
-   passes it to one of the ``XBlock``\ s handler functions
-
--  See ``lms/urls.py`` for the wirings of urls to views.
-
--  Tracking: there is support for basic tracking of client-side events
-   in ``lms/djangoapps/track``.
-
-CMS
-~~~
-
-The CMS is a django site, with root in ``cms``. It can run in a number
-of different environments, defined in ``cms/envs``.
-
--  Core rendering path: Still TBD
 
 Static file processing
 ~~~~~~~~~~~~~~~~~~~~~~
