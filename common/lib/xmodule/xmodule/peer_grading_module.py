@@ -21,8 +21,6 @@ from django.utils.timezone import UTC
 
 log = logging.getLogger(__name__)
 
-
-EXTERNAL_GRADER_NO_CONTACT_ERROR = "Failed to contact external graders.  Please notify course staff."
 MAX_ALLOWED_FEEDBACK_LENGTH = 5000
 
 
@@ -126,8 +124,10 @@ class PeerGradingModule(PeerGradingFields, XModule):
         if self.use_for_single_location_local:
             linked_descriptors = self.descriptor.get_required_module_descriptors()
             if len(linked_descriptors) == 0:
-                error_msg = "Peer grading module {0} is trying to use single problem mode without "
-                "a location specified.".format(self.location)
+                error_msg = (
+                    "The peer grading module with location {0} is trying to use single problem mode without "
+                    "a location specified."
+                ).format(self.location)
                 log.error(error_msg)
                 # Change module over to panel mode from single problem mode.
                 self.use_for_single_location_local = False
@@ -173,10 +173,11 @@ class PeerGradingModule(PeerGradingFields, XModule):
         return {'success': False, 'error': msg}
 
     def _check_required(self, data, required):
+        _ = self.runtime.service(self, "i18n").ugettext
         actual = set(data.keys())
         missing = required - actual
         if len(missing) > 0:
-            return False, "Missing required keys: {0}".format(', '.join(missing))
+            return False, _("Missing required keys: {0}").format(', '.join(missing))
         else:
             return True, ""
 
@@ -197,6 +198,7 @@ class PeerGradingModule(PeerGradingFields, XModule):
         Needs to be implemented by child modules.  Handles AJAX events.
         @return:
         """
+        _ = self.runtime.service(self, "i18n").ugettext
         handlers = {
             'get_next_submission': self.get_next_submission,
             'show_calibration_essay': self.show_calibration_essay,
@@ -210,7 +212,7 @@ class PeerGradingModule(PeerGradingFields, XModule):
             # This is a dev_facing_error
             log.error("Cannot find {0} in handlers in handle_ajax function for open_ended_module.py".format(dispatch))
             # This is a dev_facing_error
-            return json.dumps({'error': 'Error handling action.  Please try again.', 'success': False})
+            return json.dumps({'error': _('Error handling action.  Please try again.'), 'success': False})
 
         d = handlers[dispatch](data)
 
@@ -319,8 +321,13 @@ class PeerGradingModule(PeerGradingFields, XModule):
             log.exception("Error getting next submission.  server url: {0}  location: {1}, grader_id: {2}"
             .format(self.peer_gs.url, location, grader_id))
             # This is a student_facing_error
-            return {'success': False,
-                    'error': EXTERNAL_GRADER_NO_CONTACT_ERROR}
+            _ = self.runtime.service(self, "i18n").ugettext
+            return {
+                'success': False,
+                'error': _(
+                    "Failed to contact external graders. Please notify course staff."
+                )
+            }
 
     def save_grade(self, data):
         """
@@ -369,9 +376,10 @@ class PeerGradingModule(PeerGradingFields, XModule):
             .format(self.peer_gs.url)
             )
             # This is a student_facing_error
+            _ = self.runtime.service(self, "i18n").ugettext
             return {
                 'success': False,
-                'error': EXTERNAL_GRADER_NO_CONTACT_ERROR
+                'error': _("Failed to contact external graders. Please notify course staff.")
             }
 
     def is_student_calibrated(self, data):
@@ -408,9 +416,10 @@ class PeerGradingModule(PeerGradingFields, XModule):
             log.exception("Error from open ended grading service.  server url: {0}, grader_id: {0}, location: {1}"
             .format(self.peer_gs.url, grader_id, location))
             # This is a student_facing_error
+            _ = self.runtime.service(self, "i18n").ugettext
             return {
                 'success': False,
-                'error': EXTERNAL_GRADER_NO_CONTACT_ERROR
+                'error': _("Failed to contact external graders. Please notify course staff.")
             }
 
     def show_calibration_essay(self, data):
@@ -452,16 +461,22 @@ class PeerGradingModule(PeerGradingFields, XModule):
             # This is a dev_facing_error
             log.exception("Error from open ended grading service.  server url: {0}, location: {0}"
             .format(self.peer_gs.url, location))
+            _ = self.runtime.service(self, "i18n").ugettext
             # This is a student_facing_error
-            return {'success': False,
-                    'error': EXTERNAL_GRADER_NO_CONTACT_ERROR}
+            return {
+                'success': False,
+                'error': _("Failed to contact external graders. Please notify course staff.")
+            }
         # if we can't parse the rubric into HTML,
         except etree.XMLSyntaxError:
             # This is a dev_facing_error
             log.exception("Cannot parse rubric string.")
+            _ = self.runtime.service(self, "i18n").ugettext
             # This is a student_facing_error
-            return {'success': False,
-                    'error': 'Error displaying submission.  Please notify course staff.'}
+            return {
+                'success': False,
+                'error': _('Error displaying submission. Please notify course staff.')
+            }
 
     def save_calibration_essay(self, data):
         """
@@ -501,7 +516,7 @@ class PeerGradingModule(PeerGradingFields, XModule):
             # This is a dev_facing_error
             log.exception("Error saving calibration grade")
             # This is a student_facing_error
-            return self._err_response('There was an error saving your score.  Please notify course staff.')
+            return self._err_response('There was an error saving your score. Please notify course staff.')
 
     def peer_grading_closed(self):
         '''
@@ -533,6 +548,7 @@ class PeerGradingModule(PeerGradingFields, XModule):
         '''
 
         # call problem list service
+        _ = self.runtime.service(self, "i18n").ugettext
         success = False
         error_text = ""
         problem_list = []
@@ -541,19 +557,27 @@ class PeerGradingModule(PeerGradingFields, XModule):
             problem_list_dict = problem_list_json
             success = problem_list_dict['success']
             if 'error' in problem_list_dict:
-                error_text = problem_list_dict['error']
+                # A bit of a hack: `error_text` is meant to be set
+                # to `problem_list_dict['error']`. We're overwriting that
+                # here with something less scary-looking.
+                # Once we fix it on the ora side, we can reset this to
+                # `problem_list_dict['error']`
+                error_text = _(
+                    "Have you made any submissions for that problem? "
+                    "If you haven't, please try making one."
+                )
 
             problem_list = problem_list_dict['problem_list']
 
         except GradingServiceError:
             # This is a student_facing_error
-            error_text = EXTERNAL_GRADER_NO_CONTACT_ERROR
+            error_text = _("Failed to contact external graders. Please notify course staff.")
             log.error(error_text)
             success = False
         # catch error if if the json loads fails
         except ValueError:
             # This is a student_facing_error
-            error_text = "Could not get list of problems to peer grade.  Please notify course staff."
+            error_text = _("Could not get list of problems to peer grade.  Please notify course staff.")
             log.error(error_text)
             success = False
         except Exception:
@@ -645,8 +669,9 @@ class PeerGradingModule(PeerGradingFields, XModule):
 
     def _check_feedback_length(self, data):
         feedback = data.get("feedback")
+        _ = self.runtime.service(self, "i18n").ugettext
         if feedback and len(feedback) > MAX_ALLOWED_FEEDBACK_LENGTH:
-            return False, "Feedback is too long, Max length is {0} characters.".format(
+            return False, _("Feedback is too long, Max length is {0} characters.").format(
                 MAX_ALLOWED_FEEDBACK_LENGTH
             )
         else:
