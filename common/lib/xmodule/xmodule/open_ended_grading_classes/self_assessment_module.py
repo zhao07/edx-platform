@@ -101,7 +101,11 @@ class SelfAssessmentModule(openendedchild.OpenEndedChild):
             # This is a dev_facing_error
             log.error("Cannot find {0} in handlers in handle_ajax function for open_ended_module.py".format(dispatch))
             # This is a dev_facing_error
-            return json.dumps({'error': 'Error handling action.  Please try again.', 'success': False})
+            _ = self.runtime.service(self, "i18n").ugettext
+            return json.dumps({
+                'error': _('Error handling action. Please try again.'),
+                'success': False
+            })
 
         before = self.get_progress()
         d = handlers[dispatch](data, system)
@@ -125,8 +129,9 @@ class SelfAssessmentModule(openendedchild.OpenEndedChild):
         rubric_html = rubric_dict['html']
 
         # we'll render it
-        context = {'rubric': rubric_html,
-                   'max_score': self._max_score,
+        context = {
+            'rubric': rubric_html,
+            'max_score': self._max_score,
         }
 
         if self.child_state == self.ASSESSING:
@@ -232,8 +237,9 @@ class SelfAssessmentModule(openendedchild.OpenEndedChild):
         except (ValueError, TypeError):
             # This is a dev_facing_error
             log.error("Non-integer score value passed to save_assessment, or no score list present.")
+            _ = self.runtime.service(self, "i18n").ugettext
             # This is a student_facing_error
-            return {'success': False, 'error': "Error saving your score.  Please notify course staff."}
+            return {'success': False, 'error': _("Error saving your score. Please notify course staff.")}
 
         # Record score as assessment and rubric scores as post assessment
         self.record_latest_score(score)
@@ -266,9 +272,11 @@ class SelfAssessmentModule(openendedchild.OpenEndedChild):
         self.record_latest_post_assessment(data['hint'])
         self.change_state(self.DONE)
 
-        return {'success': True,
-                'message_html': '',
-                'allow_reset': self._allow_reset()}
+        return {
+            'success': True,
+            'message_html': '',
+            'allow_reset': self._allow_reset()
+        }
 
     def latest_post_assessment(self, system):
         latest_post_assessment = super(SelfAssessmentModule, self).latest_post_assessment(system)
@@ -308,8 +316,12 @@ class SelfAssessmentDescriptor():
             if len(xml_object.xpath(child)) != 1:
                 # This is a staff_facing_error
                 raise ValueError(
-                    u"Self assessment definition must include exactly one '{0}' tag. Contact the learning sciences group for assistance.".format(
-                        child))
+                    (
+                        u"Self assessment definition must include exactly one " 
+                        u"'{0}' tag. Contact the learning sciences group for "
+                        u"assistance."
+                    ).format(child)
+                )
 
         def parse(k):
             """Assumes that xml_object has child k"""

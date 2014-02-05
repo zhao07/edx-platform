@@ -144,6 +144,7 @@ class OpenEndedModule(openendedchild.OpenEndedChild):
         Handles a student message post (a reaction to the grade they received from an open ended grader type)
         Returns a boolean success/fail and an error message
         """
+        _ = self.runtime.service(self, "i18n").ugettext
 
         event_info = dict()
         event_info['problem_id'] = self.location_string
@@ -171,11 +172,11 @@ class OpenEndedModule(openendedchild.OpenEndedChild):
             )
             log.exception(error_message)
             # This is a student_facing_error
-            return {'success': False, 'msg': "There was an error saving your feedback.  Please contact course staff."}
+            return {'success': False, 'msg': _("There was an error saving your feedback. Please contact course staff.")}
 
         xqueue = system.get('xqueue')
         if xqueue is None:
-            return {'success': False, 'msg': "Couldn't submit feedback."}
+            return {'success': False, 'msg': _("Couldn't submit feedback.")}
         qinterface = xqueue['interface']
         qtime = datetime.strftime(datetime.now(UTC), xqueue_interface.dateformat)
         anonymous_student_id = system.anonymous_student_id
@@ -208,7 +209,7 @@ class OpenEndedModule(openendedchild.OpenEndedChild):
 
         # Convert error to a success value
         success = True
-        message = "Successfully saved your feedback."
+        message = _("Successfully saved your feedback.")
         if error:
             success = False
             message = "Unable to save your feedback. Please try again later."
@@ -232,6 +233,7 @@ class OpenEndedModule(openendedchild.OpenEndedChild):
         # Prepare xqueue request
         #------------------------------------------------------------
 
+        _ = self.runtime.service(self, "i18n").ugettext
         xqueue = system.get('xqueue')
         if xqueue is None:
             return False
@@ -279,10 +281,10 @@ class OpenEndedModule(openendedchild.OpenEndedChild):
         }
 
         success = True
-        message = "Successfully saved your submission."
+        message = _("Successfully saved your submission.")
         if error:
             success = False
-            message = 'Unable to submit your submission to grader. Please try again later.'
+            message = _('Unable to submit your submission to grader. Please try again later.')
             log.error("Unable to submit to grader. location: {0}, error_message: {1}".format(
                 self.location_string, error_message
             ))
@@ -297,9 +299,11 @@ class OpenEndedModule(openendedchild.OpenEndedChild):
         @param system: Modulesystem
         @return: Boolean True (not useful currently)
         """
+
+        _ = self.runtime.service(self, "i18n").ugettext
         new_score_msg = self._parse_score_msg(score_msg, system)
         if not new_score_msg['valid']:
-            new_score_msg['feedback'] = 'Invalid grader reply. Please contact the course staff.'
+            new_score_msg['feedback'] = _('Invalid grader reply. Please contact the course staff.')
 
         # self.child_history is initialized as [].  record_latest_score() and record_latest_post_assessment()
         # operate on self.child_history[-1].  Thus we have to make sure child_history is not [].
@@ -356,6 +360,7 @@ class OpenEndedModule(openendedchild.OpenEndedChild):
             String -- html that can be displayincorrect-icon.pnged to the student.
         """
 
+        _ = self.runtime.service(self, "i18n").ugettext
         # We want to display available feedback in a particular order.
         # This dictionary specifies which goes first--lower first.
         priorities = {
@@ -408,7 +413,7 @@ class OpenEndedModule(openendedchild.OpenEndedChild):
         for tag in ['success', 'feedback', 'submission_id', 'grader_id']:
             if tag not in response_items:
                 # This is a student_facing_error
-                return format_feedback('errors', 'Error getting feedback from grader.')
+                return format_feedback('errors', _('Error getting feedback from grader.'))
 
         feedback_items = response_items['feedback']
         try:
@@ -417,12 +422,12 @@ class OpenEndedModule(openendedchild.OpenEndedChild):
             # This is a dev_facing_error
             log.exception("feedback_items from external open ended grader have invalid json {0}".format(feedback_items))
             # This is a student_facing_error
-            return format_feedback('errors', 'Error getting feedback from grader.')
+            return format_feedback('errors', _('Error getting feedback from grader.'))
 
         if response_items['success']:
             if len(feedback) == 0:
                 # This is a student_facing_error
-                return format_feedback('errors', 'No feedback available from grader.')
+                return format_feedback('errors', _('No feedback available from grader.'))
 
             for tag in do_not_render:
                 if tag in feedback:
@@ -494,6 +499,8 @@ class OpenEndedModule(openendedchild.OpenEndedChild):
             correct:         Correctness of submission (Boolean)
             score:           Points to be assigned (numeric, can be float)
         """
+
+        _ = self.runtime.service(self, "i18n").ugettext
         fail = {
             'valid': False,
             'score': 0,
@@ -517,8 +524,10 @@ class OpenEndedModule(openendedchild.OpenEndedChild):
 
         if not isinstance(score_result, dict):
             # This is a dev_facing_error
-            error_message = ("External open ended grader message should be a JSON-serialized dict."
-                             " Received score_result = {0}".format(score_result))
+            error_message = _(
+                "External open ended grader message should be a JSON-serialized dict."
+                " Received score_result = {0}"
+            ).format(score_result)
             log.error(error_message)
             fail['feedback'] = error_message
             return fail
@@ -529,8 +538,9 @@ class OpenEndedModule(openendedchild.OpenEndedChild):
         for tag in ['score', 'feedback', 'grader_type', 'success', 'grader_id', 'submission_id']:
             if tag not in score_result:
                 # This is a dev_facing_error
-                error_message = ("External open ended grader message is missing required tag: {0}"
-                                 .format(tag))
+                error_message = _(
+                    "External open ended grader message is missing required tag: {0}"
+                ).format(tag)
                 log.error(error_message)
                 fail['feedback'] = error_message
                 return fail
@@ -640,6 +650,8 @@ class OpenEndedModule(openendedchild.OpenEndedChild):
           'progress' : 'none'/'in_progress'/'done',
           <other request-specific values here > }
         '''
+
+        _ = self.runtime.service(self, "i18n").ugettext
         handlers = {
             'save_answer': self.save_answer,
             'score_update': self.update_score,
@@ -653,7 +665,7 @@ class OpenEndedModule(openendedchild.OpenEndedChild):
             # This is a dev_facing_error
             log.error("Cannot find {0} in handlers in handle_ajax function for open_ended_module.py".format(dispatch))
             # This is a dev_facing_error
-            return json.dumps({'error': 'Error handling action.  Please try again.', 'success': False})
+            return json.dumps({'error': _('Error handling action. Please try again.'), 'success': False})
 
         before = self.get_progress()
         d = handlers[dispatch](data, system)
@@ -734,13 +746,15 @@ class OpenEndedModule(openendedchild.OpenEndedChild):
         Output: Rendered HTML
         """
         # set context variables and render template
+
+        _ = self.runtime.service(self, "i18n").ugettext
         eta_string = None
         if self.child_state != self.INITIAL:
             post_assessment = self.latest_post_assessment(system)
             score = self.latest_score()
             correct = 'correct' if self.is_submission_correct(score) else 'incorrect'
             if self.child_state == self.ASSESSING:
-                eta_string = "Your response has been submitted.  Please check back later for your grade."
+                eta_string = _("Your response has been submitted. Please check back later for your grade.")
         else:
             post_assessment = ""
             correct = ""
