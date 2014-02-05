@@ -14,6 +14,7 @@ Open edX
 
 EdX code is open source. You can explore our main project, `edx-platform <https://github.com/edx/edx-platform>`_, as well as all of our `other projects <https://github.com/edx>`_, on GitHub. 
 
+
 **************************
 Communication Channels
 **************************
@@ -44,13 +45,13 @@ System Overview
 The following list describes the major components of the edX system.
 
 
-* **Learning Management System (LMS)**: The LMS contains the student-facing parts of the edX platform.  The LMS handles student accounts, displaying course content and videos videos, showing problems and exams, and other course elements. 
+* **Learning Management System (LMS)**: The LMS contains the student-facing parts of the edX platform.  The LMS handles student accounts, displays course content and videos, shows problems and exams, and manages other course elements. 
 
-* **Course Management System (CMS)**: The CMS is the system course staff use to build courses. The CMS allows multiple instructors to add course content, set grading policies, create problems, and provide other course information.
+* **Course Management System (CMS)**: The CMS, also referred to as edX Studio, is the tool course staff use to build courses. The CMS allows multiple instructors to add course content, set grading policies, create problems, and provide other course information.
 
 * **Discussion Forums**: Discussion forums use a Ruby on Rails service that runs on Heroku. Discussion forums are embedded in the LMS.
 
-* **Course Data**: Course data is stored in the data directory. The file course.xml, along with XML files in sub-directories, stores the course content
+* **Course Data**: Course data is stored in the data directory. The file course.xml, along with XML files in sub-directories, stores the course content.
 
 .. note:: **CAPA**: `lon-capa.org <lon-capa.org>`_ is the content management system that has defined a
    standard for online learning and assessment materials. Much of the edX platform follows this standard.
@@ -122,10 +123,6 @@ The following list describes the common libraries in the edX platform.
 -  **capa**: Capa modules define LoncapaProblem and many related things.
 
    -  Capa code is located in ``common/lib/capa``
-
-
-
-
 
 
 LMS
@@ -227,13 +224,7 @@ TODO:
 -  describe the front-end architecture, tools, etc. Starting point:
    ``lms/static``
 
---------------
 
-Note: this file uses markdown. To convert to html, run:
-
-::
-
-    markdown2 overview.md > overview.html
 
 
 

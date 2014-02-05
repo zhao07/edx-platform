@@ -16,6 +16,14 @@ Contents:
 
     overview.rst
     LMSoverview.rst
+    CMSoverview.rst
+    code_standards.rst
+    development.rst
+    discussion.rst
+    mongo.rst
+    persistence.rst
+    remote_gradebook.rst
+    testing.rst
     common-lib.rst
     djangoapps.rst
     i18n.rst
