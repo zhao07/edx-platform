@@ -7,6 +7,22 @@ The following is an inventory of all LMS event types. **Question**: is this real
 This inventory is comprised of a table of Common Fields that appear in all events, a table of Student Event Types which lists all interaction with the LMS outside of the Instructor Dashboard,
 and a table of Instructor Event Types of all interaction with the Instructor Dashboard in the LMS.
 
+In the data package, events are delivered in a log file. 
+
+.. _sample:
+
+*************************
+Sample Events
+*************************
+
+Two sample events from the edX/prod-edxapp-011/2014-01-26_edX.log file follows.
+
+    {"username": "*username*", "event_type": "problem_check", "ip": "*ip_address*", "agent": "Mozilla/5.0 (Windows NT 6.0; rv:20.0) Gecko/20100101 Firefox/20.0", "host": "courses.edx.org", "session": "1cc603b3b4b2ed9a5475511d5d974658", "event": "\"input_i4x-edX-DemoX-problem-c554538a57664fac80783b99d9d6da7c_2_1=%5B828%2C653%5D\"", "event_source": "browser", "context": {"course_id": "edX/DemoX/Demo_Course", "org_id": "edX", "user_id": 3312650}, "time": "2014-01-26T00:00:25.776429+00:00", "page": "https://courses.edx.org/courses/edX/DemoX/Demo_Course/courseware/interactive_demonstrations/basic_questions/"}
+
+    {"username": "*user_name*", "host": "courses.edx.org", "event_source": "server", "event_type": "/courses/edX/DemoX/Demo_Course/xblock/i4x:;_;_edX;_DemoX;_problem;_c554538a57664fac80783b99d9d6da7c/handler/xmodule_handler/problem_check", "context": {"course_id": "edX/DemoX/Demo_Course", "org_id": "edX", "user_id": *id*}, "time": "2014-01-26T00:00:25.781622+00:00", "ip": "*ip_address*", "event": "{\"POST\": {\"input_i4x-edX-DemoX-problem-c554538a57664fac80783b99d9d6da7c_2_1\": [\"[828,653]\"]}, \"GET\": {}}", "agent": "Mozilla/5.0 (Windows NT 6.0; rv:20.0) Gecko/20100101 Firefox/20.0", "page": null}
+
+.. _common:
+
 ********************
 Common Fields
 ********************
@@ -38,6 +54,16 @@ This section contains a table of fields common to all events.
 |                          | string is empty for anonymous events (i.e., user not logged |             |                                    |
 |                          | in).                                                        |             |                                    |
 +--------------------------+-------------------------------------------------------------+-------------+------------------------------------+
+| host                     | TBD 
+
++--------------------------+-------------------------------------------------------------+-------------+------------------------------------+
+| user_id                  | TBD 
+
++--------------------------+-------------------------------------------------------------+-------------+------------------------------------+
+| context                  | TBD 
+
++--------------------------+-------------------------------------------------------------+-------------+------------------------------------+
+
 
 ********************
 Event Types
@@ -47,17 +73,27 @@ There are two tables of event types -- one for student events, and one for instr
 
 Event types with several different historical names are enumerated by forward slashes. Rows identical after the second column have been combined, with the corresponding event types enumerated by commas.
 
+=========================
+Enrollment Event Types
+=========================
+
+TBD --- is this edX registration or course registration? 
+
+Event Source for Both is Server
+
+* edx.course.enrollment.activated
+
+* edx.course.enrollment.deactivated
+
+TBD
+
 ==================================================
 Student Event Types
 ==================================================
 
 The Student Event Type table lists the event types logged for interaction with the LMS outside the Instructor Dashboard.
 
-* :ref:`seq_goto`
-
-* :ref:`seq_next`
-
-* :ref:`seq_prev`
+* :ref:`nav`
 
 * :ref:`hide`
 
@@ -67,61 +103,19 @@ The Student Event Type table lists the event types logged for interaction with t
 
 TBD
 
-.. _seq_goto:
+.. _nav:
 
-------------------------------------------------
-``seq_goto`` Event Type   
-------------------------------------------------
+=============================
+Navigational Event Types   
+=============================
 
-**Description**: Fired when a user jumps between units in a sequence. 
+These event types are fired when a user selects a navigational control. **Question:** what does a "sequence" correspond to in Studio? a subsection?
 
-**Component**: Sequence
+* ``seq_goto`` is fired when a user jumps between units in a sequence. 
 
-**Event Source**: Browser
+* ``seq_next`` is fired when a user navigates to the next unit in a sequence. 
 
-``event`` **Fields**: 
-
-+--------------------+---------------+---------------------------------------------------------------------+
-| Field              | Type          | Details                                                             |
-+====================+===============+=====================================================================+
-| ``old``            | integer       | Index of the unit being jumped from.                                |
-+--------------------+---------------+---------------------------------------------------------------------+
-| ``new``            | integer       | Index of the unit being jumped to.                                  |
-+--------------------+---------------+---------------------------------------------------------------------+
-| ``id``             | integer       | edX ID of the sequence.                                             |
-+--------------------+---------------+---------------------------------------------------------------------+
-
-.. _seq_next:
-
-------------------------------------------------
-``seq_next`` Event Type   
-------------------------------------------------
-
-**Description**: Fired when a user navigates to the next unit in a sequence. 
-
-**Component**: Sequence
-
-**Event Source**: Browser
-
-``event`` **Fields**: 
-
-+--------------------+---------------+---------------------------------------------------------------------+
-|Field               | Type          | Details                                                             |
-+====================+===============+=====================================================================+
-| ``old``            | integer       | Index of the unit being navigated away from.                        |
-+--------------------+---------------+---------------------------------------------------------------------+
-| ``new``            | integer       | Index of the unit being navigated to.                               |
-+--------------------+---------------+---------------------------------------------------------------------+
-| ``id``             | integer       | edX ID of the sequence.                                             |
-+--------------------+---------------+---------------------------------------------------------------------+
-
-.. _seq_prev:
-
-------------------------------------------------
-``seq_prev`` Event Type   
-------------------------------------------------
-
-**Description**: Fired when a user navigates to the previous unit in a sequence. 
+* ``seq_prev`` is fired when a user navigates to the previous unit in a sequence. 
 
 **Component**: Sequence
 
@@ -132,12 +126,17 @@ TBD
 +--------------------+---------------+---------------------------------------------------------------------+
 | Field              | Type          | Details                                                             |
 +====================+===============+=====================================================================+
-| ``old``            | integer       | Index of the unit being navigated away from.                        |
+| ``old``            | integer       | For ``seq_goto``, the index of the unit being jumped from.          |
+|                    |               | For ``seq_next`` and ``seq_prev``, the index of the unit being      |
+|                    |               | navigated away from.                                                |
 +--------------------+---------------+---------------------------------------------------------------------+
-| ``new``            | integer       | Index of the unit being navigated to.                               |
+| ``new``            | integer       | For ``seq_goto``, the index of the unit being jumped to.            |
+|                    |               | For ``seq_next`` and ``seq_prev``, the index of the unit being      |
+|                    |               | navigated to.                                                       |
 +--------------------+---------------+---------------------------------------------------------------------+
-| ``id``             | integer       | edX ID of the sequence.                                             |
+| ``id``             | integer       | The edX ID of the sequence.                                         |
 +--------------------+---------------+---------------------------------------------------------------------+
+
 
 .. _hide:
 
@@ -148,6 +147,8 @@ TBD
 **Description**: 
 
 .. TBD
+
+**Question** this was a list of 6 event_types, separated by slashes, as though 5 were deprecated and one was still in use. Correct? which is still in use? when was there a change? (or is it that for 3 different event_types a change was made from "question" to "problem"?)
 
 +---------------------------------+----------------------------------------+
 | Event Type                      | Component                              |
@@ -185,6 +186,8 @@ TBD
 **Description**: 
 
 .. TBD
+
+**Question** same as above
 
 +---------------------------------+----------------------------------------+
 |Event Type                       | Component                              |
@@ -255,6 +258,8 @@ TBD
 
 ``oe_show_respond_to_feedback`` 
 
+**Question** these were not separated by / or , -- are they two different valid event types, or is one deprecated?
+
 **Component**: Combined Open-Ended
 
 **Event Source**: Browser
@@ -323,12 +328,32 @@ TBD
 | ``currentTime``     | float         | Time the video was played at, in seconds.                           |
 +---------------------+---------------+---------------------------------------------------------------------+
 | ``speed``           | string        | Video speed in use (i.e., 0.75, 1.0, 1.25, 1.50).                   |
+|                     |               | **Question**: did the speed_change_video e_type replace this?       |
 +---------------------+---------------+---------------------------------------------------------------------+
+
+ADDITIONAL VIDEO EVENT_TYPES:
+
+* ``speed_change_video`` TBD
+
+* ``hide_transcript`` TBD
+
+* ``show_transcript`` TBD
+
+* ``load_video`` TBD
+
+* ``seek_video`` TBD
+
+    {
+                old_time: this.videoPlayer.currentTime,
+                new_time: newTime,
+                type: params.type
+            }
+
 
 .. _book:
 
 ------------------------------------------------
-``book`` Event Type   
+Book (PDF) Event Type   
 ------------------------------------------------
 
 **Description**: Fired when a user is reading a PDF book.  
@@ -366,12 +391,12 @@ TBD
 .. _save_problem:
 
 ----------------------------------------------------------
-``problem_check`` and ``save_problem_check`` Event Types   
+``problem_check`` / ``save_problem_check`` Event Types   
 ----------------------------------------------------------
 
 **Description**: Fired when a problem has been checked successfully. 
 
-**Question**: why do we have a second description for the same "problem_check" event type? is it really the same name?
+**Question**: is one of these deprecated? which one? (Ideally, when?) do any of these fields relate to one of them only?
 
 **Component**: Capa Module
 
@@ -449,6 +474,12 @@ TBD
 +---------------------+---------------+---------------------------------------------------------------------+
 | ``failure``         | string        | `'closed'`, `'unreset'`                                             |
 +---------------------+---------------+---------------------------------------------------------------------+
+
+------------------------------------------------
+``problem_graded`` Event Type
+------------------------------------------------
+
+TBD
 
 .. _problem_reset:
 
@@ -679,6 +710,28 @@ TBD
 | ``answers``         | dict          |                                                                     |
 +---------------------+---------------+---------------------------------------------------------------------+
 
+------------------------------------------------
+Additional Event Types TBD
+------------------------------------------------
+
+These were on Brian's list from AN-462, not even sure if they're explicit or implicit, or student-initiated or instructor-initiated:
+
+* get-student-progress-page
+
+* open_ended_notifications
+
+* open_ended_problems
+
+* peer_grading
+
+* progress
+
+* staff_grading
+
+* staff_grading-get_problem_list
+
+All with an Event Source of Server
+
 ==================================================
 Instructor Event Types
 ==================================================
@@ -690,7 +743,7 @@ The Instructor Event Type table lists the event types logged for course team int
 ------------------------------------------------
  ``list_students`` and``dump_*`` Event Types   
 ------------------------------------------------
-
+.. previously a comma-separated list; "Rows identical after the second column" (which means the name and description columns) have been combined
 **Description**: 
 
 * ``list-students``
@@ -718,7 +771,7 @@ The Instructor Event Type table lists the event types logged for course team int
 -----------------------------------------------------------------------
  ``rescore-all-submissions`` and ``reset-all-attempts`` Event Types   
 -----------------------------------------------------------------------
-
+.. previously a comma-separated list; "Rows identical after the second column" (which means the name and description columns) were combined
 **Description**: 
 
 **Component**: Instructor Dashboard
@@ -740,7 +793,7 @@ The Instructor Event Type table lists the event types logged for course team int
 -----------------------------------------------------------------------------------
  ``delete-student-module-state`` and ``rescore-student-submission`` Event Types   
 -----------------------------------------------------------------------------------
-
+.. previously a comma-separated list; "Rows identical after the second column" (which means the name and description columns) were combined
 **Description**: 
 
 **Component**: Instructor Dashboard
@@ -814,7 +867,7 @@ The Instructor Event Type table lists the event types logged for course team int
 ------------------------------------------------
  ``list-staff`` Event Types   
 ------------------------------------------------
-
+.. previously a comma-separated list; "Rows identical after the second column" (which means the name and description columns) were combined
 **Description**: 
 
 * ``list-staff``
@@ -834,7 +887,7 @@ The Instructor Event Type table lists the event types logged for course team int
 ------------------------------------------------
  ``*_instructor`` Event Types   
 ------------------------------------------------
-
+.. previously a comma-separated list; "Rows identical after the second column" (which means the name and description columns) were combined
 **Description**: 
 
 * ``add-instructor``
@@ -858,7 +911,7 @@ The Instructor Event Type table lists the event types logged for course team int
 ------------------------------------------------
  ``list_forum_*`` Event Types   
 ------------------------------------------------
-
+.. previously a comma-separated list; "Rows identical after the second column" (which means the name and description columns) were combined
 **Description**: 
 
 * ``list-forum-admins``
@@ -884,7 +937,7 @@ The Instructor Event Type table lists the event types logged for course team int
 ------------------------------------------------
  Managing Discussion Staff Event Types   
 ------------------------------------------------
-
+.. previously a comma-separated list; "Rows identical after the second column" (which means the name and description columns) were combined
 **Description**: 
 
 * ``remove-forum-admin``
