@@ -358,6 +358,34 @@ class CombinedOpenEndedFields(object):
         scope=Scope.settings
     )
 
+class CombinedOpenEndedSystem(object):
+    def __init__(
+        self,
+        open_ended_grading_interface,
+        s3_interface,
+        anonymous_student_id,
+        ajax_url,
+        user_is_staff,
+        render_template,
+        course_id,
+        xqueue,
+        seed,
+        i18n
+    ):
+        self.open_ended_grading_interface = open_ended_grading_interface
+        self.s3_interface = s3_interface
+        self.anonymous_student_id = anonymous_student_id
+        self.ajax_url = ajax_url
+        self.user_is_staff = user_is_staff
+        self.render_template = render_template
+        self.course_id = course_id
+        self.xqueue = xqueue
+        self.seed = seed
+        self.i18n = i18n
+
+    def set(self, attribute_name, attribute):
+        setattr(self, attribute_name, attribute)
+
 
 class CombinedOpenEndedModule(CombinedOpenEndedFields, XModule):
     """
@@ -430,13 +458,33 @@ class CombinedOpenEndedModule(CombinedOpenEndedFields, XModule):
 
         attributes = self.student_attributes + self.settings_attributes
 
+        self.combinedopenended_system = CombinedOpenEndedSystem(
+            open_ended_grading_interface = self.runtime.open_ended_grading_interface,
+            s3_interface = self.runtime.s3_interface,
+            anonymous_student_id = self.runtime.anonymous_student_id,
+            ajax_url = self.runtime.ajax_url,
+            user_is_staff = self.runtime.user_is_staff,
+            render_template = self.runtime.render_template,
+            course_id = self.runtime.course_id,
+            xqueue = self.runtime.xqueue,
+            seed = self.runtime.seed,
+            i18n = self.runtime.service(self, "i18n")
+        ) 
         static_data = {}
         instance_state = {k: getattr(self, k) for k in attributes}
-        self.child_descriptor = version_tuple.descriptor(self.system)
-        self.child_definition = version_tuple.descriptor.definition_from_xml(etree.fromstring(self.data), self.system)
-        self.child_module = version_tuple.module(self.system, self.location, self.child_definition, self.child_descriptor,
-                                                 instance_state=instance_state, static_data=static_data,
-                                                 attributes=attributes)
+        self.child_descriptor = version_tuple.descriptor(self.combinedopenended_system)
+        self.child_definition = version_tuple.descriptor.definition_from_xml(
+            etree.fromstring(self.data), self.combinedopenended_system
+        )
+        self.child_module = version_tuple.module(
+            self.combinedopenended_system,
+            self.location,
+            self.child_definition,
+            self.child_descriptor,
+            instance_state=instance_state,
+            static_data=static_data,
+            attributes=attributes
+        )
         self.save_instance_data()
 
     def get_html(self):

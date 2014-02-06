@@ -232,7 +232,7 @@ class OpenEndedModule(openendedchild.OpenEndedChild):
         # Prepare xqueue request
         #------------------------------------------------------------
 
-        xqueue = system.get('xqueue')
+        xqueue = system.xqueue
         if xqueue is None:
             return False
         qinterface = xqueue['interface']
