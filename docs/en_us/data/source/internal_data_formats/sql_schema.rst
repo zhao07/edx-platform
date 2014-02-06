@@ -12,7 +12,7 @@ Conventions to keep in mind:
 
 **Note**: EdX also uses the Django web application framework. Tables that are built into the Django framework are not documented here unless we use them in unconventional ways.
 
-All of our tables will be described below, first in summary form with field types and constraints, and then with a detailed explanation of each field. For those not familiar with the MySQL schema terminology in the table summaries:
+All of our tables are described below, first in summary form with field types and constraints, and then with a detailed explanation of each field. For those not familiar with the MySQL schema terminology in the table summaries:
 
 `Type`
 
@@ -83,9 +83,9 @@ The `auth_user` table is built into the Django web application framework that we
 
 A sample of the heading row and a data row in the `auth_user` table follow.
 
-    id  username  first_name  last_name email password  is_staff  is_active is_superuser  last_login  date_joined status  email_key avatar_typcountry show_country  date_of_birth interesting_tags  ignored_tags  email_tag_filter_strategy display_tag_filter_strategy consecutive_days_visit_count
+    `id  username  first_name  last_name email password  is_staff  is_active is_superuser  last_login  date_joined status  email_key avatar_typcountry show_country  date_of_birth interesting_tags  ignored_tags  email_tag_filter_strategy display_tag_filter_strategy consecutive_days_visit_count`
 
-    *id*  *username*      *email_address*   1 1 0 2014-01-01 17:28:27 2012-03-04 00:57:49   NULL      0 NULL      0 0
+    `*id*  *username*      *email_address*   1 1 0 2014-01-01 17:28:27 2012-03-04 00:57:49   NULL      0 NULL      0 0`
 
 The `auth_user` table has the following fields::
 
@@ -794,4 +794,3 @@ A sample of the heading row and a data row in the `student_courseenrollment` tab
 ---------------
 
   **TBD**
-
