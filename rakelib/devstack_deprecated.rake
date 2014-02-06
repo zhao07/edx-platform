@@ -6,22 +6,20 @@ def deprecated(deprecated, deprecated_by,  *args)
 
     task deprecated, [:system] do |t,args|
 
-        args.with_defaults(:system => nil)
+        # Need to install paver dependencies for the commands to work!
+        sh("pip install Paver==1.2.1 psutil==1.2.1 lazy==1.1 path.py==3.0.1")
 
-        if not args.system.nil?
-            new_cmd = "#{deprecated_by} --system=#{args.system}"
-        end
+        args.with_defaults(:system => 'lms')
+        deprecated_by = "#{deprecated_by} #{args.system}"
 
-        puts("Task #{deprecated} has been deprecated. Use #{new_cmd} instead. Waiting 5 seconds...".red)
+        puts("Task #{deprecated} has been deprecated. Use #{deprecated_by} instead. Waiting 5 seconds...".red)
         sleep(5)
-        sh(new_cmd)
+        sh(deprecated_by)
         exit
     end
 end
 
-deprecated("devstack:start", "paver devstack_start")
-deprecated("devstack:assets", "paver devstack_assets")
-deprecated("devstack:install", "paver devstack_install")
+deprecated("devstack:start", "paver devstack --fast")
+deprecated("devstack:assets", "paver update_assets --settings=devstack")
+deprecated("devstack:install", "paver install_prereqs")
 deprecated("devstack", "paver devstack")
-
-

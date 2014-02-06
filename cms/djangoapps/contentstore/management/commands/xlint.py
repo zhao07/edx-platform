@@ -1,6 +1,5 @@
 """
 Verify the structure of courseware as to it's suitability for import
-To run test: paver xlint_course --data_dir=../data --course_dir=content-edx-101
 """
 from django.core.management.base import BaseCommand, CommandError
 from xmodule.modulestore.xml_importer import perform_xlint

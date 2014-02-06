@@ -1,67 +1,65 @@
+import sys
 from paver.easy import *
-from pavelib import assets
-import webbrowser
+from .utils.envs import Env
+
+
+DOC_PATHS = {
+    "dev": "docs/en_us/developers",
+    "author": "docs/en_us/course_authors",
+    "data": "docs/en_us/data",
+    "default": "docs/en_us"
+}
+
+
+def _valid_doc_types():
+    """
+    Return a comma-separated string of valid doc types.
+    """
+    return ", ".join(DOC_PATHS.keys())
+
+
+def _doc_path(options, allow_default=True):
+    """
+    Parse `options` (from the Paver task args) to determine the path
+    to the documentation directory.
+    If the specified path is not one of the valid options, print an error
+    message and exit.
+
+    If `allow_default` is False, then require that a type is specified,
+    and exit with an error message if it isn't.
+    """
+    doc_type = getattr(options, 'type', 'default')
+    path = DOC_PATHS.get(doc_type)
+
+    if doc_type == 'default' and not allow_default:
+        print "You must specify a documentation type using '--type'.  Valid options are: {options}".format(
+            options=_valid_doc_types())
+        sys.exit(1)
+
+    if path is None:
+        print "Invalid documentation type '{doc_type}'.  Valid options are: {options}".format(
+            doc_type=doc_type, options=_valid_doc_types())
+        sys.exit(1)
+
+    else:
+        return path
 
 
 @task
+@needs('pavelib.prereqs.install_prereqs')
 @cmdopts([
     ("type=", "t", "Type of docs to compile"),
     ("verbose", "v", "Display verbose output"),
 ])
 def build_docs(options):
     """
-       Invoke sphinx 'make build' to generate docs.
+    Invoke sphinx 'make build' to generate docs.
     """
+    verbose = getattr(options, 'verbose', False)
 
-    type = getattr(options, 'type', 'docs')
-    verbose = getattr(options, 'verbose', True)
+    cmd = "cd {dir}; make html quiet={quiet}".format(
+        dir=_doc_path(options),
+        quiet="false" if verbose else "true"
+    )
 
-    paths = {
-        "dev": "docs/developers",
-        "author": "docs/course_authors",
-        "data": "docs/data",
-    }
-
-    path = paths.get(type, "docs/developers")
-
-    sh("cd {dir}; make html quiet={quiet}".format(
-        dir=path, quiet="false" if verbose else "true")
-       )
-
-
-@task
-@cmdopts([
-    ("type=", "t", "Type of docs to show"),
-])
-def show_docs(options):
-    """
-       Show docs in browser
-    """
-
-    type = getattr(options, 'type', 'docs')
-
-    paths = {
-        "dev": "docs/developers",
-        "author": "docs/course_authors",
-        "data": "docs/data",
-    }
-
-    path = paths.get(type, "docs/developers")
-
-    webbrowser.open('file://{root}/{path}/build/html/index.html'.format(
-                    root=assets.REPO_ROOT, path=path)
-                    )
-
-
-@task
-@cmdopts([
-    ("type=", "t", "Type of docs to compile"),
-    ("verbose", "v", "Display verbose output"),
-])
-def doc(options):
-    """
-       Build docs and show them in browser
-    """
-
-    build_docs(options)
-    show_docs(options)
+    sh(cmd)

@@ -6,44 +6,50 @@ def deprecated(deprecated, deprecated_by,  *args)
 
     task deprecated, [:system, :env] do |t,args|
 
+        # Need to install paver dependencies for the commands to work!
+        sh("pip install Paver==1.2.1 psutil==1.2.1 lazy==1.1 path.py==3.0.1")
+
         args.with_defaults(:system => "lms", :env => "dev")
 
-        if deprecated.include? "gather_assets"
-            new_cmd = deprecated_by
-        else
-            new_cmd = deprecated_by + " --system=#{args.system} --env=#{args.env}"
-        end
+        if deprecated_by.nil?
+            puts("Task #{deprecated} has been deprecated.".red)
 
-        puts("Task #{deprecated} has been deprecated. Use #{new_cmd} instead. Waiting 5 seconds...".red)
-        sleep(5)
-        sh(new_cmd)
-        exit
+        else
+            if deprecated.include? "gather_assets"
+                new_cmd = deprecated_by
+            else
+                new_cmd = deprecated_by + " #{args.system} --settings=#{args.env}"
+            end
+
+            puts("Task #{deprecated} has been deprecated. Use #{new_cmd} instead.".red)
+            sh(new_cmd)
+        end
     end
 end
 
-deprecated("assets:coffee", "paver compile_coffeescript")
-deprecated("assets:coffee:clobber", "paver compile_coffeescript --clobber")
-deprecated("assets:coffee:debug", "paver compile_coffeescript --debug")
-deprecated("assets:coffee:watch", "paver compile_coffeescript --watch")
+deprecated("assets:coffee", "paver update_assets")
+deprecated("assets:coffee:clobber", nil)
+deprecated("assets:coffee:debug", "paver update_assets --debug")
+deprecated("assets:coffee:watch", "paver update_assets")
 
-deprecated("assets:sass", "paver compile_sass")
-deprecated("assets:sass:debug", "paver compile_sass --debug")
-deprecated("assets:sass:watch", "paver compile_sass --watch")
+deprecated("assets:sass", "paver update_assets")
+deprecated("assets:sass:debug", "paver update_assets --debug")
+deprecated("assets:sass:watch", "paver update_assets")
 
-deprecated("assets:xmodule", "paver compile_xmodule")
-deprecated("assets:xmodule:debug", "paver compile_xmodule --debug")
-deprecated("assets:xmodule:watch", "paver compile_xmodule --watch")
+deprecated("assets:xmodule", "paver update_assets")
+deprecated("assets:xmodule:debug", "paver update_assets --debug")
+deprecated("assets:xmodule:watch", "paver update_assets")
 
-deprecated("assets:debug", "paver compile_assets ")
-deprecated("assets:watch", "paver compile_assets --watch")
+deprecated("assets:debug", "paver update_assets --debug")
+deprecated("assets:watch", "paver update_assets")
 
-deprecated("assets", "paver compile_assets ")
+deprecated("assets", "paver update_assets")
 
 [:lms, :cms].each do |system|
 
-    deprecated("#{system}:gather_assets", "paver compile_assets --system=#{system} --collectstatic")
+    deprecated("#{system}:gather_assets", "paver update_assets #{system}")
     environments(system).each do |env|
-      deprecated("#{system}:gather_assets:#{env}", "paver compile_assets --system=#{system} --env=#{env} --collectstatic")
+      deprecated("#{system}:gather_assets:#{env}", "paver update_assets #{system} --settings=#{env}")
     end
 end
 

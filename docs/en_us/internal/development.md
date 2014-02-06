@@ -47,7 +47,7 @@ After MongoDB daemon is successfully running, check out the course data
 directories that you want to work with into the `GITHUB_REPO_ROOT` (by default,
 `../data`). Then run the following command:
 
-    paver resetdb
+    paver reset_db
 
 ## Installing
 
@@ -62,9 +62,9 @@ the repo:
 Both the LMS and Studio can be started using the following shortcut tasks
 
     paver lms  # Start the LMS
-    paver cms  # Start studio
-    paver lms --env=cms.dev  # Start LMS to run alongside Studio
-    paver lms --env=cms.dev_preview  # Start LMS to run alongside Studio in preview mode
+    paver studio  # Start studio
+    paver lms --settings=cms.dev  # Start LMS to run alongside Studio
+    paver lms --settings=cms.dev_preview  # Start LMS to run alongside Studio in preview mode
 
 Under the hood, this executes `./manage.py {lms|cms} --settings $ENV runserver`,
 which starts a local development server.
@@ -73,7 +73,7 @@ Both of these commands take arguments to start the servers in different environm
 or with additional options:
 
     # Start the LMS using the test configuration, on port 5000
-    paver lms --env=test --port=5000  # Executes ./manage.py lms --settings test runserver 5000
+    paver lms --settings=test --port=5000  # Executes ./manage.py lms --settings test runserver 5000
 
 To get a full list of available paver tasks, run paver --help or read the developer docs
 

@@ -1,13 +1,21 @@
+"""
+Helper functions for caching installation requirements.
+"""
+
 import hashlib
 import os
 import errno
 
-REPO_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+from .envs import Env
 
-PREREQS_MD5_DIR = os.getenv('PREREQ_CACHE_DIR', os.path.join(REPO_ROOT, '.prereqs_cache'))
+
+PREREQS_MD5_DIR = os.getenv('PREREQ_CACHE_DIR', Env.REPO_ROOT / '.prereqs_cache')
 
 
 def get_files(dir):
+    """
+    Return a list of files in the specified directory path.
+    """
 
     files = []
     for (dirpath, dirnames, filenames) in os.walk(dir):
@@ -25,6 +33,10 @@ def read_in_chunks(infile, chunk_size=1024 * 64):
 
 
 def compute_fingerprint(files, dirs):
+    """
+    Hash the contents of all the files, and the names of files in the dirs.
+    Returns the digest.
+    """
 
     hasher = hashlib.sha1()
 
@@ -42,13 +54,12 @@ def compute_fingerprint(files, dirs):
     return hasher.hexdigest()
 
 
-# Hash the contents of all the files, and the names of files in the dirs.
 def is_changed(cache_file, files, dirs=[]):
-
+    """
+    Return a list of files that have changed, based on the cache.
+    """
     cache_file_path = os.path.join(PREREQS_MD5_DIR, cache_file) + '.sha1'
-
     hexdigest = compute_fingerprint(files, dirs)
-
     files_changed = False
 
     try:
