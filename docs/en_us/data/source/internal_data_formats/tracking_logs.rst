@@ -343,10 +343,15 @@ ADDITIONAL VIDEO EVENT_TYPES:
 
 * ``seek_video`` TBD
 
+::
+
     {
                 old_time: this.videoPlayer.currentTime,
+
                 new_time: newTime,
+
                 type: params.type
+                
             }
 
 
