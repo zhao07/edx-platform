@@ -8,21 +8,21 @@ EdX currently uses an external application called Django Wiki for Wiki functiona
 
 In the data package, wiki data is delivered in two SQL files: 
 
-* The "wiki_article" file includes TBD. The full name of this file also includes the organization and course, and indicates a source of either prod (edX) or edge, in this format: edX-*organization*-*course*-wiki_article-*source*-analytics.sql. 
+* The wiki_article file is a container for each article that is added to the wiki. The full name of this file also includes the organization and course, and indicates a source of either prod (edX) or edge, in this format: ``edX``-*organization*-*course*-``wiki_article``-*source*-``analytics.sql``. 
 
-* The "wiki_articlerevision" file includes TBD. The full name of this file is in this format: edX-*organization*-*course*-wiki_articlerevision-*source*-analytics.sql.
+* The wiki_articlerevision file stores data about the articles, including data about changes and deletions. The full name of this file is in this format: ``edX``-*organization*-*course*-``wiki_articlerevision``-*source*-``analytics.sql``.
 
-********************************
+***********************************
 Fields in the wiki_article file
-********************************
+***********************************
 
-The header row of the wiki-article file, and a row of sample data, follow.
+The header row of the wiki-article SQL file, and a row of sample data, follow.
 
     id  current_revision_id created modified  owner_id  group_id  group_read  group_write other_read  other_write
 
     1437  29819 2013-07-17 21:53:57 2014-01-26 14:48:02 NULL  NULL  1 1 1 1 
 
-The table that follows provides a reference to characteristics of each field in this file. A description of each field follows the table. 
+  The table that follows provides a reference to each field in this file. A description of each field follows the table.
 
   .. list-table::
      :widths: 15 15 15 15
@@ -79,7 +79,7 @@ The table that follows provides a reference to characteristics of each field in 
   
 `current_revision_id`
 ------------------------------
-   The ID of the revision that is displayed for this article.
+   The ID of the revision that displays for this article.
 
 `created`
 ------------
@@ -100,31 +100,33 @@ The table that follows provides a reference to characteristics of each field in 
     
 `group_read`
 ------------
-    Whether the group has read access to the article.
+    Defines whether the group has read access to the article.
 
 `group_write`
 --------------
-    Whether the group has write access to the article.
+    Defines whether the group has write access to the article.
 
 `other_read`
 ------------
-    Whether others have read access to the article.
+    Defines whether others have read access to the article.
 
 `other_write`
 ----------------------
-    Whether others have read access to the article.
+    Defines whether others have read access to the article.
 
 ******************************************************
 Fields in the wiki_articlerevision file 
 ******************************************************
 
-The header row of the wiki-articlerevision file, and a row of sample data, follow.
+The header row of the wiki-articlerevision SQL file, and a row of sample data, follow.
 
-    id  revision_number user_message  automatic_log ip_address  user_id modified  created previous_revision_id  deleted locked  article_id  content title
+    id  revision_number user_message  automatic_log ip_address  user_id modified  created previous_revision_id  deleted locked  
+    article_id  content title
     
-    17553 1 Course page automatically created.    NULL  NULL  2013-07-17 21:53:57 2013-07-17 21:53:57 NULL  0 0 1437  This is the wiki for **edX**'s _edX Demonstration Course_.  DemoX
+    17553 1 Course page automatically created.    NULL  NULL  2013-07-17 21:53:57 2013-07-17 21:53:57 NULL  0 0 
+    1437  This is the wiki for edX's _edX Demonstration Course_.  DemoX
 
-The table that follows provides a reference to the characteristics of each field in this file. Descriptions of the fields follow the table. 
+  The table that follows provides a reference to the characteristics of each field in this file. Descriptions of the fields follow the table. 
 
   .. list-table::
      :widths: 15 15 15 15
@@ -205,11 +207,13 @@ The table that follows provides a reference to the characteristics of each field
 
 `automatic_log`
 ----------------------
-    **TBD**
+    Changes to wiki pages are logged to make the revision history for an article available in the user interface.
+
+    **Question**: Is this description useful/accurate? 
 
 `ip_address`
 ----------------------
-    **TBD**
+    The IP address of the device where the revision was made.
 
 `user_id`
 ------------
@@ -229,15 +233,15 @@ The table that follows provides a reference to the characteristics of each field
 
 `deleted`
 ------------
-    Whether or not the revision was deleted.
+    Defines whether the revision was deleted.
 
 `locked`
 ------------
-    Whether or not the revision is locked.
+    Defines whether the revision is locked.
     
 `article_id`
 --------------------
-   The ID of the revision that is displayed for this article.
+   The ID of the revision that displayscd data for this article.
 
 `content`
 ------------
