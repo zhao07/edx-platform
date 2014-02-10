@@ -10,7 +10,7 @@ Overview
 ---------
 
 .. toctree::
-    :maxdepth: 5
+    :maxdepth: 2
 
     overview.rst
     LMSoverview.rst
@@ -22,11 +22,20 @@ Overview
     persistence.rst
     remote_gradebook.rst
     testing.rst
+
+APIs
+----
+.. toctree::
+    :maxdepth: 2
+
     common-lib.rst
     djangoapps.rst
 
 Internationalization
 ----------------------
+
+.. toctree::
+    :maxdepth: 2
 
     i18n.rst
     i18n_translators_guide.rst
