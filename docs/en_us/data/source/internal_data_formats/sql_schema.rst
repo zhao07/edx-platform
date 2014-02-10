@@ -48,9 +48,9 @@ All of our tables are described below, first in summary form with field types an
      * - Value
        - Meaning
      * - `YES`
-       - `NULL` values are allowed
+       - `NULL` values are allowed.
      * - `NO`
-       - `NULL` values are not allowed
+       - `NULL` values are not allowed.
 
   .. note::
      Django often just places blank strings instead of NULL when it wants to indicate a text value is optional. This is more meaningful for numeric and date fields.
@@ -64,7 +64,7 @@ All of our tables are described below, first in summary form with field types an
      * - Value
        - Meaning
      * - `PRI`
-       - Primary key for the table, usually named `id`, unique
+       - Primary key for the table, usually named `id`, unique.
      * - `UNI`
        - Unique
      * - `MUL`
@@ -232,7 +232,8 @@ Every row in this table corresponds to one row in `auth_user`::
   | allow_certificate  | tinyint(1)   | NO   |     |                                          |
   +--------------------+--------------+------+-----+------------------------------------------+
 
-There is an important split in demographic data gathered for the students who signed up during the MITx prototype phase in the spring of 2012, and those that signed up afterwards.
+**History**: 
+This table was organized differently for the students who signed up during the MITx prototype phase in the spring of 2012, and those that signed up afterwards. An important split exists in the demographic data gathered.
 
 `id`
 ----
@@ -254,17 +255,17 @@ There is an important split in demographic data gathered for the students who si
 `language`
 ----------
 
-  User's preferred language, asked during the sign up process for the 6.002x prototype course given in the Spring of 2012. This information stopped being collected after the transition from MITx to edX happened, but we never removed the values from our first group of students. Sometimes written in those languages.
+  No longer used. User's preferred language, asked during the sign up process for the 6.002x prototype course given in the Spring of 2012. This information stopped being collected after the transition from MITx to edX happened, but we never removed the values from our first group of students. Sometimes written in those languages.
 
 `location`
 ----------
 
-  User's location, asked during the sign up process for the 6.002x prototype course given in the Spring of 2012. We weren't specific, so people tended to put the city they were in, though some just specified their country and some got as specific as their street address. Again, sometimes romanized and sometimes written in their native language. Like `language`, we stopped collecting this field when we transitioned from MITx to edX, so it's only available for our first batch of students.
+  No longer used. User's location, asked during the sign up process for the 6.002x prototype course given in the Spring of 2012. We weren't specific, so people tended to put the city they were in, though some just specified their country and some got as specific as their street address. Again, sometimes romanized and sometimes written in their native language. Like `language`, we stopped collecting this field when we transitioned from MITx to edX, so it's only available for our first batch of students.
 
 `meta`
 ------
 
-  An optional, freeform text field that stores JSON data. This was a hack to allow us to associate arbitrary metadata with a user. An example of the JSON that can be stored here is::
+  An optional, freeform text field that stores JSON data. This field allows us to associate arbitrary metadata with a user. An example of the JSON that can be stored here is::
 
     {
       "old_names" : [
@@ -310,7 +311,7 @@ There is an important split in demographic data gathered for the students who si
 `courseware`
 ------------
 
-  This can be ignored. At one point, it was part of a way to do A/B tests, but it has not been used for anything meaningful since the conclusion of the prototype course in the spring of 2012.
+  No longer used. At one point, it was part of a way to do A/B tests, but it has not been used for anything meaningful since the conclusion of the prototype course in the spring of 2012.
 
 `gender`
 --------
@@ -398,6 +399,8 @@ Fields in the `student_courseenrollment` Table
 
 A row in this table represents a student's enrollment for a particular course run. If they decide to unenroll in the course, we set `is_active` to `False`. We still leave all their state in `courseware_studentmodule` untouched, so they will not lose courseware state if they unenroll and reenroll.
 
+**History**: As of 20 Aug 2013, this table retains the records of students who unenroll. Records are no longer deleted from this table.
+
 A sample of the heading row and a data row in the `student_courseenrollment` table follow.
 
     id  user_id course_id created is_active mode
@@ -417,7 +420,7 @@ A sample of the heading row and a data row in the `student_courseenrollment` tab
 `course_id`
 -----------
 
-  The ID of the course run they're enrolling in (e.g. `MITx/6.002x/2012_Fall`). You can get this from the URL when you're viewing courseware on your browser.
+  The ID of the course run they user is enrolling in (for example, `MITx/6.002x/2012_Fall`). You can get this from the URL when you view the courseware on your browser.
 
 `created`
 ---------
@@ -427,12 +430,16 @@ A sample of the heading row and a data row in the `student_courseenrollment` tab
 `is_active`
 -----------
 
-  Boolean indicating whether this enrollment is active. If an enrollment is not active, a student is not enrolled in that course. This lets us unenroll students without losing a record of what courses they were enrolled in previously. This was introduced in the 2013-08-20 release. Before this release, unenrolling a student simply deleted the row in `student_courseenrollment`.
+  Boolean indicating whether this enrollment is active. If an enrollment is not active, a student is not enrolled in that course. This lets us unenroll students without losing a record of what courses they were enrolled in previously. 
+
+  This field was introduced in the 20 Aug 2013 release. Before this release, unenrolling a student simply deleted the row in `student_courseenrollment`.
 
 `mode`
 ------
 
-  String indicating what kind of enrollment this was. The default is "honor" (honor certificate) and all enrollments prior to 2013-08-20 will be of that type. Other types being considered are "audit" and "verified_id".
+  String indicating what kind of enrollment this was. The default is "honor" (honor certificate) and all enrollments prior to 20 Aug 2013 are  of that type. Other types being considered are "audit" and "verified_id".
+
+  **Question**: Is this still correct, that these additional values are being considered?
 
 ==================================================
 Fields in the `user_id_map` Table
@@ -444,7 +451,7 @@ A sample of the heading row and a data row in the `user_id_map` table follow.
 
     hash_id id  username
 
-    e9989f2cca1d699d88e14fd43ccb5b5f  2587589 --EDXuser--
+    e9989f2cca1d699d88e14fd43ccb5b5f  NNNNNNN --EDXuser--
 
  .. list-table::
      :widths: 15 15 15 15
@@ -647,7 +654,7 @@ Every student has a separate row for every piece of content in the course, makin
 `created`
 ---------
 
-  Datetime when this row was created (i.e. when the student first accessed this piece of content).
+  Datetime when this row was created (that is, when the student first accessed this piece of content).
 
 `modified`
 ----------
@@ -663,17 +670,19 @@ Every student has a separate row for every piece of content in the course, makin
 
   These complexities in our grading system are a high priority target for refactoring in the near future.
 
+  **Question**: is that statement still accurate?
+
   Only `problem` and `selfassessment` types use this field. All other modules set this to `NULL`.
 
 `done`
 ------
 
-  Ignore this field. It was supposed to be an indication whether something was finished, but was never properly used and is just `'na'` in every row.
+  Not used. It was supposed to be an indication whether something was finished, but was never properly used and is just `'na'` in every row.
 
 `course_id`
 -----------
 
-  The course that this row applies to, represented in the form org/course/run (ex: `MITx/6.002x/2012_Fall`). The same course content (same `module_id`) can be used in different courses, and a student's state needs to be tracked separately for each course.
+  The course that this row applies to, represented in the form org/course/run (for example, `MITx/6.002x/2012_Fall`). The same course content (same `module_id`) can be used in different courses, and a student's state needs to be tracked separately for each course.
 
 ************
 Certificates
@@ -683,13 +692,13 @@ Certificates
 Fields in the `certificates_generatedcertificate` Table
 ======================================================================
 
-The `generatedcertificate` table tracks certificate state for students who have been graded after a course completes. Currently the table is only populated when a course ends and a script is run to grade students who have completed the course
+The `generatedcertificate` table tracks certificate state for students who have been graded after a course completes. Currently the table is only populated when a course ends and a script is run to grade students who have completed the course.
 
-A sample of the heading row and a data row in the `student_courseenrollment` table follow.
+.. A sample of the heading row and a data row in the `certificates_generatedcertificate` table follow.
 
-    id  user_id download_url  grade course_id key distinction status  verify_uuid download_uuid name  created_date  modified_date error_reason  mode
+..    id  user_id download_url  grade course_id key distinction status  verify_uuid download_uuid name  created_date  modified_date error_reason  mode
 
-    **TBD**
+..    **TBD**
 
 ::
 
@@ -740,12 +749,12 @@ A sample of the heading row and a data row in the `student_courseenrollment` tab
 `distinction`
 -----------------
 
-  This was used for letters of distinction for 188.1x and is not being used for any current courses.
+  Not used. This was used for letters of distinction for 188.1x, but is not being used for any current courses.
 
 `status`
 --------
 
-  Status may be one of these states:
+  Status can be one of these states:
 
   * `unavailable`
   * `generating`
@@ -757,13 +766,13 @@ A sample of the heading row and a data row in the `student_courseenrollment` tab
   * `restricted`
   * `error`
 
-  After a course has been graded and certificates have been issued status will be one of:
+  After a course has been graded and certificates have been issued, status is one of:
 
   * `downloadable`
   * `notpassing`
   * `restricted`
 
-  If the status is `downloadable` then the student passed the course and there will be a certificate available for download.
+  If the status is `downloadable` then the student passed the course and a certificate is available for download.
 
 `verify_uuid`, `download_uuid`
 ------------------------------

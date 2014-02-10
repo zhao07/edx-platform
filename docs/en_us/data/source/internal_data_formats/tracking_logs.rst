@@ -60,8 +60,12 @@ This section contains a table of fields common to all events.
 | user_id                  | TBD                                                         |             |                                    |
 |                          |                                                             |             |                                    |
 +--------------------------+-------------------------------------------------------------+-------------+------------------------------------+
-| context                  | TBD                                                         |             |                                    |
-|                          |                                                             |             |                                    |
+| ``context``              | Contains ``course_id``, ``org_id``, and ``user_id``.        |             |                                    |
+|                          | Identifies the course that generated the event, the         |             |                                    |
+|                          | organization that lists the course, and the individual to   |             |                                    |  
+|                          | whom the event pertains.                                    |             |                                    |
+|                          | **History**: This field was added 23 Oct 2013; ``user_id``  |             |                                    |
+|                          | was added 6 Nov 2013. Other fields may duplicate this data. |             |                                    |
 +--------------------------+-------------------------------------------------------------+-------------+------------------------------------+
 
 
@@ -77,13 +81,27 @@ Event types with several different historical names are enumerated by forward sl
 Enrollment Event Types
 =========================
 
-TBD --- is this edX registration or course registration? 
+**History**: Explicit event types for enrollment
+
+TBD --- is this edX registration or course registration? done by student or instructor?
 
 Event Source for Both is Server
 
 * edx.course.enrollment.activated
 
 * edx.course.enrollment.deactivated
+
+
+
+
+
+Samples
+--------
+
+    {"username": "AAAAAAAAAA", "host": "courses.edx.org", "event_source": "server", "event_type": "edx.course.enrollment.activated", "context": {"course_id": "edX/DemoX/Demo_Course", "org_id": "edX", "user_id": NNNNNNN}, "time": "2014-01-26T00:28:28.388782+00:00", "ip": "NN.NN.NNN.NNN", "event": {"course_id": "edX/DemoX/Demo_Course", "user_id": NNNNNNN, "mode": "honor"}, "agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko", "page": null}
+
+    {"username": "BBBBBBBBBB", "host": "courses.edx.org", "event_source": "server", "event_type": "edx.course.enrollment.deactivated", "context": {"course_id": "edX/DemoX/Demo_Course", "org_id": "edX", "user_id": NNNNNNN}, "time": "2014-01-26T00:24:06.642928+00:00", "ip": "NN.NN.NNN.NNN", "event": {"course_id": "edX/DemoX/Demo_Course", "user_id": NNNNNNN, "mode": "honor"}, "agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.73.11 (KHTML, like Gecko) Version/7.0.1 Safari/537.73.11", "page": null}
+
 
 TBD
 
@@ -328,7 +346,7 @@ These event types are fired when a user selects a navigational control. **Questi
 | ``currentTime``     | float         | Time the video was played at, in seconds.                           |
 +---------------------+---------------+---------------------------------------------------------------------+
 | ``speed``           | string        | Video speed in use (i.e., 0.75, 1.0, 1.25, 1.50).                   |
-|                     |               | **Question**: did the speed_change_video e_type replace this?       |
+|                     |               |                                                                     |
 +---------------------+---------------+---------------------------------------------------------------------+
 
 ADDITIONAL VIDEO EVENT_TYPES:
@@ -385,6 +403,8 @@ Book (PDF) Event Type
 ``problem_check`` Event Type   
 ------------------------------------------------
 
+**Question**: The save_problem_check event_type name is deprecated, but two different descriptions, courses, and fields are documented right now. Which is accurate? 
+
 **Description**: Fired when a user wants to check a problem.  
 
 **Component**: Capa Module
@@ -393,19 +413,21 @@ Book (PDF) Event Type
 
 ``event`` **Fields**: The ``event`` field contains the values of all input fields from the problem being checked, styled as GET parameters.
 
-.. _save_problem:
 
-----------------------------------------------------------
-``problem_check`` / ``save_problem_check`` Event Types   
-----------------------------------------------------------
 
 **Description**: Fired when a problem has been checked successfully. 
-
-**Question**: is one of these deprecated? which one? (Ideally, when?) do any of these fields relate to one of them only?
 
 **Component**: Capa Module
 
 **Event Source**: Server
+
+
+**History**: 
+
+* Prior to 15 Jul 2013, this event was fired twice for the same action.
+
+* Prior to 15 Oct 2013, this event type was named ``save_problem_check``.
+
 
 ``event`` **Fields**: 
 
@@ -466,6 +488,8 @@ Book (PDF) Event Type
 
 **Event Source**: Server
 
+**History**: Prior to 15 Oct 2013, this event type was named ``save_problem_check_fail``.
+
 ``event`` **Fields**: 
 
 +---------------------+---------------+---------------------------------------------------------------------+
@@ -507,8 +531,6 @@ TBD
 ----------------------------------------------------------
 
 **Description**: Fired when a problem is rescored sucessfully.    
-
-**Question**: why do we have a second description for the same "problem_check" event type? is it really the same name?
 
 **Component**: Capa Module
 
@@ -561,6 +583,23 @@ TBD
 +---------------------+---------------+---------------------------------------------------------------------+
 | ``failure``         | string        | `'unsupported'`, `'unanswered'`, `'input_error'`, `'unexpected'`    |
 +---------------------+---------------+---------------------------------------------------------------------+
+
+
+------------------------------------------------
+``problem_regrade`` Event Type
+------------------------------------------------
+
+TBD
+
+**History**: Prior to 15 Oct 2013, this event type was named ``save_problem_regrade``.
+
+------------------------------------------------
+``problem_regrade_fail`` Event Type
+------------------------------------------------
+
+TBD
+
+**History**: Prior to 15 Oct 2013, this event type was named ``save_problem_regrade_fail``.
 
 .. _problem_show:
 
@@ -715,27 +754,7 @@ TBD
 | ``answers``         | dict          |                                                                     |
 +---------------------+---------------+---------------------------------------------------------------------+
 
-------------------------------------------------
-Additional Event Types TBD
-------------------------------------------------
 
-These were on Brian's list from AN-462, not even sure if they're explicit or implicit, or student-initiated or instructor-initiated:
-
-* get-student-progress-page
-
-* open_ended_notifications
-
-* open_ended_problems
-
-* peer_grading
-
-* progress
-
-* staff_grading
-
-* staff_grading-get_problem_list
-
-All with an Event Source of Server
 
 ==================================================
 Instructor Event Types
