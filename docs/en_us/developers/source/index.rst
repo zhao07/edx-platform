@@ -6,7 +6,8 @@
 EdX Developer Documentation
 ===================================
 
-Contents:
+Overview
+---------
 
 .. toctree::
     :maxdepth: 5
@@ -23,6 +24,10 @@ Contents:
     testing.rst
     common-lib.rst
     djangoapps.rst
+
+Internationalization
+----------------------
+
     i18n.rst
     i18n_translators_guide.rst
 
