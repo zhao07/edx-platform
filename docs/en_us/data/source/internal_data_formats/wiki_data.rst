@@ -112,7 +112,7 @@ The header row of the wiki-article SQL file, and a row of sample data, follow.
 
 `other_write`
 ----------------------
-    Defines whether others have read access to the article.
+    Defines whether others have write access to the article.
 
 ******************************************************
 Fields in the wiki_articlerevision file 
@@ -124,7 +124,7 @@ The header row of the wiki-articlerevision SQL file, and a row of sample data, f
     article_id  content title
     
     17553 1 Course page automatically created.    NULL  NULL  2013-07-17 21:53:57 2013-07-17 21:53:57 NULL  0 0 
-    1437  This is the wiki for edX's _edX Demonstration Course_.  DemoX
+    1437  This is the wiki for edX's edX Demonstration Course.  DemoX
 
   The table that follows provides a reference to the characteristics of each field in this file. Descriptions of the fields follow the table. 
 
@@ -207,7 +207,7 @@ The header row of the wiki-articlerevision SQL file, and a row of sample data, f
 
 `automatic_log`
 ----------------------
-    Changes to wiki pages are logged to make the revision history for an article available in the user interface.
+    Some changes to wiki pages are logged to make the revision history for an article available in the user interface.
 
     **Question**: Is this description useful/accurate? 
 
@@ -241,7 +241,7 @@ The header row of the wiki-articlerevision SQL file, and a row of sample data, f
     
 `article_id`
 --------------------
-   The ID of the revision that displayscd data for this article.
+   The ID of the revision that displays data for this article.
 
 `content`
 ------------
