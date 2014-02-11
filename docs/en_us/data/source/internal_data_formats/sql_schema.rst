@@ -391,7 +391,7 @@ This table was organized differently for the students who signed up during the M
 `allow_certificate`
 -------------------
 
-  Set to `1` for most students. This field is set to `0` if log analysis has revealed that this student is accessing our site from a country that the US has an embargo against. At this time, we do not issue certificates to students from those countries.
+  Set to `1` (true) for most students. This field is set to `0` (false) if log analysis has revealed that this student is accessing our site from a country that the US has an embargo against. At this time, we do not issue certificates to students from those countries.
 
 ====================================================
 Fields in the `student_courseenrollment` Table
@@ -719,7 +719,7 @@ The `generatedcertificate` table tracks certificate state for students who have 
   | created_date  | datetime     | NO   |     | NULL    |                |
   | modified_date | datetime     | NO   |     | NULL    |                |
   | error_reason  | varchar(512) | NO   |     | NULL    |                |
-  | mode          | TBD          |      |     |         |                |
+  | mode          | TBD          | NO   |     | NULL    |                |
   +---------------+--------------+------+-----+---------+----------------+
 
 `id`
@@ -756,23 +756,22 @@ The `generatedcertificate` table tracks certificate state for students who have 
 
   Status can be one of these states:
 
-  * `unavailable`
-  * `generating`
-  * `regenerating`
-  * `deleting`
-  * `deleted`
-  * `downloadable`
-  * `notpassing`
-  * `restricted`
-  * `error`
+  
+  * `deleted` - the certificate has been deleted.
+  * `deleting` - a request has been made to delete a certificate.
+  * `downloadable` - the student passed the course and a  certificate is available for download.
+  * `error` - an error ocurred during certificate generation.
+  * `generating` - a request has been made to generate a certificate but it has not yet been generated.
+  * `notpassing` - the student's grade is not a passing grade. 
+  * `regenerating` - a request has been made to regenerate a certificate but it has not yet been generated.
+  * `restricted` - userprofile.allow_certificate is false: the student is on the restricted embargo list 
+  * `unavailable` - no entry, typically because the student has not yet been graded for certificate generation.
 
   After a course has been graded and certificates have been issued, status is one of:
 
   * `downloadable`
   * `notpassing`
   * `restricted`
-
-  If the status is `downloadable` then the student passed the course and a certificate is available for download.
 
 `verify_uuid`, `download_uuid`
 ------------------------------
@@ -787,12 +786,12 @@ The `generatedcertificate` table tracks certificate state for students who have 
 `created_date`
 ---------------
 
-  **TBD**
+  Date this row in the database was created.
 
 `modified_date`
 ---------------
 
-  **TBD**
+  Date this row in the database was modified.
 
 `error_reason`
 ---------------
@@ -802,4 +801,5 @@ The `generatedcertificate` table tracks certificate state for students who have 
 `mode`
 ---------------
 
-  **TBD**
+  Defaults to `honor`. Other values are `audit` and `verified`.  
+.. same as enrollment.mode. 
