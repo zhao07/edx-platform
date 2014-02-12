@@ -70,10 +70,10 @@ This section contains a table of fields common to all events.
 |                          | string is empty for anonymous events (i.e., user not logged |             |                                    |
 |                          | in).                                                        |             |                                    |
 +--------------------------+-------------------------------------------------------------+-------------+------------------------------------+
-| host                     | TBD                                                         |             |                                    |
+| ``host``                 | TBD                                                         |             |                                    |
 |                          |                                                             |             |                                    |
 +--------------------------+-------------------------------------------------------------+-------------+------------------------------------+
-| user_id                  | TBD                                                         |             |                                    |
+| ``user_id``              | TBD                                                         |             |                                    |
 |                          |                                                             |             |                                    |
 +--------------------------+-------------------------------------------------------------+-------------+------------------------------------+
 | ``context``              | Contains ``course_id``, ``org_id``, and ``user_id``.        |             |                                    |
@@ -89,7 +89,9 @@ This section contains a table of fields common to all events.
 Event Types
 ********************
 
-There are two tables of event types -- one for student events, and one for instructor events. Table columns describe what each event type represents, which component it originates from, what scripting language was used to fire the event, and what ``event`` fields are associated with it. The ``event_source`` field from the "Common Fields" table above distinguishes between events that originated in the browser (in javascript) and events that originated on the server (during the processing of a request).
+.. Event types are initiated by interactions with the courseware and by interactions with the Instructor Dashboard. This chapter presents information about event types in sections for student events and for instructor events. While the "instructor" events typically all result from interactions by one of the member of the course staff, the "student" events are initiated by students, course staff, beta testers: anyone who interacts with the courseware.
+
+There are two tables of event types: one for student events, and one for instructor events. Table columns describe what each event type represents, which component it originates from, what scripting language was used to fire the event, and what ``event`` fields are associated with it. The ``event_source`` field from the "Common Fields" table above distinguishes between events that originated in the browser (in javascript) and events that originated on the server (during the processing of a request).
 
 Event types with several different historical names are enumerated by forward slashes. Rows identical after the second column have been combined, with the corresponding event types enumerated by commas.
 
