@@ -69,7 +69,7 @@ FEATURES = {
 
     # If set to True, Studio won't restrict the set of advanced components
     # to just those pre-approved by edX
-    'ALLOW_ALL_ADVANCED_COMPONENTS': False,
+    'ALLOW_ALL_ADVANCED_COMPONENTS': True,
 
     # Turn off account locking if failed login attempts exceeds a limit
     'ENABLE_MAX_FAILED_LOGIN_ATTEMPTS': False,
@@ -199,14 +199,14 @@ MIDDLEWARE_CLASSES = (
 XBLOCK_MIXINS = (LmsBlockMixin, CmsBlockMixin, InheritanceMixin, XModuleMixin)
 
 # Only allow XModules in Studio
-XBLOCK_SELECT_FUNCTION = only_xmodules
+# XBLOCK_SELECT_FUNCTION = only_xmodules
 
 # Use the following lines to allow any xblock in Studio,
 # either by uncommenting them here, or adding them to your private.py
 # You should also enable the ALLOW_ALL_ADVANCED_COMPONENTS feature flag, so that
 # xblocks can be added via advanced settings
-# from xmodule.x_module import prefer_xmodules
-# XBLOCK_SELECT_FUNCTION = prefer_xmodules
+from xmodule.x_module import prefer_xmodules
+XBLOCK_SELECT_FUNCTION = prefer_xmodules
 
 ############################ SIGNAL HANDLERS ################################
 # This is imported to register the exception signal handling that logs exceptions
@@ -428,6 +428,10 @@ INSTALLED_APPS = (
     'course_creators',
     'student',  # misleading name due to sharing with lms
     'course_groups',  # not used in cms (yet), but tests run
+
+    # ORA TIM Services (so XBlocks load in Studio)
+    'submissions',
+    'openassessment.peer',
 
     # Tracking
     'track',

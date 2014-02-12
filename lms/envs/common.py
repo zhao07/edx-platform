@@ -1097,6 +1097,10 @@ INSTALLED_APPS = (
     'django_comment_common',
     'notes',
 
+    # ORA TIM Services
+    'submissions',
+    'openassessment.peer',
+
     # Splash screen
     'splash',
 
