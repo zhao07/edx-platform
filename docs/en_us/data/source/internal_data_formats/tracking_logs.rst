@@ -15,25 +15,27 @@ In the data package, events are delivered in a log file.
 Sample Events
 *************************
 
-Two sample events from the edX/prod-edxapp-011/2014-01-26_edX.log file follows.
+Two sample events from the edX/prod-edxapp-011/2014-01-26_edX.log file follows. 
 
 .. code-block:: json
 
     {"username": "AAAAAAAAAA", "event_type": "problem_check", "ip": "NNNNNNNNNN", "agent": 
-    "Mozilla/5.0 (Windows NT 6.0; rv:20.0) Gecko/20100101 Firefox/20.0", "host": "courses.edx.org", 
-    "session": "1cc603b3b4b2ed9a5475511d5d974658", "event": "\"input_i4x-edX-DemoX-problem-
-    c554538a57664fac80783b99d9d6da7c_2_1=%5B828%2C653%5D\"", "event_source": "browser", "context": 
-    {"course_id": "edX/DemoX/Demo_Course", "org_id": "edX", "user_id": 3312650}, "time": 
-    "2014-01-26T00:00:25.776429+00:00", "page": "https://courses.edx.org/courses/edX/DemoX/ 
-    Demo_Course/courseware/interactive_demonstrations/basic_questions/"}
+    "Mozilla/5.0 (Windows NT 6.0; rv:20.0) Gecko/20100101 Firefox/20.0", "host": 
+    "courses.edx.org",     "session": "1cc603b3b4b2ed9a5475511d5d974658", "event": 
+    "\"input_i4x-edX-DemoX-problem-c554538a57664fac80783b99d9d6da7c_2_1=
+    %5B828%2C653%5D\"", "event_source": "browser", "context": {"course_id": 
+    "edX/DemoX/Demo_Course", "org_id": "edX", "user_id": 3312650}, "time": 
+    "2014-01-26T00:00:25.776429+00:00", "page": "https://courses.edx.org/courses/edX/
+    DemoX/Demo_Course/courseware/interactive_demonstrations/basic_questions/"}
 
-    {"username": "AAAAAAAAAA", "host": "courses.edx.org", "event_source": "server", "event_type": 
-    "/courses/edX/DemoX/Demo_Course/xblock/i4x:;_;_edX;_DemoX;_problem;_c554538a57664fac80783b99d9d6da7c/
-    handler/xmodule_handler/problem_check", "context": {"course_id": "edX/DemoX/Demo_Course", "org_id": 
-    "edX", "user_id": *id*}, "time": "2014-01-26T00:00:25.781622+00:00", "ip": "NNNNNNNNNN", "event": 
-    "{\"POST\": {\"input_i4x-edX-DemoX-problem-c554538a57664fac80783b99d9d6da7c_2_1\": [\"[828,653]\"]}, 
-    \"GET\": {}}", "agent": "Mozilla/5.0 (Windows NT 6.0; rv:20.0) Gecko/20100101 Firefox/20.0", "page": 
-    null}
+    {"username": "AAAAAAAAAA", "host": "courses.edx.org", "event_source": "server", 
+    "event_type": "/courses/edX/DemoX/Demo_Course/xblock/i4x:;_;_edX;_DemoX;_problem;_
+    c554538a57664fac80783b99d9d6da7c/handler/xmodule_handler/problem_check", "context": 
+    {"course_id": "edX/DemoX/Demo_Course", "org_id": "edX", "user_id": *id*}, "time": 
+    "2014-01-26T00:00:25.781622+00:00", "ip": "NNNNNNNNNN", "event": "{\"POST\": 
+    {\"input_i4x-edX-DemoX-problem-c554538a57664fac80783b99d9d6da7c_2_1\": 
+    [\"[828,653]\"]}, \"GET\": {}}", "agent": "Mozilla/5.0 (Windows NT 6.0; rv:20.0) 
+    Gecko/20100101 Firefox/20.0", "page": null}
 
 .. _common:
 
@@ -111,6 +113,9 @@ Event Source for Both is Server
 
 Samples
 --------
+
+.. code-block:: json
+
 
     {"username": "AAAAAAAAAA", "host": "courses.edx.org", "event_source": "server", "event_type": "edx.course.enrollment.activated", "context": {"course_id": "edX/DemoX/Demo_Course", "org_id": "edX", "user_id": NNNNNNN}, "time": "2014-01-26T00:28:28.388782+00:00", "ip": "NN.NN.NNN.NNN", "event": {"course_id": "edX/DemoX/Demo_Course", "user_id": NNNNNNN, "mode": "honor"}, "agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko", "page": null}
 

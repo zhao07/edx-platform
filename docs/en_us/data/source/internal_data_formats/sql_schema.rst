@@ -83,9 +83,15 @@ The `auth_user` table is built into the Django web application framework that we
 
 A sample of the heading row and a data row in the `auth_user` table follow.
 
-    `id  username  first_name  last_name email password  is_staff  is_active is_superuser  last_login  date_joined status  email_key avatar_typcountry show_country  date_of_birth interesting_tags  ignored_tags  email_tag_filter_strategy display_tag_filter_strategy consecutive_days_visit_count`
+.. code-block:: json
 
-    `*id*  *username*      *email_address*   1 1 0 2014-01-01 17:28:27 2012-03-04 00:57:49   NULL      0 NULL      0 0`
+    `id  username  first_name  last_name email password  is_staff  is_active is_superuser  
+    last_login  date_joined status  email_key avatar_typcountry show_country  date_of_birth 
+    interesting_tags  ignored_tags  email_tag_filter_strategy display_tag_filter_strategy 
+    consecutive_days_visit_count`
+
+    `NNNNN  AAAAAAAAA      AAAAAA   AAAAAA   1 1 0 2014-01-01 17:28:27 2012-03-04 00:57:49   
+    NULL      0 NULL      0 0`
 
 The `auth_user` table has the following fields::
 
@@ -208,9 +214,15 @@ The `auth_userprofile` table is mostly used to store user demographic informatio
 
 A sample of the heading row and a data row in the `auth_userprofile` table follow.
 
-    id  user_id name  language  location  meta  courseware  gender  mailing_address year_of_birth level_of_education  goals allow_certificate
+.. code-block:: json
 
-    *id*  *username*  *full_name* English MIT {"old_emails": [["*old_email*", "2012-11-16T10:28:10.096489"]], "old_names": [["*old_full_name*", "I wanted to test out the name-change functionality", "2012-10-22T12:23:10.598444"]]} course.xml  NULL  NULL  NULL  NULL  NULL  1
+    id  user_id name  language  location  meta  courseware  gender  mailing_address 
+    year_of_birth level_of_education  goals allow_certificate
+
+    *id*  *username*  *full_name* English MIT {"old_emails": [["*old_email*", 
+    "2012-11-16T10:28:10.096489"]], "old_names": [["*old_full_name*", "I wanted 
+    to test out the name-change functionality", "2012-10-22T12:23:10.598444"]]} 
+    course.xml  NULL  NULL  NULL  NULL  NULL  1
 
 Every row in this table corresponds to one row in `auth_user`::
 
@@ -394,10 +406,10 @@ This table was organized differently for the students who signed up during the M
   Set to `1` (true) for most students. This field is set to `0` (false) if log analysis has revealed that this student is accessing our site from a country that the US has an embargo against. At this time, we do not issue certificates to students from those countries.
 
 ====================================================
-Fields in the `student_courseenrollment` Table
+Fields in the ``student_courseenrollment`` Table
 ====================================================
 
-A row in this table represents a student's enrollment for a particular course run. If they decide to unenroll in the course, we set `is_active` to `False`. We still leave all their state in `courseware_studentmodule` untouched, so they will not lose courseware state if they unenroll and reenroll.
+A row in this table represents a student's enrollment for a particular course run. If they decide to unenroll in the course, we set `is_active` to `False`. We still leave all their state in ``courseware_studentmodule`` untouched, so they will not lose courseware state if they unenroll and reenroll.
 
 **History**: As of 20 Aug 2013, this table retains the records of students who unenroll. Records are no longer deleted from this table.
 
@@ -449,9 +461,13 @@ A row in this table maps a student's real user ID to an anonymous ID generated t
 
 A sample of the heading row and a data row in the `user_id_map` table follow.
 
+.. code-block:: json
+
     hash_id id  username
 
     e9989f2cca1d699d88e14fd43ccb5b5f  NNNNNNN --EDXuser--
+
+.. Text to end the code   
 
  .. list-table::
      :widths: 15 15 15 15
@@ -511,9 +527,13 @@ The `courseware_studentmodule` table holds all courseware state for a given user
 
 A sample of the heading row and a data row in the `courseware_studentmodule` table follow.
 
-    id  module_type module_id student_id  state grade created modified  max_grade done  course_id
+.. code-block:: json
 
-    33973858  course  i4x://edX/DemoX/course/Demo_course  96452 {"position": 3} NULL  2013-03-19 17:21:07 2014-01-07 20:18:54 NULL  na  edX/DemoX/Demo_course
+    id  module_type module_id student_id  state grade created modified  max_grade done  
+    course_id
+
+    33973858  course  i4x://edX/DemoX/course/Demo_course  96452 {"position": 3} NULL  
+    2013-03-19 17:21:07 2014-01-07 20:18:54 NULL  na  edX/DemoX/Demo_course
 
 Every student has a separate row for every piece of content in the course, making this by far our largest table::
 
