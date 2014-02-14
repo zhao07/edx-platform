@@ -4,9 +4,9 @@ Wiki Data
 
 .. DO NOT PUBLISH until LMS review per Carlos: LMS-2246
 
-The following sections detail how edX stores Wiki data internally, and is useful for developers and researchers who are examining database exports. 
+The following sections detail how edX stores wiki data internally, and is useful for developers and researchers who are examining database exports. 
 
-EdX currently uses an external application called Django Wiki for Wiki functionality within courses. 
+EdX currently uses an external application called django-wiki for wiki functionality within courses. 
 
 In the data package, wiki data is delivered in two SQL files: 
 
@@ -101,23 +101,23 @@ The table that follows provides a reference to each field in this file. A descri
 `group_id`
 ------------
     As in a UNIX file system, permissions can be given to a user according to group membership. 
-    Groups are handled through the Django auth system.
+    Groups are handled through the Django authentication system.
     
 `group_read`
 ------------
-    Defines whether the group has read access to the article.
+    Defines whether the group has read access to the article. 1 if so, 0 if not.
 
 `group_write`
 --------------
-    Defines whether the group has write access to the article.
+    Defines whether the group has write access to the article. 1 if so, 0 if not.
 
 `other_read`
 ------------
-    Defines whether others have read access to the article.
+    Defines whether others have read access to the article. 1 if so, 0 if not.
 
 `other_write`
 ----------------------
-    Defines whether others have write access to the article.
+    Defines whether others have write access to the article. 1 if so, 0 if not.
 
 ******************************************************
 Fields in the wiki_articlerevision file 
@@ -215,8 +215,6 @@ The table that follows provides a reference to the characteristics of each field
 `automatic_log`
 ----------------------
     Some changes to wiki pages are logged to make the revision history for an article available in the user interface.
-
-    **Question**: Is this description useful/accurate? 
 
 `ip_address`
 ----------------------

@@ -2,7 +2,7 @@
 Discussion Forums Data
 ######################
 
-Data for the discussions in edX is stored in a MongoDB database as collections of JSON documents. MongoDB is a document-oriented, NoSQL database system. MongoDB is open source; documentation can be found here_.
+Discussion data is stored in a MongoDB database as collections of JSON documents. MongoDB is a document-oriented, NoSQL database system. MongoDB is open source; documentation can be found here_.
 
 ..  _here: http://docs.mongodb.org/manual/
 
@@ -12,7 +12,7 @@ The primary collection that holds all of the discussion posts written by users i
 
 * A ``CommentThread`` represents the first level of interaction: a post that opens a new thread, often a student question of some sort. 
 
-* A ``Comment`` represents both the second and third levels of interaction: a response made directly to the conversation started by a CommentThread is a Comment, and any further contribution made to a specific response is also a Comment.
+* A ``Comment`` represents both the second and third levels of interaction: a response made directly to the conversation started by a ``CommentThread`` is a ``Comment``, and any further contribution made to a specific response is also a ``Comment``.
 
 A sample of the field/value pairs that are in the mongo file, and descriptions of the attributes that these two types of objects share and that are specific to each type, follow.
 
@@ -58,11 +58,11 @@ Comment Document Example
 Shared Fields
 *****************
 
-Descriptions of the fields that are present for both CommentThread and Comment objects follow.
+Descriptions of the fields that are present for both ``CommentThread`` and ``Comment`` objects follow.
 
 `_id`
 -----
-  The 12-byte MongoDB unique ID for this collection. Like all MongoDB IDs, the IDs are monotonically increasing and the first four bytes are a timestamp. 
+  The 12-byte MongoDB unique ID for this collection of data. Like all MongoDB IDs, the IDs are monotonically increasing and the first four bytes are a timestamp. 
 
 `_type`
 -------
@@ -70,7 +70,7 @@ Descriptions of the fields that are present for both CommentThread and Comment o
 
 `anonymous`
 -----------
-  If true, this CommentThread or Comment displays in the user interface as written by "anonymous", even to those who have moderator privileges in the forums.
+  If true, this ``CommentThread`` or ``Comment`` displays in the user interface as written by "anonymous", even to those who have moderator privileges in the forums.
 
 `anonymous_to_peers`
 --------------------
@@ -98,6 +98,8 @@ Descriptions of the fields that are present for both CommentThread and Comment o
 -----------
   The full course_id of the course that this comment was made in, including org and run. This value can be seen in the URL when browsing the courseware section. Example: ``BerkeleyX/Stat2.1x/2013_Spring``.
 
+.. 12 Feb 14, Sarina: not yet relevant but with splitmongo changes course_id conventions will change. may be worth discussing with Don et al as to when we expect these changes to land and how to document.  
+
 `created_at`
 ------------
   Timestamp in UTC. Example: ``ISODate("2013-02-21T03:03:04.587Z")``.
@@ -108,7 +110,7 @@ Descriptions of the fields that are present for both CommentThread and Comment o
 
 `votes`
 -------
-  Both CommentThread and Comment objects support voting. In the user interface, students can vote for posts (CommentThreads) and for responses, but not for the third-level comments made on responses. All Comment objects still have this attribute, even though there is no way to actually vote on the comment-level items in the UI. This attribute is a dictionary that has the following items inside:
+  Both ``CommentThread`` and ``Comment`` objects support voting. In the user interface, students can vote for posts (``CommentThread``s) and for responses, but not for the third-level comments made on responses. All ``Comment`` objects still have this attribute, even though there is no way to actually vote on the comment-level items in the UI. This attribute is a dictionary that has the following items inside:
 
   * `up` = list of User IDs that up-voted this comment or thread.
   * `down` = list of User IDs that down-voted this comment or thread (no longer used).
@@ -117,13 +119,13 @@ Descriptions of the fields that are present for both CommentThread and Comment o
   * `count` = total votes cast.
   * `point` = net vote, now always equal to `up_count`.
 
-A user only has one vote per Comment or CommentThread. Though it's still written to the database, the UI no longer displays an option to downvote anything.
+A user only has one vote per ``Comment`` or ``CommentThread``. Though it's still written to the database, the UI no longer displays an option to downvote anything.
 
 **************************
 CommentThread Fields
 **************************
 
-The following fields are specific to CommentThread objects. Each thread in the discussion forums is represented by one CommentThread.
+The following fields are specific to ``CommentThread`` objects. Each thread in the discussion forums is represented by one ``CommentThread``.
 
 `closed`
 --------
@@ -139,7 +141,7 @@ The following fields are specific to CommentThread objects. Each thread in the d
         * Comment: "A Loco Moco? Only if you want a heart attack!"
         * Comment: "But it's worth it! Just get a spam musubi on the side."
 
-  In that exchange, the ``comment_count`` for this CommentThread is **4**.
+  In that exchange, the ``comment_count`` for this ``CommentThread`` is **4**.
 
 `commentable_id`
 ----------------
@@ -163,9 +165,9 @@ The following fields are specific to CommentThread objects. Each thread in the d
 Comment Fields
 ********************
 
-The following fields are specific to Comment objects. A Comment is a response to a CommentThread (so an answer to the question), or a reply to another Comment (a comment about somebody's answer). 
+The following fields are specific to ``Comment`` objects. A ``Comment`` is a response to a ``CommentThread`` (so an answer to the question), or a reply to another ``Comment`` (a comment about somebody's answer). 
 
-**History**: It used to be the case that Comment replies could nest much more deeply, but we later capped it at just these three levels (question, answer, comment) much in the way that StackOverflow does.
+**History**: It used to be the case that ``Comment`` replies could nest much more deeply, but we later capped it at just these three levels (question, answer, comment) much in the way that StackOverflow does.
 
 `visible`
 ----------
@@ -173,31 +175,31 @@ The following fields are specific to Comment objects. A Comment is a response to
 
 `abuse_flaggers`
 --------------------
-  Records the user id of each user who selects the **Report Misuse** flag for a Comment in the user interface. Stores an array of user ids if more than one user flags the Comment. Empty if no users flag the Comment. 
+  Records the user id of each user who selects the **Report Misuse** flag for a ``Comment`` in the user interface. Stores an array of user ids if more than one user flags the ``Comment``. This is empty if no users flag the ``Comment``. 
 
 `historical_abuse_flaggers`
 ------------------------------
-  If a discussion moderator removes the **Report Misuse** flag from a Comment, all user IDs in the ``abuse_flaggers`` field are removed and then written to this field.
+  If a discussion moderator removes the **Report Misuse** flag from a ``Comment``, all user IDs in the ``abuse_flaggers`` field are removed and then written to this field.
 
 `endorsed`
 ----------
-  Boolean value, true if a forum moderator or instructor has marked that this Comment is a correct answer for whatever question the thread was asking. Exists for Comments that are replies to other Comments, but in that case ``endorsed`` is always false because there's no way to endorse such comments through the UI.
+  Boolean value, true if a forum moderator or instructor has marked that this ``Comment`` is a correct answer for whatever question the thread was asking. Exists for ``Comment``s that are replies to other ``Comment``s, but in that case ``endorsed`` is always false because there's no way to endorse such comments through the UI.
 
 `comment_thread_id`
 -------------------
-  Identifies the CommentThread that the Comment is a part of. 
+  Identifies the ``CommentThread`` that the ``Comment`` is a part of. 
 
 `parent_id`
 --------------
-  Applies only to comments made to a response. (In the example given for ``comment_count`` above, "A Loco Moco? Only if you want a heart attack!" is a comment that was made to the response, "Try a Loco Moco, it's amazing!".) 
+  Applies only to comments made to a response. In the example given for ``comment_count`` above, "A Loco Moco? Only if you want a heart attack!" is a comment that was made to the response, "Try a Loco Moco, it's amazing!"
 
-  The ``parent_id`` is the ``_id`` of the response-level Comment that this Comment is a reply to. Note that this field is only present in a Comment that is a reply to another Comment; it does not appear in a Comment that is a reply to a CommentThread.
+  The ``parent_id`` is the ``_id`` of the response-level ``Comment`` that this ``Comment`` is a reply to. Note that this field is only present in a ``Comment`` that is a reply to another ``Comment``; it does not appear in a ``Comment`` that is a reply to a ``CommentThread``.
 
 `parent_ids`
 ------------
-  The ``parent_ids`` attribute appears in all Comment objects, and contains the ``_id`` of all ancestor comments. Since the UI now prevents comments from being nested more than one layer deep, it will only ever have at most one element in it. If a Comment has no parent, it is an empty list.
+  The ``parent_ids`` attribute appears in all ``Comment`` objects, and contains the ``_id`` of all ancestor comments. Since the UI now prevents comments from being nested more than one layer deep, it will only ever have at most one element in it. If a ``Comment`` has no parent, it is an empty list.
 
 `sk`
 --------------------
-  A construct that drives a sorted index to improve online performance.
+  A randomly generated number that drives a sorted index to improve online performance.
 
