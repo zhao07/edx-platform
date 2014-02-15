@@ -192,6 +192,7 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
 
       var itemFeedbackStrings = [];           // the text of the targeted feedback messages (no delimiters)
       var itemFeedbackMatches = [];           // the entire match string of targeted feedback (including delimiters)
+      var itemFeedbackTruthValue = [];        // 'true' if this response item is a correct answer
       var itemFeedbackStringsCount = 0;       // total number of feedback strings (the arrays can have null entries)
 
       // replace headers
@@ -218,7 +219,7 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
             itemFeedbackStrings.push(feedbackString);             // add a feedback string entry (possibly null)
             itemFeedbackMatches.push(matchString);                // add a match string entry (possibly null)
         }
-        var targetedFeedbackAttribute = ' targeted-feedback="alwaysShowCorrectChoiceExplanation" ';  // assume we have targeted feedback items
+        var targetedFeedbackAttribute = ' targeted-feedback="always" ';  // assume we have targeted feedback items
         if(itemFeedbackStringsCount == 0) {                        // if we guessed wrong
           targetedFeedbackAttribute = '';
         }
@@ -234,6 +235,7 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
             var value = options[i].split(/^\s*\(.{0,3}\)\s*/)[1];
             var inparens = /^\s*\((.{0,3})\)\s*/.exec(options[i])[1];
             var correct = /x/i.test(inparens);
+            itemFeedbackTruthValue.push(correct);
             var fixed = '';
             if(/@/.test(inparens)) {
               fixed = ' fixed="true"';
@@ -241,7 +243,7 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
             if(/!/.test(inparens)) {
               shuffle = true;
             }
-            choices += '    <choice correct="' + correct + '"' + fixed + ' targetedFeedback="' + itemFeedbackStrings[i] + '">' + value + '</choice>\n';
+            choices += '    <choice id="' + i.toString() + '" correct="' + correct + '">' + value + '</choice>\n';
           }
         }
         var result = '<multiplechoiceresponse ' + targetedFeedbackAttribute + '>\n';
@@ -253,6 +255,24 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
         result += choices;
         result += '  </choicegroup>\n';
         result += '</multiplechoiceresponse>\n\n';
+
+        for (i = 0; i < itemFeedbackStrings.length; i += 1) {
+            if(itemFeedbackStrings[i].length > 0) {
+              var truthValueString = "incorrect";
+              var truthValueClass = "detailed-targeted-feedback";
+              if(itemFeedbackTruthValue[i]) {
+                var truthValueString = "correct";
+                var truthValueClass = "detailed-targeted-feedback-correct";
+              }
+              result += '<span id="' + i.toString() + '" class="hidden">\n';
+              result += '  <div class="' + truthValueClass + '" >\n';
+              result += '    <p>' + truthValueString + '</p>\n';
+              result += '    <p>' + itemFeedbackStrings[i] + '</p>\n';
+              result += '  </div>\n';
+              result += '</span>\n';
+            }
+        }
+
         return result;
       });
 
@@ -363,6 +383,7 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
           return selectString;
       });
 
+
       // replace explanations
       xml = xml.replace(/\[explanation\]\n?([^\]]*)\[\/?explanation\]/gmi, function(match, p1) {
           var selectString = '<solution>\n<div class="detailed-solution">\nExplanation\n\n' + p1 + '\n</div>\n</solution>';
@@ -402,6 +423,9 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
 
       // surround w/ problem tag
       xml = '<problem>\n' + xml + '\n</problem>';
+
+      alert(xml);
+
 
       return xml;
     }`
