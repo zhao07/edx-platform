@@ -228,7 +228,7 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
           itemFeedbackStrings.push(feedbackString);             // add a feedback string entry (possibly null)
           itemFeedbackMatches.push(matchString);                // add a match string entry (possibly null)
       }
-      var targetedFeedbackAttribute = ' targeted-feedback="" ';  // assume we have targeted feedback items
+      var targetedFeedbackAttribute = ' targeted-feedback="alwaysShowCorrectChoiceExplanation" ';  // assume we have targeted feedback items
       if(itemFeedbackStringsCount == 0) {                        // if we guessed wrong
         targetedFeedbackAttribute = '';
       }
@@ -258,9 +258,7 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
 
             var itemFeedbackMatchString = itemFeedbackMatches[i];   // get this response item's feedback match, if any
             if(itemFeedbackMatchString.length > 0) {                // if this response item had a match
-              alert(itemFeedbackMatchString);
               options[i] = options[i].replace(itemFeedbackMatchString, '');   // remove it from the line
-              alert(options[i]);
             }
 
 
@@ -316,9 +314,9 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
 
 
 
+                  alert(itemFeedbackStrings[i]);
 
-
-                  groupString += '    <choice correct="' + correct + '">' + value + '</choice>\n';
+                  groupString += '    <choice correct="' + correct + '"  targetedFeedback="' + itemFeedbackStrings[i] + '">' + value + '</choice>\n';
               }
           }
 
