@@ -199,6 +199,48 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
       var shuffle = false;
       xml = xml.replace(/(^\s*\(.{0,3}\).*?$\n*)+/gm, function(match, p) {
         var options = match.split('\n');
+
+
+
+      // parse the user's text for any targeted feedback specifications, leaving the results of the parsing
+      // process in a set of lists for later processing
+      for(var i = 0; i < options.length; i++) {
+          var feedbackString = '';
+          var matchString = '';
+          var matches = options[i].match( /{{(.+)}}/ );         // string surrounded by {{...}} is a match group
+          if(matches) {
+              matchString = matches[0];         // group 0 holds the entire matching string (includes delimiters)
+              feedbackString = matches[1];      // group 1 holds the matching characters (our string)
+              itemFeedbackStringsCount += 1;
+          }
+          itemFeedbackStrings.push(feedbackString);             // add a feedback string entry (possibly null)
+          itemFeedbackMatches.push(matchString);                // add a match string entry (possibly null)
+      }
+      var targetedFeedbackAttribute = ' targeted-feedback="" ';  // assume we have targeted feedback items
+      if(itemFeedbackStringsCount == 0) {                        // if we guessed wrong
+        targetedFeedbackAttribute = '';
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         for(var i = 0; i < options.length; i++) {
           if(options[i].length > 0) {
             var value = options[i].split(/^\s*\(.{0,3}\)\s*/)[1];
@@ -238,6 +280,21 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
               if(options[i].length > 0) {
                   value = options[i].split(/^\s*\[.?\]\s*/)[1];
                   correct = /^\s*\[x\]/i.test(options[i]);
+
+
+
+
+                  itemTruthValues.push(correct);     // save this item's truth value for later
+
+
+
+
+
+
+
+
+
+
                   groupString += '    <choice correct="' + correct + '">' + value + '</choice>\n';
               }
           }
@@ -346,6 +403,44 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
 
           return selectString;
       });
+
+
+
+
+
+
+      // if any targeted feedback specifications were found, we'll create a new element to hold those strings
+      if(itemFeedbackStringsCount > 0) {
+        xml += '<targetedfeedbackset>\n';
+        for (i = 0; i < itemFeedbackStrings.length; i += 1) {
+          if(itemFeedbackStrings[i].length > 0) {
+            var truthValueString = 'Incorrect';
+            if(itemTruthValues[i]) {
+              truthValueString = "Correct";
+            }
+            xml += '    <targetedfeedback explanation-id="' + String(i) + '">\n';
+            xml += '        <div class="detailed-targeted-feedback">\n';
+            xml += '            <p>' + truthValueString + '</p>\n';
+            xml += '            <p>' + itemFeedbackStrings[i] + '</p>\n';
+            xml += '        </div>\n';
+            xml += '    </targetedfeedback>\n';
+         }
+        }
+        xml += '</targetedfeedbackset>\n\n';
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       // split scripts and preformatted sections, and wrap paragraphs
       splits = xml.split(/(\<\/?(?:script|pre).*?\>)/g);
