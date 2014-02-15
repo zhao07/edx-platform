@@ -195,7 +195,6 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
 
       var itemFeedbackStrings = [];           // the text of the targeted feedback messages (no delimiters)
       var itemFeedbackMatches = [];           // the entire match string of targeted feedback (including delimiters)
-      var itemTruthValues = [];               // correct/incorrect status of each response
       var itemFeedbackStringsCount = 0;       // total number of feedback strings (the arrays can have null entries)
 
 
@@ -274,7 +273,7 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
             if(/!/.test(inparens)) {
               shuffle = true;
             }
-            choices += '    <choice correct="' + correct + '"' + fixed + '>' + value + '</choice>\n';
+            choices += '    <choice correct="' + correct + '"' + fixed + ' targetedFeedback="' + itemFeedbackStrings[i] + '">' + value + '</choice>\n';
           }
         }
         var result = '<multiplechoiceresponse ' + targetedFeedbackAttribute + '>\n';
@@ -301,21 +300,6 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
               if(options[i].length > 0) {
                   value = options[i].split(/^\s*\[.?\]\s*/)[1];
                   correct = /^\s*\[x\]/i.test(options[i]);
-
-
-
-
-                  itemTruthValues.push(correct);     // save this item's truth value for later
-
-
-
-
-
-
-
-
-                  alert(itemFeedbackStrings[i]);
-
                   groupString += '    <choice correct="' + correct + '"  targetedFeedback="' + itemFeedbackStrings[i] + '">' + value + '</choice>\n';
               }
           }
@@ -430,25 +414,25 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
 
 
 
-      // if any targeted feedback specifications were found, we'll create a new element to hold those strings
-      if(itemFeedbackStringsCount > 0) {
-        xml += '<targetedfeedbackset>\n';
-        for (i = 0; i < itemFeedbackStrings.length; i += 1) {
-          if(itemFeedbackStrings[i].length > 0) {
-            var truthValueString = 'Incorrect';
-            if(itemTruthValues[i]) {
-              truthValueString = "Correct";
-            }
-            xml += '    <targetedfeedback explanation-id="' + String(i) + '">\n';
-            xml += '        <div class="detailed-targeted-feedback">\n';
-            xml += '            <p>' + truthValueString + '</p>\n';
-            xml += '            <p>' + itemFeedbackStrings[i] + '</p>\n';
-            xml += '        </div>\n';
-            xml += '    </targetedfeedback>\n';
-         }
-        }
-        xml += '</targetedfeedbackset>\n\n';
-      }
+//      // if any targeted feedback specifications were found, we'll create a new element to hold those strings
+//      if(itemFeedbackStringsCount > 0) {
+//        xml += '<targetedfeedbackset>\n';
+//        for (i = 0; i < itemFeedbackStrings.length; i += 1) {
+//          if(itemFeedbackStrings[i].length > 0) {
+//            var truthValueString = 'Incorrect';
+//            if(itemTruthValues[i]) {
+//              truthValueString = "Correct";
+//            }
+//            xml += '    <targetedfeedback explanation-id="' + String(i) + '">\n';
+//            xml += '        <div class="detailed-targeted-feedback">\n';
+//            xml += '            <p>' + truthValueString + '</p>\n';
+//            xml += '            <p>' + itemFeedbackStrings[i] + '</p>\n';
+//            xml += '        </div>\n';
+//            xml += '    </targetedfeedback>\n';
+//         }
+//        }
+//        xml += '</targetedfeedbackset>\n\n';
+//      }
 
 
 
