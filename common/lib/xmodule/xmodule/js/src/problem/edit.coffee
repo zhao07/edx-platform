@@ -190,6 +190,18 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
       var xml = markdown,
           i, splits, scriptFlag;
 
+
+
+
+      var itemFeedbackStrings = [];           // the text of the targeted feedback messages (no delimiters)
+      var itemFeedbackMatches = [];           // the entire match string of targeted feedback (including delimiters)
+      var itemTruthValues = [];               // correct/incorrect status of each response
+      var itemFeedbackStringsCount = 0;       // total number of feedback strings (the arrays can have null entries)
+
+
+
+
+
       // replace headers
       xml = xml.replace(/(^.*?$)(?=\n\=\=+$)/gm, '<h1>$1</h1>');
       xml = xml.replace(/\n^\=\=+$/gm, '');
@@ -243,6 +255,17 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
 
         for(var i = 0; i < options.length; i++) {
           if(options[i].length > 0) {
+
+            var itemFeedbackMatchString = itemFeedbackMatches[i];   // get this response item's feedback match, if any
+            if(itemFeedbackMatchString.length > 0) {                // if this response item had a match
+              alert(itemFeedbackMatchString);
+              options[i] = options[i].replace(itemFeedbackMatchString, '');   // remove it from the line
+              alert(options[i]);
+            }
+
+
+
+
             var value = options[i].split(/^\s*\(.{0,3}\)\s*/)[1];
             var inparens = /^\s*\((.{0,3})\)\s*/.exec(options[i])[1];
             var correct = /x/i.test(inparens);
@@ -256,7 +279,7 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
             choices += '    <choice correct="' + correct + '"' + fixed + '>' + value + '</choice>\n';
           }
         }
-        var result = '<multiplechoiceresponse>\n';
+        var result = '<multiplechoiceresponse ' + targetedFeedbackAttribute + '>\n';
         if(shuffle) {
           result += '  <choicegroup type="MultipleChoice" shuffle="true">\n';
         } else {
@@ -467,6 +490,20 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
 
       // surround w/ problem tag
       xml = '<problem>\n' + xml + '\n</problem>';
+
+
+
+
+
+
+
+      alert(xml);
+
+
+
+
+
+
 
       return xml;
     }`
