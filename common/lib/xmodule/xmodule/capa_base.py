@@ -121,6 +121,35 @@ class CapaFields(object):
             {"display_name": "Past Due", "value": "past_due"},
             {"display_name": "Never", "value": "never"}]
     )
+
+
+
+
+
+
+
+
+    show_targeted_feedback = String(
+    display_name="Show Targeted Feedback",
+    help=("Defines when to show targeted feedback to the student."),
+    scope=Scope.settings,
+    default="always",
+    values=[
+        {"display_name": "Always", "value": "always"},
+        {"display_name": "Answered", "value": "answered"},
+        {"display_name": "Closed", "value": "closed"},
+        {"display_name": "Finished", "value": "finished"},
+        {"display_name": "Past Due", "value": "past_due"},
+        {"display_name": "Never", "value": "never"}]
+    )
+
+
+
+
+
+
+
+
     force_save_button = Boolean(
         help="Whether to force the save button to appear on the page",
         scope=Scope.settings,
@@ -570,6 +599,7 @@ class CapaMixin(CapaFields):
             'reset_button': self.should_show_reset_button(),
             'save_button': self.should_show_save_button(),
             'answer_available': self.answer_available(),
+            'targeted_feedback_available': self.targeted_feedback_available(),
             'attempts_used': self.attempts,
             'attempts_allowed': self.max_attempts,
         }
@@ -665,6 +695,52 @@ class CapaMixin(CapaFields):
             return True
 
         return False
+
+
+
+
+
+    def targeted_feedback_available(self):
+        """
+        Is the user allowed to see an answer?
+        """
+        if self.show_targeted_feedback == '':
+            return False
+
+        return False;  # temp hack
+
+
+
+        #elif self.showanswer == "never":
+        #    return False
+        #elif self.runtime.user_is_staff:
+        #    # This is after the 'never' check because admins can see the answer
+        #    # unless the problem explicitly prevents it
+        #    return True
+        #elif self.showanswer == 'attempted':
+        #    return self.attempts > 0
+        #elif self.showanswer == 'answered':
+        #    # NOTE: this is slightly different from 'attempted' -- resetting the problems
+        #    # makes lcp.done False, but leaves attempts unchanged.
+        #    return self.lcp.done
+        #elif self.showanswer == 'closed':
+        #    return self.closed()
+        #elif self.showanswer == 'finished':
+        #    return self.closed() or self.is_correct()
+        #
+        #elif self.showanswer == 'past_due':
+        #    return self.is_past_due()
+        #elif self.showanswer == 'always':
+        #    return True
+
+        return False
+
+
+
+
+
+
+
 
     def update_score(self, data):
         """

@@ -175,6 +175,7 @@ class CapaDescriptor(CapaFields, RawDescriptor):
 
     # Proxy to CapaModule for access to any of its attributes
     answer_available = module_attr('answer_available')
+    show_targeted_feedback = module_attr('show_targeted_feedback')
     check_button_name = module_attr('check_button_name')
     check_problem = module_attr('check_problem')
     choose_new_seed = module_attr('choose_new_seed')
