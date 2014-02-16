@@ -604,6 +604,7 @@ class CapaMixin(CapaFields):
             'attempts_allowed': self.max_attempts,
         }
 
+        #from pdb import set_trace; set_trace()
         html = self.runtime.render_template('problem.html', context)
 
         if encapsulate:
@@ -707,7 +708,7 @@ class CapaMixin(CapaFields):
         if self.show_targeted_feedback == '':
             return False
 
-        return False;  # temp hack
+        return True;  # temp hack
 
 
 
@@ -804,6 +805,7 @@ class CapaMixin(CapaFields):
 
         Returns the answers: {'answers' : answers}
         """
+        #from pdb import set_trace; set_trace()
         event_info = dict()
         event_info['problem_id'] = self.location.url()
         self.runtime.track_function('showanswer', event_info)
@@ -1046,6 +1048,19 @@ class CapaMixin(CapaFields):
 
         # render problem into HTML
         html = self.get_problem_html(encapsulate=False)
+
+
+
+        from pdb import set_trace; set_trace()
+        html = html.replace("TARGET AVAIL", '------target available------')
+
+
+        html += "<div>FLINTSTONE</div>"
+
+
+
+
+
 
         return {'success': success, 'contents': html}
 

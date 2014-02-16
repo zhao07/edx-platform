@@ -264,7 +264,7 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
                 var truthValueString = "correct";
                 var truthValueClass = "detailed-targeted-feedback-correct";
               }
-              result += '<span id="' + i.toString() + '" class="hidden">\n';
+              result += '<span id="targeted_feedback_item_' + i.toString() + '" class="hidden">\n';
               result += '  <div class="' + truthValueClass + '" >\n';
               result += '    <p>' + truthValueString + '</p>\n';
               result += '    <p>' + itemFeedbackStrings[i] + '</p>\n';
@@ -423,9 +423,6 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
 
       // surround w/ problem tag
       xml = '<problem>\n' + xml + '\n</problem>';
-
-      alert(xml);
-
 
       return xml;
     }`
