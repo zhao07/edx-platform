@@ -130,8 +130,8 @@ class CapaFields(object):
 
 
     show_targeted_feedback = String(
-    display_name="Show Targeted Feedback",
-    help=("Defines when to show targeted feedback to the student."),
+    display_name="Show Feedback",
+    help=("Defines when to show the feedback for the problem."),
     scope=Scope.settings,
     default="always",
     values=[
