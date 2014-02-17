@@ -1049,19 +1049,6 @@ class CapaMixin(CapaFields):
         # render problem into HTML
         html = self.get_problem_html(encapsulate=False)
 
-
-
-        from pdb import set_trace; set_trace()
-        html = html.replace("TARGET AVAIL", '------target available------')
-
-
-        html += "<div>FLINTSTONE</div>"
-
-
-
-
-
-
         return {'success': success, 'contents': html}
 
     def unmask_log(self, event_info):

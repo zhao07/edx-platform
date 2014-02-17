@@ -243,7 +243,7 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
             if(/!/.test(inparens)) {
               shuffle = true;
             }
-            choices += '    <choice id="' + i.toString() + '" correct="' + correct + '">' + value + '</choice>\n';
+            choices += '    <choice explanation-id="' + i.toString() + '" correct="' + correct + '">' + value + '</choice>\n';
           }
         }
         var result = '<multiplechoiceresponse ' + targetedFeedbackAttribute + '>\n';
@@ -256,6 +256,10 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
         result += '  </choicegroup>\n';
         result += '</multiplechoiceresponse>\n\n';
 
+        result += '<targetedfeedbackset>\n';
+
+        from pdb import set_trace; set_trace()
+
         for (i = 0; i < itemFeedbackStrings.length; i += 1) {
             if(itemFeedbackStrings[i].length > 0) {
               var truthValueString = "incorrect";
@@ -264,14 +268,15 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
                 var truthValueString = "correct";
                 var truthValueClass = "detailed-targeted-feedback-correct";
               }
-              result += '<span id="targeted_feedback_item_' + i.toString() + '" class="hidden">\n';
-              result += '  <div class="' + truthValueClass + '" >\n';
-              result += '    <p>' + truthValueString + '</p>\n';
-              result += '    <p>' + itemFeedbackStrings[i] + '</p>\n';
-              result += '  </div>\n';
-              result += '</span>\n';
+              result += '<targetedfeedback explanation-id="' + i.toString() + '">\n';
+              result += '   <div class="' + truthValueClass + '" >\n';
+              result += '     <p>' + truthValueString + '</p>\n';
+              result += '     <p>' + itemFeedbackStrings[i] + '</p>\n';
+              result += '   </div>\n';
+              result += '</targetedfeedback>\n';
             }
         }
+        result += '</targetedfeedbackset>\n';
 
         return result;
       });
