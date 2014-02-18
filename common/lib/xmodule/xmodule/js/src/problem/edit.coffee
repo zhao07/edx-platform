@@ -258,8 +258,6 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
 
         result += '<targetedfeedbackset>\n';
 
-        from pdb import set_trace; set_trace()
-
         for (i = 0; i < itemFeedbackStrings.length; i += 1) {
             if(itemFeedbackStrings[i].length > 0) {
               var truthValueString = "incorrect";

@@ -424,14 +424,13 @@ class LoncapaProblem(object):
             answer_ids.append(results.keys())
         return answer_ids
 
-    # THIS WHOLE MECHANISM NEEDS TO CHANGE
-    def do_targeted_feedback(self, tree):
+    def do_targeted_feedback(self, targeted_feedback_available=None):
         """
         Implements the targeted-feedback=N in-place on  <multiplechoiceresponse> --
         choice-level explanations shown to a student after submission.
         Does nothing if there is no targeted-feedback attribute.
         """
-        for mult_choice_response in tree.xpath('//multiplechoiceresponse[@targeted-feedback]'):
+        for mult_choice_response in self.tree.xpath('//multiplechoiceresponse[@targeted-feedback]'):
             show_explanation = mult_choice_response.get('targeted-feedback') == 'alwaysShowCorrectChoiceExplanation'
 
             # Avoid modifying the tree again if targeted_feedback has already run --
@@ -464,9 +463,14 @@ class LoncapaProblem(object):
                 targetedfeedbackset = targetedfeedbackset[0]
                 targetedfeedbacks = targetedfeedbackset.xpath('./targetedfeedback')
                 for targetedfeedback in targetedfeedbacks:
-                    # Don't show targeted feedback if the student hasn't answer the problem
-                    # or if the target feedback doesn't match the student's (incorrect) answer
-                    if not self.done or targetedfeedback.get('explanation-id') != expl_id_for_student_answer:
+                    # remove this targeted feedback item if:
+                    #   the student has not answered the problem, or
+                    #   this item is not one of the student's selected answers, or
+                    #   targeted feedback are not enabled for display at the moment
+                    student_has_not_yet_answered = not self.done
+                    this_item_not_selected = targetedfeedback.get('explanation-id') != expl_id_for_student_answer
+                    targeted_feedback_not_enabled = not targeted_feedback_available();
+                    if student_has_not_yet_answered or this_item_not_selected or targeted_feedback_not_enabled:
                         targetedfeedbackset.remove(targetedfeedback)
 
             # Do not displace the solution under these circumstances
@@ -475,7 +479,7 @@ class LoncapaProblem(object):
 
             # The next element should either be <solution> or <solutionset>
             next_element = targetedfeedbackset.getnext()
-            parent_element = tree
+            parent_element = self.tree
             solution_element = None
             if next_element is not None and next_element.tag == 'solution':
                 solution_element = next_element
@@ -499,11 +503,11 @@ class LoncapaProblem(object):
             solution_element.tag = 'targetedfeedback'
             targetedfeedbackset.append(solution_element)
 
-    def get_html(self):
+    def get_html(self, targeted_feedback_available=None):
         """
         Main method called externally to get the HTML to be rendered for this capa Problem.
         """
-        self.do_targeted_feedback(self.tree)
+        self.do_targeted_feedback(targeted_feedback_available)
         html = contextualize_text(etree.tostring(self._extract_html(self.tree)), self.context)
         return html
 

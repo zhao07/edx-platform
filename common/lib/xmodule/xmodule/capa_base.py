@@ -571,7 +571,7 @@ class CapaMixin(CapaFields):
         """
 
         try:
-            html = self.lcp.get_html()
+            html = self.lcp.get_html(self.targeted_feedback_available)
 
         # If we cannot construct the problem HTML,
         # then generate an error message instead.
@@ -599,12 +599,10 @@ class CapaMixin(CapaFields):
             'reset_button': self.should_show_reset_button(),
             'save_button': self.should_show_save_button(),
             'answer_available': self.answer_available(),
-            'targeted_feedback_available': self.targeted_feedback_available(),
             'attempts_used': self.attempts,
             'attempts_allowed': self.max_attempts,
         }
 
-        #from pdb import set_trace; set_trace()
         html = self.runtime.render_template('problem.html', context)
 
         if encapsulate:
@@ -697,44 +695,32 @@ class CapaMixin(CapaFields):
 
         return False
 
-
-
-
-
     def targeted_feedback_available(self):
         """
-        Is the user allowed to see an answer?
+        Given this problem's 'Show Feedback' setting, return True if the student is allowed to see targeted feedback.
         """
-        if self.show_targeted_feedback == '':
-            return False
+        targeted_feedback_is_available = True                   # assume the answer will be True
 
-        return True;  # temp hack
+        if self.show_targeted_feedback != 'always':             # if always allowed, skip all the other checks
+            if self.show_targeted_feedback == '':
+                targeted_feedback_is_available = False
 
+            elif self.show_targeted_feedback == "never":
+               targeted_feedback_is_available = False
 
+            elif self.show_targeted_feedback == 'past_due':
+                targeted_feedback_is_available = self.is_past_due()
 
-        #elif self.showanswer == "never":
-        #    return False
-        #elif self.runtime.user_is_staff:
-        #    # This is after the 'never' check because admins can see the answer
-        #    # unless the problem explicitly prevents it
-        #    return True
-        #elif self.showanswer == 'attempted':
-        #    return self.attempts > 0
-        #elif self.showanswer == 'answered':
-        #    # NOTE: this is slightly different from 'attempted' -- resetting the problems
-        #    # makes lcp.done False, but leaves attempts unchanged.
-        #    return self.lcp.done
-        #elif self.showanswer == 'closed':
-        #    return self.closed()
-        #elif self.showanswer == 'finished':
-        #    return self.closed() or self.is_correct()
-        #
-        #elif self.showanswer == 'past_due':
-        #    return self.is_past_due()
-        #elif self.showanswer == 'always':
-        #    return True
+            elif self.show_targeted_feedback == 'answered':
+                targeted_feedback_is_available = self.lcp.done
 
-        return False
+            elif self.show_targeted_feedback == 'closed':
+                targeted_feedback_is_available = self.closed()
+
+            elif self.show_targeted_feedback == 'finished':
+                targeted_feedback_is_available = self.closed() or self.is_correct()
+
+        return targeted_feedback_is_available
 
 
 
