@@ -121,6 +121,21 @@ class CapaFields(object):
             {"display_name": "Past Due", "value": "past_due"},
             {"display_name": "Never", "value": "never"}]
     )
+
+    show_targeted_feedback = String(
+    display_name="Show Feedback",
+    help=("Defines when to show the feedback for the problem."),
+    scope=Scope.settings,
+    default="always",
+    values=[
+        {"display_name": "Always", "value": "always"},
+        {"display_name": "Answered", "value": "answered"},
+        {"display_name": "Closed", "value": "closed"},
+        {"display_name": "Finished", "value": "finished"},
+        {"display_name": "Past Due", "value": "past_due"},
+        {"display_name": "Never", "value": "never"}]
+    )
+
     force_save_button = Boolean(
         help="Whether to force the save button to appear on the page",
         scope=Scope.settings,
@@ -534,7 +549,7 @@ class CapaMixin(CapaFields):
         """
 
         try:
-            html = self.lcp.get_html()
+            html = self.lcp.get_html(self.targeted_feedback_available)
 
         # If we cannot construct the problem HTML,
         # then generate an error message instead.
@@ -657,6 +672,33 @@ class CapaMixin(CapaFields):
             return True
 
         return False
+
+    def targeted_feedback_available(self):
+        """
+        Given this problem's 'Show Feedback' setting, return True if the student is allowed to see targeted feedback.
+        """
+        targeted_feedback_is_available = True                   # assume the answer will be True
+
+        if self.show_targeted_feedback != 'always':             # if always allowed, skip all the other checks
+            if self.show_targeted_feedback == '':
+                targeted_feedback_is_available = False
+
+            elif self.show_targeted_feedback == "never":
+               targeted_feedback_is_available = False
+
+            elif self.show_targeted_feedback == 'past_due':
+                targeted_feedback_is_available = self.is_past_due()
+
+            elif self.show_targeted_feedback == 'answered':
+                targeted_feedback_is_available = self.lcp.done
+
+            elif self.show_targeted_feedback == 'closed':
+                targeted_feedback_is_available = self.closed()
+
+            elif self.show_targeted_feedback == 'finished':
+                targeted_feedback_is_available = self.closed() or self.is_correct()
+
+        return targeted_feedback_is_available
 
     def update_score(self, data):
         """
