@@ -2,8 +2,6 @@
 Wiki Data
 ##############################
 
-.. DO NOT PUBLISH until LMS review per Carlos: LMS-2246
-
 The following sections detail how edX stores wiki data internally, and is useful for developers and researchers who are examining database exports. 
 
 EdX currently uses an external application called django-wiki for wiki functionality within courses. 
@@ -29,54 +27,29 @@ The header row of the wiki-article SQL file, and a row of sample data, follow.
 
 The table that follows provides a reference to each field in this file. A description of each field follows the table.
 
-.. list-table::
-  :widths: 15 15 15 15
-  :header-rows: 1
-
-     * - Field
-       - Type
-       - Null
-       - Key
-     * - id
-       - int(11) 
-       - NO
-       - PRI
-     * - current_revision_id
-       - int(11)
-       - NO
-       - UNI
-     * - created
-       - datetime
-       - NO
-       -
-     * - modified
-       - datetime
-       - NO
-       -
-     * - owner_id
-       - int(11)
-       - YES
-       - MUL
-     * - group_id
-       - int(11)
-       - YES
-       - MUL
-     * - group_read
-       - tinyint(1)
-       - NO
-       - 
-     * - group_write
-       - tinyint(1)
-       - NO
-       - 
-     * - other_read
-       - tinyint(1)
-       - NO
-       - 
-     * - other_write
-       - tinyint(1)
-       - NO
-       - 
++-----------------------+--------------------+--------------+--------------+
+| Field                 | Type               | Null         | Key          |
++=======================+====================+==============+==============+
+| id                    | int(11)            | NO           | PRI          |
++-----------------------+--------------------+--------------+--------------+
+| current_revision_id   | int(11)            | NO           | UNI          |
++-----------------------+--------------------+--------------+--------------+
+| created               | datetime           | NO           |              |
++-----------------------+--------------------+--------------+--------------+
+| modified              | datetime           | NO           |              |
++-----------------------+--------------------+--------------+--------------+
+| owner_id              | int(11)            | YES          | MUL          |
++-----------------------+--------------------+--------------+--------------+
+| group_id              | int(11)            | YES          | MUL          |
++-----------------------+--------------------+--------------+--------------+
+| group_read            | tinyint(1)         | NO           |              |
++-----------------------+--------------------+--------------+--------------+
+| group_write           | tinyint(1)         | NO           |              |
++-----------------------+--------------------+--------------+--------------+
+| other_read            | tinyint(1)         | NO           |              |
++-----------------------+--------------------+--------------+--------------+
+| other_write           | tinyint(1)         | NO           |              |
++-----------------------+--------------------+--------------+--------------+
 
 `id`
 ----
@@ -136,7 +109,7 @@ The header row of the wiki-articlerevision SQL file, and a row of sample data, f
 The table that follows provides a reference to the characteristics of each field in this file. Descriptions of the fields follow the table. 
 
 .. list-table::
-     :widths: 15 15 15 15
+     :widths: 15 15 10 10
      :header-rows: 1
 
      * - Field
