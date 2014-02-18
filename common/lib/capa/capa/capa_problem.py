@@ -106,7 +106,6 @@ class LoncapaSystem(object):
         self.STATIC_URL = STATIC_URL                    # pylint: disable=invalid-name
         self.xqueue = xqueue
 
-
 class LoncapaProblem(object):
     """
     Main class for capa Problems.
@@ -464,7 +463,7 @@ class LoncapaProblem(object):
                     #   targeted feedback are not enabled for display at the moment
                     student_has_not_yet_answered = not self.done
                     this_item_not_selected = targetedfeedback.get('explanation-id') != expl_id_for_student_answer
-                    targeted_feedback_not_enabled = not targeted_feedback_available();
+                    targeted_feedback_not_enabled = not targeted_feedback_available()
                     if student_has_not_yet_answered or this_item_not_selected or targeted_feedback_not_enabled:
                         targetedfeedbackset.remove(targetedfeedback)
 

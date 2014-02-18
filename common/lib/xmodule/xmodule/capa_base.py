@@ -684,7 +684,7 @@ class CapaMixin(CapaFields):
                 targeted_feedback_is_available = False
 
             elif self.show_targeted_feedback == "never":
-               targeted_feedback_is_available = False
+                targeted_feedback_is_available = False
 
             elif self.show_targeted_feedback == 'past_due':
                 targeted_feedback_is_available = self.is_past_due()
