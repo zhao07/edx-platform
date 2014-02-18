@@ -24,19 +24,19 @@ All of our tables are described below, first in summary form with field types an
 
      * - Value
        - Meaning
-     * - `int`
+     * - int
        - 4 byte integer.
-     * - `smallint`
+     * - smallint
        - 2 byte integer, sometimes used for enumerated values.
-     * - `tinyint`
+     * - tinyint
        - 1 byte integer, but usually just used to indicate a boolean field with 0 = False and 1 = True.
-     * - `varchar`
+     * - varchar
        - String, typically short and indexable. The length is the number of chars, not bytes (so unicode friendly).
-     * - `longtext`
+     * - longtext
        - A long block of text, usually not indexed.
-     * - `date`
+     * - date
        - Date
-     * - `datetime`
+     * - datetime
        - Datetime in UTC, precision in seconds.
 
 `Null`
@@ -47,10 +47,10 @@ All of our tables are described below, first in summary form with field types an
 
      * - Value
        - Meaning
-     * - `YES`
-       - `NULL` values are allowed.
-     * - `NO`
-       - `NULL` values are not allowed.
+     * - YES
+       - NULL values are allowed.
+     * - NO
+       - NULL values are not allowed.
 
   .. note::
      Django often just places blank strings instead of NULL when it wants to indicate a text value is optional. This is more meaningful for numeric and date fields.
@@ -63,12 +63,12 @@ All of our tables are described below, first in summary form with field types an
 
      * - Value
        - Meaning
-     * - `PRI`
-       - Primary key for the table, usually named `id`, unique.
-     * - `UNI`
+     * - PRI
+       - Primary key for the table, usually named ``id``, unique.
+     * - UNI
        - Unique
-     * - `MUL`
-       - Indexed for fast lookup, but the same value can appear multiple times. A Unique index that allows `NULL` can also show up as `MUL`.
+     * - MUL
+       - Indexed for fast lookup, but the same value can appear multiple times. A unique index that allows NULL can also show up as MUL.
 
 
 ****************
@@ -76,12 +76,12 @@ User Information
 ****************
 
 =================================
-Fields in the `auth_user` Table
+Fields in the ``auth_user`` Table
 =================================
 
-The `auth_user` table is built into the Django web application framework that we use. It holds generic information necessary for basic login and permissions information. 
+The ``auth_user`` table is built into the Django web application framework that we use. It holds generic information necessary for basic login and permissions information. 
 
-A sample of the heading row and a data row in the `auth_user` table follow.
+A sample of the heading row and a data row in the ``auth_user`` table follow.
 
 .. code-block:: json
 
@@ -93,7 +93,7 @@ A sample of the heading row and a data row in the `auth_user` table follow.
     `NNNNN  AAAAAAAAA      AAAAAA   AAAAAA   1 1 0 2014-01-01 17:28:27 2012-03-04 00:57:49   
     NULL      0 NULL      0 0`
 
-The `auth_user` table has the following fields::
+The ``auth_user`` table has the following fields::
 
   +------------------------------+--------------+------+-----+------------------+
   | Field                        | Type         | Null | Key | Comment          |
@@ -124,95 +124,83 @@ The `auth_user` table has the following fields::
 
 `id`
 ----
-
-  Primary key, and the value typically used in URLs that reference the user. A user has the same value for `id` here as they do in the MongoDB database's users collection. Foreign keys referencing `auth_user.id` will often be named `user_id`, but are sometimes named `student_id`.
+  Primary key, and the value typically used in URLs that reference the user. A user has the same value for ``id`` here as they do in the MongoDB database's users collection. Foreign keys referencing ``auth_user.id`` will often be named ``user_id``, but are sometimes named ``student_id``.
 
 `username`
 ----------
-
-  The unique username for a user in our system. It may contain alphanumeric, _, @, +, . and - characters. The username is the only information that the students give about themselves that we currently expose to other students. We have never allowed people to change their usernames so far, but that's not something we guarantee going forward.
+  The unique username for a user in our system. It can contain alphanumeric, _, @, +, . and - characters. The username is the only information that the students give about themselves that we currently expose to other students. We have never allowed people to change their usernames so far, but that's not something we guarantee going forward.
 
 `first_name`
 ------------
-
-  .. note::
-     Not used; we store a user's full name in `auth_userprofile.name` instead.
+  Not used; a user's full name is stored in ``auth_userprofile.name`` instead.
 
 `last_name`
 -----------
-
-  .. note::
-     Not used; we store a user's full name in `auth_userprofile.name` instead.
+  Not used; a user's full name is stored in ``auth_userprofile.name`` instead.
 
 `email`
 -------
-
-  Their email address. While Django by default makes this optional, we make it required, since it's the primary mechanism through which people log in. Must be unique to each user. Never shown to other users.
+  The email address of the user. While Django by default makes this optional, we make it required, since it's the primary mechanism through which people log in. Must be unique to each user. Never shown to other users.
 
 `password`
 ----------
-
   A hashed version of the user's password. Depending on when the password was last set, this will either be a SHA1 hash or PBKDF2 with SHA256 (Django 1.3 uses the former and 1.4 the latter).
 
 `is_staff`
 ----------
+  Most users have a 0 for this field. Set to 1 if the user is a staff member of **edX**, with corresponding elevated privileges that cut across courses. It does not indicate that the person is a member of the course staff for any given course. 
 
-  This value is `1` if the user is a staff member *of edX* with corresponding elevated privileges that cut across courses. It does not indicate that the person is a member of the course staff for any given course. Generally, users with this flag set to 1 are either edX program managers responsible for course delivery, or edX developers who need access for testing and debugging purposes. People who have `is_staff = 1` get instructor privileges on all courses, along with having additional debug information show up in the instructor tab.
+  Generally, users with this flag set to 1 are either edX program managers responsible for course delivery, or edX developers who need access for testing and debugging purposes. People who have ``is_staff`` = 1 get instructor privileges on all courses, along with having additional debug information show up in the instructor tab.
 
-  Note that this designation has no bearing with a user's role in the forums, and confers no elevated privileges there.
-
-  Most users have a `0` for this value.
+  Note that this designation has no bearing on a user's role in the discussion forums, and confers no elevated privileges there.
 
 `is_active`
 -----------
+  This value is 1 if the user has clicked on the activation link that was sent to them when they created their account, and 0 otherwise. 
 
-  This value is `1` if the user has clicked on the activation link that was sent to them when they created their account, and `0` otherwise. Users who have `is_active = 0` generally cannot log into the system. However, when users first create their account, they are automatically logged in even though they are not active. This is to let them experience the site immediately without having to check their email. They just get a little banner at the top of their dashboard reminding them to check their email and activate their account when they have time. If they log out, they won't be able to log back in again until they've activated. However, because our sessions last a long time, it is theoretically possible for someone to use the site as a student for days without being "active".
+  Users who have ``is_active`` = 0 generally cannot log into the system. However, when users first create their account, they are automatically logged in even though they are not active. This is to let them experience the site immediately without having to check their email. They do see a little banner at the top of their dashboard reminding them to check their email and activate their account when they have time. If they log out, they won't be able to log back in again until they've activated. However, because our sessions last a long time, it is theoretically possible for someone to use the site as a student for days without being "active".
 
-  Once `is_active` is set to `1`, the only circumstance where it would be set back to `0` would be if we decide to ban the user (which is very rare, manual operation).
+  Once ``is_active`` is set to 1, the only circumstance where it would be set back to 0 is if we decide to ban the user (which is a very rare, manual operation).
 
 `is_superuser`
 --------------
-
-  Value is `1` if the user has admin privileges. Only the earliest developers of the system have this set to `1`, and it's no longer really used in the codebase. Set to 0 for almost everybody.
+  Value is 1 if the user has admin privileges. Only the earliest developers of the system have this set to 1, and it is no longer really used in the codebase. Set to 0 for almost everybody.
 
 `last_login`
 ------------
-
   A datetime of the user's last login. Should not be used as a proxy for activity, since people can use the site all the time and go days between logging in and out.
 
 `date_joined`
 -------------
-
   Date that the account was created (NOT when it was activated).
 
 `(obsolete fields)`
 -------------------
-
   All the following fields were added by an application called Askbot, a discussion forum package that is no longer part of the system:
 
-  * `status`
-  * `email_key`
-  * `avatar_typ`
-  * `country`
-  * `show_country`
-  * `date_of_birth`
-  * `interesting_tags`
-  * `ignored_tags`
-  * `email_tag_filter_strategy`
-  * `display_tag_filter_strategy`
-  * `consecutive_days_visit_count`
+  * status
+  * email_key
+  * avatar_typ
+  * country
+  * show_country
+  * date_of_birth
+  * interesting_tags
+  * ignored_tags
+  * email_tag_filter_strategy
+  * display_tag_filter_strategy
+  * consecutive_days_visit_count
 
   Only users who were part of the prototype 6.002x course run in the Spring of 2012 would have any information in these fields. Even with those users, most of this information was never collected. Only the fields that are automatically generated have any values in them, such as tag settings.
 
-  These fields are completely unrelated to the discussion forums we currently use, and will eventually be dropped from this table.
+  These fields are completely unrelated to the discussion forums that we currently use, and will eventually be dropped from this table.
 
 ==========================================
-Fields in the `auth_userprofile` Table
+Fields in the ``auth_userprofile`` Table
 ==========================================
 
-The `auth_userprofile` table is mostly used to store user demographic information collected during the student registration process. We also use it to store certain additional metadata relating to certificates. 
+The ``auth_userprofile`` table is mostly used to store user demographic information collected during the student registration process. We also use it to store certain additional metadata relating to certificates. 
 
-A sample of the heading row and a data row in the `auth_userprofile` table follow.
+A sample of the heading row and a data row in the ``auth_userprofile`` table follow.
 
 .. code-block:: json
 
@@ -224,7 +212,8 @@ A sample of the heading row and a data row in the `auth_userprofile` table follo
     to test out the name-change functionality", "2012-10-22T12:23:10.598444"]]} 
     course.xml  NULL  NULL  NULL  NULL  NULL  1
 
-Every row in this table corresponds to one row in `auth_user`::
+Every row in this table corresponds to one row in ``auth_user``::
+..should this be ``auth_userprofile``?
 
   +--------------------+--------------+------+-----+------------------------------------------+
   | Field              | Type         | Null | Key | Comment                                  |
@@ -245,38 +234,32 @@ Every row in this table corresponds to one row in `auth_user`::
   +--------------------+--------------+------+-----+------------------------------------------+
 
 **History**: 
-This table was organized differently for the students who signed up during the MITx prototype phase in the spring of 2012, and those that signed up afterwards. An important split exists in the demographic data gathered.
+This table was organized differently for the students who signed up during the MITx prototype phase in the spring of 2012, and those who signed up afterwards. An important split exists in the demographic data gathered.
 
 `id`
 ----
-
   Primary key, not referenced anywhere else.
 
 `user_id`
 ---------
-
   A foreign key that maps to `auth_user.id`.
 
 `name`
 ------
-
   String for a user's full name. We make no constraints on language or breakdown into first/last name. The names are never shown to other students. Foreign students usually enter a romanized version of their names, but not always.
 
   It used to be our policy to require manual approval of name changes to guard the integrity of the certificates. Students would submit a name change request and someone from the team would approve or reject as appropriate. Later, we decided to allow the name changes to take place automatically, but to log previous names in the `meta` field.
 
 `language`
 ----------
-
   No longer used. User's preferred language, asked during the sign up process for the 6.002x prototype course given in the Spring of 2012. This information stopped being collected after the transition from MITx to edX happened, but we never removed the values from our first group of students. Sometimes written in those languages.
 
 `location`
 ----------
-
   No longer used. User's location, asked during the sign up process for the 6.002x prototype course given in the Spring of 2012. We weren't specific, so people tended to put the city they were in, though some just specified their country and some got as specific as their street address. Again, sometimes romanized and sometimes written in their native language. Like `language`, we stopped collecting this field when we transitioned from MITx to edX, so it's only available for our first batch of students.
 
 `meta`
 ------
-
   An optional, freeform text field that stores JSON data. This field allows us to associate arbitrary metadata with a user. An example of the JSON that can be stored here is::
 
     {
@@ -322,12 +305,10 @@ This table was organized differently for the students who signed up during the M
 
 `courseware`
 ------------
-
   No longer used. At one point, it was part of a way to do A/B tests, but it has not been used for anything meaningful since the conclusion of the prototype course in the spring of 2012.
 
 `gender`
 --------
-
   Dropdown field collected during student signup. We only started collecting this information after the transition from MITx to edX, so prototype course students will have `NULL` for this field.
 
   .. list-table::
@@ -349,17 +330,14 @@ This table was organized differently for the students who signed up during the M
 
 `mailing_address`
 -----------------
-
   Text field collected during student signup. We only started collecting this information after the transition from MITx to edX, so prototype course students will have `NULL` for this field. Students who elected not to enter anything will have a blank string.
 
 `year_of_birth`
 ---------------
-
   Dropdown field collected during student signup. We only started collecting this information after the transition from MITx to edX, so prototype course students will have `NULL` for this field. Students who decided not to fill this in will also have NULL.
 
 `level_of_education`
 --------------------
-
   Dropdown field collected during student signup. We only started collecting this information after the transition from MITx to edX, so prototype course students will have `NULL` for this field.
 
   .. list-table::
@@ -397,13 +375,11 @@ This table was organized differently for the students who signed up during the M
 
 `goals`
 -------
-
-  Text field collected during student signup in response to the prompt, "Goals in signing up for edX". We only started collecting this information after the transition from MITx to edX, so prototype course students will have `NULL` for this field. Students who elected not to enter anything will have a blank string.
+  Text field collected during student signup in response to the prompt, "Goals in signing up for edX". We only started collecting this information after the transition from MITx to edX, so prototype course students will have NULL for this field. Students who elected not to enter anything will have a blank string.
 
 `allow_certificate`
 -------------------
-
-  Set to `1` (true) for most students. This field is set to `0` (false) if log analysis has revealed that this student is accessing our site from a country that the US has an embargo against. At this time, we do not issue certificates to students from those countries.
+  Set to 1 (true) for most students. This field is set to 0 (false) if log analysis has revealed that this student is accessing our site from a country that the US has an embargo against. At this time, we do not issue certificates to students from those countries.
 
 ====================================================
 Fields in the ``student_courseenrollment`` Table
@@ -413,7 +389,9 @@ A row in this table represents a student's enrollment for a particular course ru
 
 **History**: As of 20 Aug 2013, this table retains the records of students who unenroll. Records are no longer deleted from this table.
 
-A sample of the heading row and a data row in the `student_courseenrollment` table follow.
+A sample of the heading row and a data row in the ``student_courseenrollment`` table follow.
+
+.. code-block:: json
 
     id  user_id course_id created is_active mode
 
@@ -421,45 +399,39 @@ A sample of the heading row and a data row in the `student_courseenrollment` tab
 
 `id`
 ----
-
   Primary key.
 
 `user_id`
 ---------
-
   Student's ID in `auth_user.id`
 
 `course_id`
 -----------
-
   The ID of the course run they user is enrolling in (for example, `MITx/6.002x/2012_Fall`). You can get this from the URL when you view the courseware on your browser.
 
 `created`
 ---------
-
   Datetime of enrollment, UTC.
 
 `is_active`
 -----------
-
   Boolean indicating whether this enrollment is active. If an enrollment is not active, a student is not enrolled in that course. This lets us unenroll students without losing a record of what courses they were enrolled in previously. 
 
   This field was introduced in the 20 Aug 2013 release. Before this release, unenrolling a student simply deleted the row in `student_courseenrollment`.
 
 `mode`
 ------
-
   String indicating what kind of enrollment this was. The default is "honor" (honor certificate) and all enrollments prior to 20 Aug 2013 are  of that type. Other types being considered are "audit" and "verified_id".
 
   **Question**: Is this still correct, that these additional values are being considered?
 
 ==================================================
-Fields in the `user_id_map` Table
+Fields in the ``user_id_map`` Table
 ==================================================
 
 A row in this table maps a student's real user ID to an anonymous ID generated to obfuscate the student's identity.
 
-A sample of the heading row and a data row in the `user_id_map` table follow.
+A sample of the heading row and a data row in the ``user_id_map`` table follow.
 
 .. code-block:: json
 
@@ -493,24 +465,21 @@ A sample of the heading row and a data row in the `user_id_map` table follow.
 
 `hash_id`
 ----------
-
    The user ID generated to obfuscate the student's identity.
 
 `id`
 ---------
-
-  The student's ID in `auth_user.id`.
+  The student's ID in ``auth_user.id``.
 
 `username`
 -----------
-
-  The student's username in `auth_user.id`. 
+  The student's username in ``auth_user.id``. 
 
 *******************
 Courseware Progress
 *******************
 
-Any piece of content in the courseware can store state and score in the `courseware_studentmodule` table. Grades and the user Progress page are generated by doing a walk of the course contents, searching for graded items, looking up a student's entries for those items in `courseware_studentmodule` via `(course_id, student_id, module_id)`, and then applying the grade weighting found in the course policy and grading policy files. Course policy files determine how much weight one problem has relative to another, and grading policy files determine how much categories of problems are weighted (e.g. HW=50%, Final=25%, etc.).
+Any piece of content in the courseware can store state and score in the ``courseware_studentmodule`` table. Grades and the user Progress page are generated by doing a walk of the course contents, searching for graded items, looking up a student's entries for those items in ``courseware_studentmodule`` via (course_id, student_id, module_id), and then applying the grade weighting found in the course policy and grading policy files. Course policy files determine how much weight one problem has relative to another, and grading policy files determine how much categories of problems are weighted (e.g. HW=50%, Final=25%, etc.).
 
 .. warning::
    **Modules might not be what you expect!**
@@ -520,12 +489,12 @@ Any piece of content in the courseware can store state and score in the `coursew
    Modules can store state, but whether and how they do so is up to the implemenation for that particular kind of module. When a user loads page, we look up all the modules they need to render in order to display it, and then we ask the database to look up state for those modules for that user. If there is corresponding entry for that user for a given module, we create a new row and set the state to an empty JSON dictionary.
 
 ====================================================
-Fields in the `courseware_studentmodule` Table
+Fields in the ``courseware_studentmodule`` Table
 ====================================================
 
-The `courseware_studentmodule` table holds all courseware state for a given user. 
+The ``courseware_studentmodule`` table holds all courseware state for a given user. 
 
-A sample of the heading row and a data row in the `courseware_studentmodule` table follow.
+A sample of the heading row and a data row in the ``courseware_studentmodule`` table follow.
 
 .. code-block:: json
 
@@ -558,7 +527,6 @@ Every student has a separate row for every piece of content in the course, makin
 
 `id`
 ----
-
   Primary key. Rarely used though, since most lookups on this table are searches on the three tuple of `(course_id, student_id, module_id)`.
 
 `module_type`
@@ -591,7 +559,6 @@ Every student has a separate row for every piece of content in the course, makin
 
 `module_id`
 -----------
-
    Unique ID for a distinct piece of content in a course, these are recorded as URLs of the form `i4x://{org}/{course_num}/{module_type}/{module_name}`. Having URLs of this form allows us to give content a canonical representation even as we are in a state of transition between backend data stores.
 
 
@@ -599,7 +566,7 @@ Every student has a separate row for every piece of content in the course, makin
 
       `i4x://MITx/3.091x/problemset/Sample_Problems`
 
-  contains the following parts. 
+   contains the following parts. 
 
   .. list-table::
      :widths: 15 20 55
@@ -626,12 +593,10 @@ Every student has a separate row for every piece of content in the course, makin
 
 `student_id`
 ------------
-
-  A reference to `auth_user.id`, this is the student that this module state row belongs to.
+  A reference to ``auth_user.id``, this is the student that this module state row belongs to.
 
 `state`
 -------
-
   This is a JSON text field where different module types are free to store their state however they wish.
 
   Container Modules: 
@@ -666,55 +631,49 @@ Every student has a separate row for every piece of content in the course, makin
 
 `grade`
 -------
-
   Floating point value indicating the total unweighted grade for this problem that the student has scored. Basically how many responses they got right within the problem.
 
-  Only `problem` and `selfassessment` types use this field. All other modules set this to `NULL`. Due to a quirk in how rendering is done, `grade` can also be `NULL` for a tenth of a second or so the first time that a user loads a problem. The initial load will trigger two writes, the first of which will set the `grade` to `NULL`, and the second of which will set it to `0`.
+  Only ``problem`` and ``selfassessment`` types use this field. All other modules set this to NULL. Due to a quirk in how rendering is done, ``grade`` can also be NULL for a tenth of a second or so the first time that a user loads a problem. The initial load will trigger two writes, the first of which sets the ``grade`` to NULL, and the second of which sets it to 0.
 
 `created`
 ---------
-
   Datetime when this row was created (that is, when the student first accessed this piece of content).
 
 `modified`
 ----------
-
-  Datetime when we last updated this row. Set to be equal to `created` at first. A change in `modified` implies that there was a state change, usually in response to a user action like saving or submitting a problem, or clicking on a navigational element that records its state. However it can also be triggered if the module writes multiple times on its first load, like problems do (see note in `grade`).
+  Datetime when we last updated this row. Set to be equal to ``created`` at first. A change in ``modified`` implies that there was a state change, usually in response to a user action like saving or submitting a problem, or clicking on a navigational element that records its state. However it can also be triggered if the module writes multiple times on its first load, like problems do (see note in ``grade``).
 
 `max_grade`
 -----------
+  Floating point value indicating the total possible unweighted grade for this problem, or basically the number of responses that are in this problem. Though in practice it's the same for every entry with the same ``module_id``, it is technically possible for it to be anything. The problems are dynamic enough where you could create a random number of responses if you wanted. This a bad idea and will probably cause grading errors, but it is possible.
 
-  Floating point value indicating the total possible unweighted grade for this problem, or basically the number of responses that are in this problem. Though in practice it's the same for every entry with the same `module_id`, it is technically possible for it to be anything. The problems are dynamic enough where you could create a random number of responses if you wanted. This a bad idea and will probably cause grading errors, but it is possible.
-
-  Another way in which `max_grade` can differ between entries with the same `module_id` is if the problem was modified after the `max_grade` was written and the user never went back to the problem after it was updated. This might happen if a member of the course staff puts out a problem with five parts, realizes that the last part doesn't make sense, and decides to remove it. People who saw and answered it when it had five parts and never came back to it after the changes had been made will have a `max_grade` of `5`, while people who saw it later will have a `max_grade` of `4`.
+  Another way in which ``max_grade`` can differ between entries with the same `module_id` is if the problem was modified after the ``max_grade`` was written and the user never went back to the problem after it was updated. This might happen if a member of the course staff puts out a problem with five parts, realizes that the last part doesn't make sense, and decides to remove it. People who saw and answered it when it had five parts and never came back to it after the changes had been made will have a ``max_grade`` of 5, while people who saw it later will have a ``max_grade`` of 4.
 
   These complexities in our grading system are a high priority target for refactoring in the near future.
 
   **Question**: is that statement still accurate?
 
-  Only `problem` and `selfassessment` types use this field. All other modules set this to `NULL`.
+  Only ``problem`` and ``selfassessment`` types use this field. All other modules set this to NULL.
 
 `done`
 ------
-
-  Not used. It was supposed to be an indication whether something was finished, but was never properly used and is just `'na'` in every row.
+  Not used. It was supposed to be an indication whether something was finished, but was never properly used and is just 'na' in every row.
 
 `course_id`
 -----------
-
-  The course that this row applies to, represented in the form org/course/run (for example, `MITx/6.002x/2012_Fall`). The same course content (same `module_id`) can be used in different courses, and a student's state needs to be tracked separately for each course.
+  The course that this row applies to, represented in the form org/course/run (for example, ``MITx/6.002x/2012_Fall``). The same course content (same ``module_id``) can be used in different courses, and a student's state needs to be tracked separately for each course.
 
 ************
 Certificates
 ************
 
 ======================================================================
-Fields in the `certificates_generatedcertificate` Table
+Fields in the ``certificates_generatedcertificate`` Table
 ======================================================================
 
-The `generatedcertificate` table tracks certificate state for students who have been graded after a course completes. Currently the table is only populated when a course ends and a script is run to grade students who have completed the course.
+The ``certificates_generatedcertificate`` table tracks certificate state for students who have been graded after a course completes. Currently the table is only populated when a course ends and a script is run to grade students who have completed the course.
 
-.. A sample of the heading row and a data row in the `certificates_generatedcertificate` table follow.
+.. A sample of the heading row and a data row in the ``certificates_generatedcertificate`` table follow.
 
 ..    id  user_id download_url  grade course_id key distinction status  verify_uuid download_uuid name  created_date  modified_date error_reason  mode
 
@@ -744,82 +703,72 @@ The `generatedcertificate` table tracks certificate state for students who have 
 
 `id`
 ---------
-
-  **TBD**
+  The primary key. 
 
 `user_id`, `course_id`
 ----------------------
-
   The table is indexed by user and course.
 
 `download_url`
 --------------
   The `download_uuid` has the full URL to the certificate. 
 
+.. is this a typo? should it be download_url in this description instead? 
+
 `grade`
 -------
-
   The grade of the student recorded at the time the certificate was generated. This may be different than the current grade since grading is only done once for a course when it ends.
 
 `key`
 ---------
-
-  **TBD**
+  Used internally only. A random string that is used to match server requests to responses sent to the LMS. 
 
 `distinction`
 -----------------
-
   Not used. This was used for letters of distinction for 188.1x, but is not being used for any current courses.
 
 `status`
 --------
-
   Status can be one of these states:
 
-  
-  * `deleted` - the certificate has been deleted.
-  * `deleting` - a request has been made to delete a certificate.
-  * `downloadable` - the student passed the course and a  certificate is available for download.
-  * `error` - an error ocurred during certificate generation.
-  * `generating` - a request has been made to generate a certificate but it has not yet been generated.
-  * `notpassing` - the student's grade is not a passing grade. 
-  * `regenerating` - a request has been made to regenerate a certificate but it has not yet been generated.
-  * `restricted` - userprofile.allow_certificate is false: the student is on the restricted embargo list 
-  * `unavailable` - no entry, typically because the student has not yet been graded for certificate generation.
+  * deleted - the certificate has been deleted.
+  * deleting - a request has been made to delete a certificate.
+  * downloadable - the student passed the course and a  certificate is available for download.
+  * error - an error ocurred during certificate generation.
+  * generating - a request has been made to generate a certificate but it has not yet been generated.
+  * notpassing - the student's grade is not a passing grade. 
+  * regenerating - a request has been made to regenerate a certificate but it has not yet been generated.
+  * restricted - userprofile.allow_certificate is false: the student is on the restricted embargo list 
+  * unavailable - no entry, typically because the student has not yet been graded for certificate generation.
 
   After a course has been graded and certificates have been issued, status is one of:
 
-  * `downloadable`
-  * `notpassing`
-  * `restricted`
+  * downloadable
+  * notpassing`
+  * restricted
 
 `verify_uuid`, `download_uuid`
 ------------------------------
-
   The two uuids are what uniquely identify the download url and the url used to download the certificate.
 
 `name`
 ------
-
   This field records the name of the student that was set at the time the student was graded and the certificate was generated.
 
 `created_date`
 ---------------
-
   Date this row in the database was created.
 
 `modified_date`
 ---------------
-
   Date this row in the database was modified.
 
 `error_reason`
 ---------------
-
-  **TBD**
+  Used internally only. Logs messages that are used for debugging if the certificate generation process fails.
 
 `mode`
 ---------------
+  Contains the value found in the ``enrollment.mode`` field for a student and course at the time the certificate was generated: blank, audit, honor, or verified. This value is not updated if the student's enrollment mode changes after certificates are generated. 
 
-  Defaults to `honor`. Other values are `audit` and `verified`.  
 .. same as enrollment.mode. 
