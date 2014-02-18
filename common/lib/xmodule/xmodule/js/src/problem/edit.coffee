@@ -190,30 +190,93 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
       var xml = markdown,
           i, splits, scriptFlag;
 
+      var itemFeedbackStrings = [];           // the text of the targeted feedback messages (no delimiters)
+      var itemFeedbackMatches = [];           // the entire match string of targeted feedback (including delimiters)
+      var itemFeedbackTruthValue = [];        // 'true' if this response item is a correct answer
+      var itemFeedbackStringsCount = 0;       // total number of feedback strings (the arrays can have null entries)
+
       // replace headers
       xml = xml.replace(/(^.*?$)(?=\n\=\=+$)/gm, '<h1>$1</h1>');
       xml = xml.replace(/\n^\=\=+$/gm, '');
 
       // group multiple choice answers
-      xml = xml.replace(/(^\s*\(.?\).*?$\n*)+/gm, function (match) {
-          var groupString = '<multiplechoiceresponse>\n',
-              value, correct, options;
+      var choices = '';
+      var shuffle = false;
+      xml = xml.replace(/(^\s*\(.{0,3}\).*?$\n*)+/gm, function(match, p) {
+        var options = match.split('\n');
 
-          groupString += '  <choicegroup type="MultipleChoice">\n';
-          options = match.split('\n');
+        // parse the user's text for any targeted feedback specifications, leaving the results of the parsing
+        // process in a set of lists for later processing
+        for(var i = 0; i < options.length; i++) {
+            var feedbackString = '';
+            var matchString = '';
+            var matches = options[i].match( /{{(.+)}}/ );         // string surrounded by {{...}} is a match group
+            if(matches) {
+                matchString = matches[0];         // group 0 holds the entire matching string (includes delimiters)
+                feedbackString = matches[1];      // group 1 holds the matching characters (our string)
+                itemFeedbackStringsCount += 1;
+            }
+            itemFeedbackStrings.push(feedbackString);             // add a feedback string entry (possibly null)
+            itemFeedbackMatches.push(matchString);                // add a match string entry (possibly null)
+        }
+        var targetedFeedbackAttribute = ' targeted-feedback="always" ';  // assume we have targeted feedback items
+        if(itemFeedbackStringsCount == 0) {                        // if we guessed wrong
+          targetedFeedbackAttribute = '';
+        }
 
-          for (i = 0; i < options.length; i += 1) {
-              if(options[i].length > 0) {
-                  value = options[i].split(/^\s*\(.?\)\s*/)[1];
-                  correct = /^\s*\(x\)/i.test(options[i]);
-                  groupString += '    <choice correct="' + correct + '">' + value + '</choice>\n';
-              }
+        for(var i = 0; i < options.length; i++) {
+          if(options[i].length > 0) {
+
+            var itemFeedbackMatchString = itemFeedbackMatches[i];   // get this response item's feedback match, if any
+            if(itemFeedbackMatchString.length > 0) {                // if this response item had a match
+              options[i] = options[i].replace(itemFeedbackMatchString, '');   // remove it from the line
+            }
+
+            var value = options[i].split(/^\s*\(.{0,3}\)\s*/)[1];
+            var inparens = /^\s*\((.{0,3})\)\s*/.exec(options[i])[1];
+            var correct = /x/i.test(inparens);
+            itemFeedbackTruthValue.push(correct);
+            var fixed = '';
+            if(/@/.test(inparens)) {
+              fixed = ' fixed="true"';
+            }
+            if(/!/.test(inparens)) {
+              shuffle = true;
+            }
+            choices += '    <choice explanation-id="' + i.toString() + '" correct="' + correct + '">' + value + '</choice>\n';
           }
+        }
+        var result = '<multiplechoiceresponse ' + targetedFeedbackAttribute + '>\n';
+        if(shuffle) {
+          result += '  <choicegroup type="MultipleChoice" shuffle="true">\n';
+        } else {
+          result += '  <choicegroup type="MultipleChoice">\n';
+        }
+        result += choices;
+        result += '  </choicegroup>\n';
+        result += '</multiplechoiceresponse>\n\n';
 
-          groupString += '  </choicegroup>\n';
-          groupString += '</multiplechoiceresponse>\n\n';
+        result += '<targetedfeedbackset>\n';
 
-          return groupString;
+        for (i = 0; i < itemFeedbackStrings.length; i += 1) {
+            if(itemFeedbackStrings[i].length > 0) {
+              var truthValueString = "incorrect";
+              var truthValueClass = "detailed-targeted-feedback";
+              if(itemFeedbackTruthValue[i]) {
+                var truthValueString = "correct";
+                var truthValueClass = "detailed-targeted-feedback-correct";
+              }
+              result += '<targetedfeedback explanation-id="' + i.toString() + '">\n';
+              result += '   <div class="' + truthValueClass + '" >\n';
+              result += '     <p>' + truthValueString + '</p>\n';
+              result += '     <p>' + itemFeedbackStrings[i] + '</p>\n';
+              result += '   </div>\n';
+              result += '</targetedfeedback>\n';
+            }
+        }
+        result += '</targetedfeedbackset>\n';
+
+        return result;
       });
 
       // group check answers
@@ -228,7 +291,7 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
               if(options[i].length > 0) {
                   value = options[i].split(/^\s*\[.?\]\s*/)[1];
                   correct = /^\s*\[x\]/i.test(options[i]);
-                  groupString += '    <choice correct="' + correct + '">' + value + '</choice>\n';
+                  groupString += '    <choice correct="' + correct + '"  targetedFeedback="' + itemFeedbackStrings[i] + '">' + value + '</choice>\n';
               }
           }
 
@@ -329,9 +392,9 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
 
           return selectString;
       });
-      
+
       // replace labels
-      // looks for >>arbitrary text<< and inserts it into the label attribute of the input type directly below the text. 
+      // looks for >>arbitrary text<< and inserts it into the label attribute of the input type directly below the text.
       var split = xml.split('\n');
       var new_xml = [];
       var line, i, curlabel = '';
