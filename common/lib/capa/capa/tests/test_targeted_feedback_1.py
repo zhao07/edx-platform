@@ -1,6 +1,11 @@
 """
 Tests the logic of the "targeted-feedback" attribute for MultipleChoice questions,
 i.e. those with the <multiplechoiceresponse> element
+
+NOTE: this file includes code which is about to be pulled into `master` in a file
+called `test_targeted_feedback.py`. Once both files are brought to `master` this
+one should be merged in to the original then discarded.
+
 """
 
 import unittest
