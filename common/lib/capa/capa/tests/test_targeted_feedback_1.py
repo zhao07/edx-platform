@@ -618,3 +618,78 @@ class CapaTargetedFeedbackTest(unittest.TestCase):
         self.assertNotRegexpMatches(without_new_lines, r"<targetedfeedback explanation-id=\"feedbackC\".*solution explanation")
         self.assertRegexpMatches(without_new_lines, r"<div>\{.*'1_solution_1'.*\}</div>")
         self.assertNotRegexpMatches(without_new_lines, r"feedback1|feedback3|feedbackC")
+
+    def test_targeted_feedback_xml_from_markdown(self):
+        '''
+        Verify that a block of simple 'markdown' text is converted to correct XML
+        '''
+
+        xml_str = textwrap.dedent("""
+            <problem>
+            <p>What is the correct answer?</p>
+            <multiplechoiceresponse targeted-feedback="">
+              <choicegroup type="MultipleChoice">
+                <choice correct="false" explanation-id="feedback1">wrong-1</choice>
+                <choice correct="false" explanation-id="feedback2">wrong-2</choice>
+                <choice correct="true" explanation-id="feedbackC">correct-1</choice>
+                <choice correct="false" explanation-id="feedback3">wrong-3</choice>
+              </choicegroup>
+            </multiplechoiceresponse>
+
+            <targetedfeedbackset>
+                <targetedfeedback explanation-id="feedback1">
+                <div class="detailed-targeted-feedback">
+                    <p>Targeted Feedback</p>
+                    <p>This is the 1st WRONG solution</p>
+                </div>
+                </targetedfeedback>
+
+                <targetedfeedback explanation-id="feedback3">
+                <div class="detailed-targeted-feedback">
+                    <p>Targeted Feedback</p>
+                    <p>This is the 3rd WRONG solution</p>
+                </div>
+                </targetedfeedback>
+
+                <targetedfeedback explanation-id="feedbackC">
+                <div class="detailed-targeted-feedback-correct">
+                    <p>Targeted Feedback</p>
+                    <p>Feedback on your correct solution...</p>
+                </div>
+                </targetedfeedback>
+
+            </targetedfeedbackset>
+
+            <solutionset>
+                <solution explanation-id="feedbackC">
+                <div class="detailed-solution">
+                    <p>Explanation</p>
+                    <p>This is the solution explanation</p>
+                    <p>Not much to explain here, sorry!</p>
+                </div>
+                </solution>
+            </solutionset>
+        </problem>""")
+
+        problem = new_loncapa_problem(xml_str)
+        problem.student_answers = {'1_2_1': 'choice_1'}
+
+        the_html = problem.get_html(False)      # assume targeted feedback is not enabled
+        without_new_lines = the_html.replace("\n", "")
+
+        testcases = []
+        testcases.extend([True, r"div class=\"detailed-targeted-feedback\"", "no targeted feedback should be shown (div visible)"])
+
+        from pdb import set_trace; set_trace()
+
+        for testcase in testcases:
+            expect_match = testcase[0]
+            pattern = testcase[1]
+            message = testcase[2]
+
+            if expect_match:
+                self.assertRegexpMatches(without_new_lines, pattern, message)
+            else:
+                self.assertNotRegexpMatches(without_new_lines, pattern, message)
+
+
