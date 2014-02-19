@@ -23,7 +23,7 @@ class MixedModuleStore(ModuleStoreWriteBase):
     ModuleStore knows how to route requests to the right persistence ms and how to convert any
     references in the xblocks to the type required by the app and the persistence layer.
     """
-    def __init__(self, mappings, stores, reference_type=None, **kwargs):
+    def __init__(self, mappings, stores, reference_type=None, i18n_service=None, **kwargs):
         """
         Initialize a MixedModuleStore. Here we look into our passed in kwargs which should be a
         collection of other modulestore configuration informations
@@ -31,6 +31,7 @@ class MixedModuleStore(ModuleStoreWriteBase):
         :param reference_type: either Location or Locator to indicate what type of reference this app
         uses.
         """
+        i18n_service    # This name is unused in this function.... # pylint: disable=pointless-statement
         super(MixedModuleStore, self).__init__(**kwargs)
 
         self.modulestores = {}
