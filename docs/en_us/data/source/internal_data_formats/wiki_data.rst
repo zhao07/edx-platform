@@ -51,44 +51,44 @@ The table that follows provides a reference to each field in this file. A descri
 | other_write           | tinyint(1)         | NO           |              |
 +-----------------------+--------------------+--------------+--------------+
 
-`id`
+id
 ----
   The primary key. 
   
-`current_revision_id`
+current_revision_id
 ------------------------------
    The ID of the revision that displays for this article.
 
-`created`
+created
 ------------
     The date the article was created.
 
-`modified`
+modified
 ------------
     The date the article properties were last modified.
     
-`owner_id`
+owner_id
 ------------
     The owner of the article, usually the creator. The owner always has both read and write access.
     
-`group_id`
+group_id
 ------------
     As in a UNIX file system, permissions can be given to a user according to group membership. 
     Groups are handled through the Django authentication system.
     
-`group_read`
+group_read
 ------------
     Defines whether the group has read access to the article. 1 if so, 0 if not.
 
-`group_write`
+group_write
 --------------
     Defines whether the group has write access to the article. 1 if so, 0 if not.
 
-`other_read`
+other_read
 ------------
     Defines whether others have read access to the article. 1 if so, 0 if not.
 
-`other_write`
+other_write
 ----------------------
     Defines whether others have write access to the article. 1 if so, 0 if not.
 
@@ -173,59 +173,59 @@ The table that follows provides a reference to the characteristics of each field
        - NO
        - 
      
-`id`
+id
 ----
-  The primary key. 
+   The primary key. 
 
-`revision_number`
+revision_number
 --------------------
-   The ID of the revision.
+    The ID of the revision.
 
-`user_message`
+user_message
 ----------------------
     The message the user added when saving the revision.
 
-`automatic_log`
+automatic_log
 ----------------------
     Some changes to wiki pages are logged to make the revision history for an article available in the user interface.
 
-`ip_address`
+ip_address
 ----------------------
     The IP address of the device where the revision was made.
 
-`user_id`
+user_id
 ------------
     The ID of the user who made the revision.
 
-`modified`
+modified
 ------------
     The date the article was last modified.
     
-`created`
+created
 ------------
     The date the article was created.
 
-`previous_revision_id`
+previous_revision_id
 ----------------------
     The ID of the revision previous to this one.
 
-`deleted`
+deleted
 ------------
     Defines whether the revision was deleted.
 
-`locked`
+locked
 ------------
     Defines whether the revision is locked.
     
-`article_id`
+article_id
 --------------------
    The ID of the revision that displays data for this article.
 
-`content`
+content
 ------------
     The content of the article revision.
     
-`title`
+title
 ----------
    The title of the article revision.
 
