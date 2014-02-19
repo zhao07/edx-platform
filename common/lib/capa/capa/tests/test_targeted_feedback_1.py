@@ -678,15 +678,13 @@ class CapaTargetedFeedbackTest(unittest.TestCase):
         without_new_lines = the_html.replace("\n", "")
 
         testcases = []
-        testcases.extend([True, r"div class=\"detailed-targeted-feedback\"", "no targeted feedback should be shown (div visible)"])
+        testcases.append((False, r"div class=\"detailed-targeted-feedback\"", "1 no targeted feedback should be shown (div visible)"))
+        testcases.append((False, r"div class=\"detailed-targeted-feedback\"", "2 no targeted feedback should be shown (div visible)"))
 
         from pdb import set_trace; set_trace()
 
         for testcase in testcases:
-            expect_match = testcase[0]
-            pattern = testcase[1]
-            message = testcase[2]
-
+            expect_match, pattern, message = testcase
             if expect_match:
                 self.assertRegexpMatches(without_new_lines, pattern, message)
             else:
