@@ -748,7 +748,7 @@ class CapaTargetedFeedbackTest(unittest.TestCase):
         problem.done = True                                 # the student has answered
         problem.student_answers = {'1_2_1': 'choice_2'}     # but answered wrong
 
-        the_html = problem.get_html(self.targeted_feedback_available)      # targeted feedback is enabled
+        the_html = problem.get_html(_return_true)      # targeted feedback is enabled
         without_new_lines = the_html.replace("\n", "")
 
         testcases = []

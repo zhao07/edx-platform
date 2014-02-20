@@ -1417,9 +1417,9 @@ class CapaModuleTest(unittest.TestCase):
         self.assertFalse(problem.targeted_feedback_available(), "`past_due` setting should cause False when not past due")
 
         problem.show_targeted_feedback = 'answered'
-        problem.lcp.done = True;
+        problem.lcp.done = True
         self.assertTrue(problem.targeted_feedback_available(), "`answered` setting should cause True when answered")
-        problem.lcp.done = False;
+        problem.lcp.done = False
         self.assertFalse(problem.targeted_feedback_available(), "`answered` setting should cause False when not yet answered")
 
         problem.show_targeted_feedback = 'closed'
