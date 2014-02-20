@@ -621,7 +621,7 @@ class CapaTargetedFeedbackTest(unittest.TestCase):
 
     def test_targeted_feedback_xml_from_markdown(self):
         '''
-        Verify that a block of simple 'markdown' text is converted to correct XML
+        Verify that a block of XML is manipulated properly according to various conditions
         '''
 
         xml_str = textwrap.dedent("""
@@ -639,21 +639,21 @@ class CapaTargetedFeedbackTest(unittest.TestCase):
             <targetedfeedbackset>
                 <targetedfeedback explanation-id="feedback1">
                 <div class="detailed-targeted-feedback">
-                    <p>Targeted Feedback</p>
+                    <p>Incorrect</p>
                     <p>This is the 1st WRONG solution</p>
                 </div>
                 </targetedfeedback>
 
                 <targetedfeedback explanation-id="feedback3">
                 <div class="detailed-targeted-feedback">
-                    <p>Targeted Feedback</p>
+                    <p>Incorrect</p>
                     <p>This is the 3rd WRONG solution</p>
                 </div>
                 </targetedfeedback>
 
                 <targetedfeedback explanation-id="feedbackC">
                 <div class="detailed-targeted-feedback-correct">
-                    <p>Targeted Feedback</p>
+                    <p>Correct</p>
                     <p>Feedback on your correct solution...</p>
                 </div>
                 </targetedfeedback>
@@ -671,23 +671,109 @@ class CapaTargetedFeedbackTest(unittest.TestCase):
             </solutionset>
         </problem>""")
 
-        problem = new_loncapa_problem(xml_str)
-        problem.student_answers = {'1_2_1': 'choice_1'}
+        def testCase_01(xml_str):
+            '''
+            Test Case: targeted feedback is not enabled--could be for any number of reasons
+            '''
+            problem = new_loncapa_problem(xml_str)
+            the_html = problem.get_html(False)      # targeted feedback is not enabled
+            without_new_lines = the_html.replace("\n", "")
 
-        the_html = problem.get_html(False)      # assume targeted feedback is not enabled
-        without_new_lines = the_html.replace("\n", "")
+            testcases = []
+            testcases.append((False, r"targetedfeedback explanation-id=\"feedback1\"", "feedback item `feedback1` should not be visible (testCase_01)"))
+            testcases.append((False, r"targetedfeedback explanation-id=\"feedback3\"", "feedback item `feedback3` should not be visible (testCase_01)"))
+            testcases.append((False, r"targetedfeedback explanation-id=\"feedbackC\"", "feedback item `feedbackC` should not be visible (testCase_01)"))
+            testcases.append((False, r"Incorrect", "no targeted feedback should be shown  (testCase_01)"))
+            testcases.append((False, r"Correct", "no targeted feedback should be shown  (testCase_01)"))
 
-        testcases = []
-        testcases.append((False, r"div class=\"detailed-targeted-feedback\"", "1 no targeted feedback should be shown (div visible)"))
-        testcases.append((False, r"div class=\"detailed-targeted-feedback\"", "2 no targeted feedback should be shown (div visible)"))
+            for testcase in testcases:
+                expect_match, pattern, message = testcase
+                if expect_match:
+                    self.assertRegexpMatches(without_new_lines, pattern, message)
+                else:
+                    self.assertNotRegexpMatches(without_new_lines, pattern, message)
 
-        from pdb import set_trace; set_trace()
+        def testCase_02(xml_str):
+            '''
+            Test Case: targeted feedback is enabled, but the student has not yet answered
+            '''
+            problem = new_loncapa_problem(xml_str)
+            the_html = problem.get_html(return_true)      # targeted feedback is enabled
+            without_new_lines = the_html.replace("\n", "")
 
-        for testcase in testcases:
-            expect_match, pattern, message = testcase
-            if expect_match:
-                self.assertRegexpMatches(without_new_lines, pattern, message)
-            else:
-                self.assertNotRegexpMatches(without_new_lines, pattern, message)
+            testcases = []
+            testcases.append((False, r"targetedfeedback explanation-id=\"feedback1\"", "feedback item `feedback1` should not be visible (testCase_02)"))
+            testcases.append((False, r"targetedfeedback explanation-id=\"feedback3\"", "feedback item `feedback3` should not be visible (testCase_02)"))
+            testcases.append((False, r"targetedfeedback explanation-id=\"feedbackC\"", "feedback item `feedbackC` should not be visible (testCase_02)"))
+            testcases.append((False, r"Incorrect", "no targeted feedback should be shown (testCase_02)"))
+            testcases.append((False, r"Correct", "no targeted feedback should be shown  (testCase_02)"))
 
+            for testcase in testcases:
+                expect_match, pattern, message = testcase
+                if expect_match:
+                    self.assertRegexpMatches(without_new_lines, pattern, message)
+                else:
+                    self.assertNotRegexpMatches(without_new_lines, pattern, message)
 
+        def testCase_03(xml_str):
+            '''
+            Test Case: targeted feedback is enabled, the student has answered, but the wrong answer
+            '''
+            problem = new_loncapa_problem(xml_str)
+            problem.done = True                                 # the student has answered
+            problem.student_answers = {'1_2_1': 'choice_0'}     # but answered wrong
+
+            the_html = problem.get_html(return_true)      # targeted feedback is enabled
+            without_new_lines = the_html.replace("\n", "")
+
+            testcases = []
+            testcases.append((True, r"targetedfeedback explanation-id=\"feedback1\"", "feedback item `feedback1` should be visible (testCase_03)"))
+            testcases.append((False, r"targetedfeedback explanation-id=\"feedback3\"", "feedback item `feedback3` should not be visible (testCase_03)"))
+            testcases.append((False, r"targetedfeedback explanation-id=\"feedbackC\"", "feedback item `feedbackC` should not be visible (testCase_03)"))
+            testcases.append((True, r"Incorrect", "incorrect feedback should be shown  (testCase_03)"))
+            testcases.append((False, r"Correct", "correct should not be shown (testCase_03)"))
+            testcases.append((True, r"This is the 1st WRONG solution", "wrong feedback item shown (testCase_03)"))
+
+            for testcase in testcases:
+                expect_match, pattern, message = testcase
+                if expect_match:
+                    self.assertRegexpMatches(without_new_lines, pattern, message)
+                else:
+                    self.assertNotRegexpMatches(without_new_lines, pattern, message)
+
+        def testCase_04(xml_str):
+            '''
+            Test Case: targeted feedback is enabled, the student has answered, and with the right answer
+            '''
+            problem = new_loncapa_problem(xml_str)
+            problem.done = True                                 # the student has answered
+            problem.student_answers = {'1_2_1': 'choice_2'}     # but answered wrong
+
+            the_html = problem.get_html(return_true)      # targeted feedback is enabled
+            without_new_lines = the_html.replace("\n", "")
+
+            testcases = []
+            testcases.append((False, r"targetedfeedback explanation-id=\"feedback1\"", "feedback item `feedback1` should not be visible (testCase_04)"))
+            testcases.append((False, r"targetedfeedback explanation-id=\"feedback3\"", "feedback item `feedback3` should not be visible (testCase_04)"))
+            testcases.append((True, r"targetedfeedback explanation-id=\"feedbackC\"", "feedback item `feedbackC` should be visible (testCase_04)"))
+            testcases.append((False, r"Incorrect", "incorrect feedback should not be shown (testCase_04)"))
+            testcases.append((True, r"Correct", "correct should be shown (testCase_04)"))
+            testcases.append((True, r"Feedback on your correct solution..", "wrong feedback item shown (testCase_04)"))
+
+            for testcase in testcases:
+                expect_match, pattern, message = testcase
+                if expect_match:
+                    self.assertRegexpMatches(without_new_lines, pattern, message)
+                else:
+                    self.assertNotRegexpMatches(without_new_lines, pattern, message)
+
+        def return_true():
+            '''
+            Simply a callable function to return True, standing in for 'targeted_feedback_available()'
+            '''
+            return True
+
+        testCase_01(xml_str)
+        testCase_02(xml_str)
+        testCase_03(xml_str)
+        testCase_04(xml_str)
