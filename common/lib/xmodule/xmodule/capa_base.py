@@ -123,17 +123,17 @@ class CapaFields(object):
     )
 
     show_targeted_feedback = String(
-    display_name="Show Feedback",
-    help=("Defines when to show the feedback for the problem."),
-    scope=Scope.settings,
-    default="always",
-    values=[
-        {"display_name": "Always", "value": "always"},
-        {"display_name": "Answered", "value": "answered"},
-        {"display_name": "Closed", "value": "closed"},
-        {"display_name": "Finished", "value": "finished"},
-        {"display_name": "Past Due", "value": "past_due"},
-        {"display_name": "Never", "value": "never"}]
+        display_name="Show Feedback",
+        help=("Defines when to show the feedback for the problem."),
+        scope=Scope.settings,
+        default="always",
+        values=[
+            {"display_name": "Always", "value": "always"},
+            {"display_name": "Answered", "value": "answered"},
+            {"display_name": "Closed", "value": "closed"},
+            {"display_name": "Finished", "value": "finished"},
+            {"display_name": "Past Due", "value": "past_due"},
+            {"display_name": "Never", "value": "never"}]
     )
 
     force_save_button = Boolean(
