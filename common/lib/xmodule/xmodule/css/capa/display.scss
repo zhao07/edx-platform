@@ -646,6 +646,10 @@ div.problem {
   }
 
   .detailed-targeted-feedback {
+    border-color: #000203;
+    border-style: solid;
+    border-width: 1px;
+    padding:6px;
     > p:first-child {
       color: red;
       text-transform: uppercase;
@@ -660,6 +664,10 @@ div.problem {
   }
 
   .detailed-targeted-feedback-correct {
+    border-color: #000203;
+    border-style: solid;
+    border-width: 1px;
+    padding:6px;
     > p:first-child {
       color: green;
       text-transform: uppercase;
