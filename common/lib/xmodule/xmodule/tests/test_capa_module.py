@@ -1392,6 +1392,56 @@ class CapaModuleTest(unittest.TestCase):
         module = CapaFactory.create()
         self.assertEquals(module.get_problem("data"), {'html': module.get_problem_html(encapsulate=False)})
 
+    def test_targeted_feedback_available_determination(self):
+        """
+        Check the various logical combinations of states produce the correct true/false result
+        """
+        problem = CapaFactory.create()
+
+        earlier_than_now = datetime.datetime(2000, 2, 20, 22, 48, 45, 386892, tzinfo=UTC)
+        later_then_now = datetime.datetime(2050, 2, 20, 22, 48, 45, 386892, tzinfo=UTC)
+
+        problem.show_targeted_feedback = 'never'
+        self.assertFalse(problem.targeted_feedback_available(), "`never` setting should always cause False")
+
+        problem.show_targeted_feedback = ''
+        self.assertFalse(problem.targeted_feedback_available(), "`` setting should always cause False")
+
+        problem.show_targeted_feedback = 'always'
+        self.assertTrue(problem.targeted_feedback_available(), "`always` setting should always cause True")
+
+        problem.show_targeted_feedback = 'past_due'
+        problem.close_date = earlier_than_now
+        self.assertTrue(problem.targeted_feedback_available(), "`past_due` setting should cause True when past due")
+        problem.close_date = later_then_now
+        self.assertFalse(problem.targeted_feedback_available(), "`past_due` setting should cause False when not past due")
+
+        problem.show_targeted_feedback = 'answered'
+        problem.lcp.done = True;
+        self.assertTrue(problem.targeted_feedback_available(), "`answered` setting should cause True when answered")
+        problem.lcp.done = False;
+        self.assertFalse(problem.targeted_feedback_available(), "`answered` setting should cause False when not yet answered")
+
+        problem.show_targeted_feedback = 'closed'
+        problem.close_date = later_then_now
+        problem.max_attempts = 3
+        problem.attempts = 6
+        self.assertTrue(problem.targeted_feedback_available(), "`closed` setting should cause True after max attempts")
+        problem.attempts = 1
+        self.assertFalse(problem.targeted_feedback_available(), "`closed` setting should cause False before max attempts")
+        problem.close_date = earlier_than_now
+        self.assertTrue(problem.targeted_feedback_available(), "`closed` setting should cause True when past due")
+
+        problem.show_targeted_feedback = 'finished'
+        problem.close_date = later_then_now
+        problem.max_attempts = 3
+        problem.attempts = 1
+        self.assertFalse(problem.targeted_feedback_available(), "`finished` setting should cause False when not past due, not correct, attempts left")
+        problem.attempts = 3
+        self.assertTrue(problem.targeted_feedback_available(), "`finished` setting should cause True when not past due, not correct, no attempts left")
+        problem.attempts = 1
+        problem.close_date = earlier_than_now
+        self.assertTrue(problem.targeted_feedback_available(), "`finished` setting should cause True when past due, not correct, attempts left")
 
 class ComplexEncoderTest(unittest.TestCase):
     def test_default(self):

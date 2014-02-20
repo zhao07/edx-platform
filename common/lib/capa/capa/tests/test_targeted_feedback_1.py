@@ -668,12 +668,12 @@ class CapaTargetedFeedbackTest(unittest.TestCase):
         </solutionset>
     </problem>""")
 
-    def test_not_enabled(self):
+    def test_show_targeted_feedback_disabled(self):
         '''
         Test Case: targeted feedback is not enabled--could be for any number of reasons
         '''
         problem = new_loncapa_problem(self.targeted_feedback_xml)
-        the_html = problem.get_html(False)      # targeted feedback is not enabled
+        the_html = problem.get_html(False)
         without_new_lines = the_html.replace("\n", "")
 
         testcases = []
@@ -748,7 +748,7 @@ class CapaTargetedFeedbackTest(unittest.TestCase):
         problem.done = True                                 # the student has answered
         problem.student_answers = {'1_2_1': 'choice_2'}     # but answered wrong
 
-        the_html = problem.get_html(self._return_true)      # targeted feedback is enabled
+        the_html = problem.get_html(self.targeted_feedback_available)      # targeted feedback is enabled
         without_new_lines = the_html.replace("\n", "")
 
         testcases = []
