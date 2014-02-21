@@ -2,9 +2,9 @@
 Discussion Forums Data
 ######################
 
-Discussion data is stored in a MongoDB database as collections of JSON documents. MongoDB is a document-oriented, NoSQL database system. MongoDB is open source; documentation can be found here_.
+EdX discussion data is stored in a MongoDB database as collections of JSON documents. MongoDB is a document-oriented, NoSQL database system. MongoDB is open source; documentation can be found at the mongodb_ web site.
 
-..  _here: http://docs.mongodb.org/manual/
+..  _mongodb: http://docs.mongodb.org/manual/
 
 In the data package, discussion data is delivered in a MONGO file, identified by organization and course, in this format: edX-*organization*-*course*-*source*.mongo. 
 
@@ -62,7 +62,7 @@ Descriptions of the fields that are present for both ``CommentThread`` and ``Com
 
 _id
 -----
-  The 12-byte MongoDB unique ID for this collection of data. Like all MongoDB IDs, the IDs are monotonically increasing and the first four bytes are a timestamp. 
+  The 12-byte MongoDB unique ID for this collection. Like all MongoDB IDs, the IDs are monotonically increasing and the first four bytes are a timestamp. 
 
 _type
 -------
@@ -70,13 +70,11 @@ _type
 
 anonymous
 -----------
-  If true, this ``CommentThread`` or ``Comment`` displays in the user interface as written by "anonymous", even to those who have moderator privileges in the forums.
+  If true, this ``CommentThread`` or ``Comment`` displays in the user interface as written by "anonymous", even to those who have course staff or discussion administration roles in the course. 
 
 anonymous_to_peers
 --------------------
-  Not used. 
-
-  **History**: The idea behind this field was that ``anonymous_to_peers = true`` would make the comment appear anonymous to other students, but would allow the course staff to see who you were. However, the feature was never implemented in the user interface, and only the ``anonymous`` field is actually used. The ``anonymous_to_peers`` field is always false.
+  If true, this ``CommentThread`` or ``Comment`` displays in the user interface as written by "anonymous" to students, but  course staff and discussion administrators see the author's username. 
 
 at_position_list
 ------------------
@@ -104,9 +102,13 @@ created_at
 ------------
   Timestamp in UTC. Example: ``ISODate("2013-02-21T03:03:04.587Z")``.
 
+.. FOR-482 open to research inconsistency between the data actually in the data package and this example and description.
+
 updated_at
 ------------
   Timestamp in UTC. Example: ``ISODate("2013-02-21T03:03:04.587Z")``.
+
+.. FOR-482 open to research inconsistency between the data actually in the data package and this example and description.
 
 votes
 -------
@@ -117,7 +119,7 @@ votes
   * up_count = total upvotes received.
   * down_count = No longer used. Total downvotes received.
   * count = total votes cast.
-  * point = net vote, now always equal to `up_count`.
+  * point = net vote, now always equal to up_count.
 
 A user only has one vote per ``Comment`` or ``CommentThread``. Though it's still written to the database, the UI no longer displays an option to downvote anything.
 
@@ -145,11 +147,15 @@ comment_count
 
 commentable_id
 ----------------
-  We can attach a discussion to any piece of content in the course, or to top level categories like "General" and "Troubleshooting". When the ``commentable_id`` is a high level category, it is specified in the course's policy file. When the ``commentable_id`` is a specific content piece (such as ``600x_l5_p8``, meaning course 6.00x, Lecture Sequence 5, Problem 8), it is taken from a discussion module in the course.
+  A course team can attach a discussion to any piece of content in the course, or to top level categories like "General" and "Troubleshooting". When the ``commentable_id`` is a high level category, it is specified in the course's policy file. When the ``commentable_id`` is a specific content piece (such as ``600x_l5_p8``, meaning course 6.00x, Lecture Sequence 5, Problem 8), it is taken from a discussion module in the course.
+
+.. 12 Feb 14 Sarina suggests a different example. Followup with Olga to get access to discussion data to get examples of both policy-level and component-level commentable_id's. 
 
 last_activity_at
 ------------------
   Timestamp in UTC indicating the last time there was activity in the thread (new posts, edits, etc). Closing the thread does not affect the value in this field. 
+
+.. FOR-482 open to research inconsistency between the data actually in the data package and this example and description.
 
 tags_array
 ------------
@@ -165,9 +171,9 @@ title
 Comment Fields
 ********************
 
-The following fields are specific to ``Comment`` objects. A ``Comment`` is a response to a ``CommentThread`` (so an answer to the question), or a reply to another ``Comment`` (a comment about somebody's answer). 
+The following fields are specific to ``Comment`` objects. A ``Comment`` is either a response to a ``CommentThread`` (such as an answer to the question), or a reply to another ``Comment`` (a comment about somebody's answer). 
 
-**History**: It used to be the case that ``Comment`` replies could nest much more deeply, but we later capped it at just these three levels (question, answer, comment) much in the way that StackOverflow does.
+**History**: It used to be the case that ``Comment`` replies could nest much more deeply, but we later capped it at just these three levels (question, response, comment) much in the way that StackOverflow does.
 
 visible
 ----------
@@ -197,7 +203,7 @@ parent_id
 
 parent_ids
 ------------
-  The ``parent_ids`` attribute appears in all ``Comment`` objects, and contains the ``_id`` of all ancestor comments. Since the UI now prevents comments from being nested more than one layer deep, it will only ever have at most one element in it. If a ``Comment`` has no parent, it is an empty list.
+  The ``parent_ids`` field appears in all ``Comment`` objects, and contains the ``_id`` of all ancestor comments. Since the UI now prevents comments from being nested more than one layer deep, it will only ever have at most one element in it. If a ``Comment`` has no parent, it is an empty list.
 
 sk
 --------------------
