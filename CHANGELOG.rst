@@ -5,6 +5,10 @@ These are notable changes in edx-platform.  This is a rolling list of changes,
 in roughly chronological order, most recent first.  Add your entries at or near
 the top.  Include a label indicating the component affected.
 
+Studio: Added the ability to include targeted feedback items by marking the item text
+
+Studio: Added a new Settings dropdown to control when targeted feedback is shown
+
 CMS: Add feature to allow exporting a course to a git repository by
 specifying the giturl in the course settings.
 
