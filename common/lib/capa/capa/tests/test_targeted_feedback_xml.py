@@ -1,3 +1,8 @@
+'''
+This file contains tests aimed at exercising the XML production mechanism of the
+targeted feedback feature.
+'''
+
 import unittest
 import textwrap
 from . import test_capa_system, new_loncapa_problem
