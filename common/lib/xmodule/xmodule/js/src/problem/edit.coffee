@@ -219,7 +219,7 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
             itemFeedbackStrings.push(feedbackString);             // add a feedback string entry (possibly null)
             itemFeedbackMatches.push(matchString);                // add a match string entry (possibly null)
         }
-        var targetedFeedbackAttribute = ' targeted-feedback="always" ';  // assume we have targeted feedback items
+        var targetedFeedbackAttribute = ' targeted-feedback="" ';  // assume we have targeted feedback items
         if(itemFeedbackStringsCount == 0) {                        // if we guessed wrong
           targetedFeedbackAttribute = '';
         }
