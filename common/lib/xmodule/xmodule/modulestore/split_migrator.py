@@ -59,6 +59,88 @@ class SplitMigrator(object):
 
         return new_package_id
 
+    def _location_to_locator(self, course_id, reference):
+        """
+        Convert the referenced location to a locator casting to and from a string as necessary
+        """
+        if reference is None:
+            return None
+        stringify = isinstance(reference, basestring)
+        if stringify:
+            reference = Location(reference)
+        locator = loc_mapper().translate_location(course_id, reference, reference.revision == None, True)
+        return unicode(locator) if stringify else locator
+
+    def _xblock_adaptor_iterator(self, adaptor, string_converter, store, course_id, xblock):
+        """
+        Change all reference fields in this xblock to the type expected by the receiving layer
+        """
+        xblock.location = adaptor(store, course_id, xblock.location)
+        for field in xblock.fields.itervalues():
+            if field.is_set_on(xblock):
+                if isinstance(field, Reference):
+                    field.write_to(
+                        xblock,
+                        adaptor(store, course_id, field.read_from(xblock))
+                    )
+                elif isinstance(field, ReferenceList):
+                    field.write_to(
+                        xblock,
+                        [
+                            adaptor(store, course_id, ref)
+                            for ref in field.read_from(xblock)
+                        ]
+                    )
+                elif isinstance(field, String):
+                    # replace links within the string
+                    string_converter(field, xblock)
+        return xblock
+
+    def _incoming_xblock_adaptor(self, store, course_id, xblock):
+        """
+        Change all reference fields in this xblock to the type expected by the persistence layer
+        """
+        string_converter = self._get_string_converter(
+            course_id, store.reference_type, xblock.scope_ids.usage_id
+        )
+        return self._xblock_adaptor_iterator(
+            self._incoming_reference_adaptor, string_converter, store, course_id, xblock
+        )
+
+    CONVERT_RE = re.compile(r"/jump_to_id/({}+)".format(ALLOWED_ID_CHARS))
+
+    def _get_string_converter(self, course_id, reference_type, from_base_addr):
+        """
+        Return a closure which finds and replaces all embedded links in a string field
+        with the correct rewritten link for the target type
+        """
+        if issubclass(self.reference_type, reference_type):
+            return lambda field, xblock: None
+        if isinstance(from_base_addr, Location):
+            def mapper(found_id):
+                """
+                Convert the found id to BlockUsageLocator block_id
+                """
+                location = from_base_addr.replace(category=None, name=found_id)
+                # NOTE without category, it cannot create a new mapping if there's not one already
+                return loc_mapper().translate_location(course_id, location).block_id
+        else:
+            def mapper(found_id):
+                """
+                Convert the found id to Location block_id
+                """
+                locator = BlockUsageLocator.make_relative(from_base_addr, found_id)
+                return loc_mapper().translate_locator_to_location(locator).name
+
+        def converter(field, xblock):
+            """
+            Find all of the ids in the block and replace them w/ their mapped values
+            """
+            value = field.read_from(xblock)
+            self.CONVERT_RE.sub(mapper, value)
+            field.write_to(xblock, value)
+        return converter
+
     def _copy_published_modules_to_course(self, new_course, old_course_loc, old_course_id, user):
         """
         Copy all of the modules from the 'direct' version of the course to the new split course.
