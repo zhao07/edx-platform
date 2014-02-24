@@ -8,6 +8,11 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
   @headerTemplate: "Header\n=====\n"
   @explanationTemplate: "[explanation]\nShort explanation\n[explanation]\n"
 
+  @itemFeedbackStrings = [];
+  @itemFeedbackMatches = [];
+  @itemFeedbackTruthValue = [];
+  @itemFeedbackStringsCount = 0;
+
   constructor: (element) ->
     @element = element
 
@@ -175,6 +180,32 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
     else
       return template
 
+
+
+
+
+
+
+
+  @findTargetedFeedbackItem: (answerString) ->
+    # parse a single answer string for any targeted feedback specifications
+    feedbackString = ''
+    matchString = ''
+    matches = answerString.match( /{{(.+)}}/ )       # string surrounded by {{...}} is a match group
+    if matches
+        matchString = matches[0]        # group 0 holds the entire matching string (includes delimiters)
+        feedbackString = matches[1]     # group 1 holds the matching characters (our string)
+        MarkdownEditingDescriptor.itemFeedbackStringsCount += 1
+
+    MarkdownEditingDescriptor.itemFeedbackStrings.push(feedbackString)              # add a feedback string entry (possibly null)
+    MarkdownEditingDescriptor.itemFeedbackMatches.push(matchString)                 # add a match string entry (possibly null)
+    return MarkdownEditingDescriptor.itemFeedbackStrings.length
+
+
+
+
+
+
 # We may wish to add insertHeader. Here is Tom's code.
 # function makeHeader() {
 #  var selection = simpleEditor.getSelection();
@@ -190,14 +221,37 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
       var xml = markdown,
           i, splits, scriptFlag;
 
-      var itemFeedbackStrings = [];           // the text of the targeted feedback messages (no delimiters)
-      var itemFeedbackMatches = [];           // the entire match string of targeted feedback (including delimiters)
-      var itemFeedbackTruthValue = [];        // 'true' if this response item is a correct answer
-      var itemFeedbackStringsCount = 0;       // total number of feedback strings (the arrays can have null entries)
+      MarkdownEditingDescriptor.itemFeedbackStrings = [];
+      MarkdownEditingDescriptor.itemFeedbackMatches = [];
+      MarkdownEditingDescriptor.itemFeedbackTruthValue = [];
+      MarkdownEditingDescriptor.itemFeedbackStringsCount = 0;
 
       // replace headers
       xml = xml.replace(/(^.*?$)(?=\n\=\=+$)/gm, '<h1>$1</h1>');
       xml = xml.replace(/\n^\=\=+$/gm, '');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       // group multiple choice answers
       var choices = '';
@@ -205,37 +259,34 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
       xml = xml.replace(/(^\s*\(.{0,3}\).*?$\n*)+/gm, function(match, p) {
         var options = match.split('\n');
 
-        // parse the user's text for any targeted feedback specifications, leaving the results of the parsing
-        // process in a set of lists for later processing
-        for(var i = 0; i < options.length; i++) {
-            var feedbackString = '';
-            var matchString = '';
-            var matches = options[i].match( /{{(.+)}}/ );         // string surrounded by {{...}} is a match group
-            if(matches) {
-                matchString = matches[0];         // group 0 holds the entire matching string (includes delimiters)
-                feedbackString = matches[1];      // group 1 holds the matching characters (our string)
-                itemFeedbackStringsCount += 1;
-            }
-            itemFeedbackStrings.push(feedbackString);             // add a feedback string entry (possibly null)
-            itemFeedbackMatches.push(matchString);                // add a match string entry (possibly null)
-        }
-        var targetedFeedbackAttribute = ' targeted-feedback="" ';  // assume we have targeted feedback items
-        if(itemFeedbackStringsCount == 0) {                        // if we guessed wrong
-          targetedFeedbackAttribute = '';
-        }
 
-        for(var i = 0; i < options.length; i++) {
-          if(options[i].length > 0) {
 
-            var itemFeedbackMatchString = itemFeedbackMatches[i];   // get this response item's feedback match, if any
-            if(itemFeedbackMatchString.length > 0) {                // if this response item had a match
-              options[i] = options[i].replace(itemFeedbackMatchString, '');   // remove it from the line
-            }
+         for(var i = 0; i < options.length; i++) {
+           if(options[i].length > 0) {
+
+              MarkdownEditingDescriptor.findTargetedFeedbackItem(options[i]);
+
+
+
+
+
+
+
+//           var this.itemFeedbackMatchString = this.itemFeedbackMatches[i];   // get this response item's feedback match, if any
+//           if(this.itemFeedbackMatchString.length > 0) {                // if this response item had a match
+//             options[i] = options[i].replace(this.itemFeedbackMatchString, '');   // remove it from the line
+//           }
+
+
+
+
+
+
 
             var value = options[i].split(/^\s*\(.{0,3}\)\s*/)[1];
             var inparens = /^\s*\((.{0,3})\)\s*/.exec(options[i])[1];
             var correct = /x/i.test(inparens);
-            itemFeedbackTruthValue.push(correct);
+            MarkdownEditingDescriptor.itemFeedbackTruthValue.push(correct);
             var fixed = '';
             if(/@/.test(inparens)) {
               fixed = ' fixed="true"';
@@ -246,7 +297,7 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
             choices += '    <choice explanation-id="' + i.toString() + '" correct="' + correct + '">' + value + '</choice>\n';
           }
         }
-        var result = '<multiplechoiceresponse ' + targetedFeedbackAttribute + '>\n';
+        var result = '<multiplechoiceresponse>\n';
         if(shuffle) {
           result += '  <choicegroup type="MultipleChoice" shuffle="true">\n';
         } else {
@@ -256,25 +307,25 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
         result += '  </choicegroup>\n';
         result += '</multiplechoiceresponse>\n\n';
 
-        result += '<targetedfeedbackset>\n';
+//       result += '<targetedfeedbackset>\n';
 
-        for (i = 0; i < itemFeedbackStrings.length; i += 1) {
-            if(itemFeedbackStrings[i].length > 0) {
-              var truthValueString = "incorrect";
-              var truthValueClass = "detailed-targeted-feedback";
-              if(itemFeedbackTruthValue[i]) {
-                var truthValueString = "correct";
-                var truthValueClass = "detailed-targeted-feedback-correct";
-              }
-              result += '<targetedfeedback explanation-id="' + i.toString() + '">\n';
-              result += '   <div class="' + truthValueClass + '" >\n';
-              result += '     <p>' + truthValueString + '</p>\n';
-              result += '     <p>' + itemFeedbackStrings[i] + '</p>\n';
-              result += '   </div>\n';
-              result += '</targetedfeedback>\n';
-            }
-        }
-        result += '</targetedfeedbackset>\n';
+//       for (i = 0; i < this.itemFeedbackStrings.length; i += 1) {
+//           if(this.itemFeedbackStrings[i].length > 0) {
+//             var truthValueString = "incorrect";
+//             var truthValueClass = "detailed-targeted-feedback";
+//             if(this.itemFeedbackTruthValue[i]) {
+//               var truthValueString = "correct";
+//               var truthValueClass = "detailed-targeted-feedback-correct";
+//             }
+//             result += '<targetedfeedback explanation-id="' + i.toString() + '">\n';
+//             result += '   <div class="' + truthValueClass + '" >\n';
+//             result += '     <p>' + truthValueString + '</p>\n';
+//             result += '     <p>' + this.itemFeedbackStrings[i] + '</p>\n';
+//             result += '   </div>\n';
+//             result += '</targetedfeedback>\n';
+//           }
+//       }
+//        result += '</targetedfeedbackset>\n';
 
         return result;
       });
@@ -291,7 +342,7 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
               if(options[i].length > 0) {
                   value = options[i].split(/^\s*\[.?\]\s*/)[1];
                   correct = /^\s*\[x\]/i.test(options[i]);
-                  groupString += '    <choice correct="' + correct + '"  targetedFeedback="' + itemFeedbackStrings[i] + '">' + value + '</choice>\n';
+                  groupString += '    <choice correct="' + correct + '"  targetedFeedback="">' + value + '</choice>\n';
               }
           }
 
@@ -447,11 +498,33 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
 
       xml = splits.join('');
 
+      // add in an element to hold all the TF items (which may be none)
+      xml += '<targetedfeedbackset>\n';
+      for (i = 0; i < MarkdownEditingDescriptor.itemFeedbackStrings.length; i += 1) {
+          if(MarkdownEditingDescriptor.itemFeedbackStrings[i].length > 0) {
+            var truthValueString = "incorrect";
+            var truthValueClass = "detailed-targeted-feedback";
+            if(MarkdownEditingDescriptor.itemFeedbackTruthValue[i]) {
+               var truthValueString = "correct";
+               var truthValueClass = "detailed-targeted-feedback-correct";
+            }
+            xml += '<targetedfeedback explanation-id="' + i.toString() + '">\n';
+            xml += '   <div class="' + truthValueClass + '" >\n';
+            xml += '     <p>' + truthValueString + '</p>\n';
+            xml += '     <p>' + MarkdownEditingDescriptor.itemFeedbackStrings[i] + '</p>\n';
+            xml += '   </div>\n';
+            xml += '</targetedfeedback>\n';
+          }
+       }
+       xml += '</targetedfeedbackset>\n';
+
       // rid white space
       xml = xml.replace(/\n\n\n/g, '\n');
 
       // surround w/ problem tag
       xml = '<problem>\n' + xml + '\n</problem>';
+
+alert(xml);
 
       return xml;
     }`
