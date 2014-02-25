@@ -195,11 +195,12 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
     if matches
         matchString = matches[0]        # group 0 holds the entire matching string (includes delimiters)
         feedbackString = matches[1]     # group 1 holds the matching characters (our string)
-        MarkdownEditingDescriptor.itemFeedbackStringsCount += 1
+        answerString = answerString.replace(matchString, '')
 
-    MarkdownEditingDescriptor.itemFeedbackStrings.push(feedbackString)              # add a feedback string entry (possibly null)
-    MarkdownEditingDescriptor.itemFeedbackMatches.push(matchString)                 # add a match string entry (possibly null)
-    return MarkdownEditingDescriptor.itemFeedbackStrings.length
+    MarkdownEditingDescriptor.itemFeedbackStrings.push(feedbackString)  # add a feedback string entry (possibly null)
+    MarkdownEditingDescriptor.itemFeedbackMatches.push(matchString)     # add a match string entry (possibly null)
+
+    return answerString
 
 
 
@@ -218,13 +219,15 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
 #
   @markdownToXml: (markdown)->
     toXml = `function (markdown) {
-      var xml = markdown,
-          i, splits, scriptFlag;
+      var xml = markdown;
+      var i;
+      var splits;
+      var scriptFlag;
 
+      // initialize the targeted feedback working arrays
       MarkdownEditingDescriptor.itemFeedbackStrings = [];
       MarkdownEditingDescriptor.itemFeedbackMatches = [];
       MarkdownEditingDescriptor.itemFeedbackTruthValue = [];
-      MarkdownEditingDescriptor.itemFeedbackStringsCount = 0;
 
       // replace headers
       xml = xml.replace(/(^.*?$)(?=\n\=\=+$)/gm, '<h1>$1</h1>');
@@ -257,31 +260,14 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
       var choices = '';
       var shuffle = false;
       xml = xml.replace(/(^\s*\(.{0,3}\).*?$\n*)+/gm, function(match, p) {
-        var options = match.split('\n');
+         var options = match.split('\n');
 
 
 
          for(var i = 0; i < options.length; i++) {
            if(options[i].length > 0) {
 
-              MarkdownEditingDescriptor.findTargetedFeedbackItem(options[i]);
-
-
-
-
-
-
-
-//           var this.itemFeedbackMatchString = this.itemFeedbackMatches[i];   // get this response item's feedback match, if any
-//           if(this.itemFeedbackMatchString.length > 0) {                // if this response item had a match
-//             options[i] = options[i].replace(this.itemFeedbackMatchString, '');   // remove it from the line
-//           }
-
-
-
-
-
-
+            options[i] = MarkdownEditingDescriptor.findTargetedFeedbackItem(options[i], i);
 
             var value = options[i].split(/^\s*\(.{0,3}\)\s*/)[1];
             var inparens = /^\s*\((.{0,3})\)\s*/.exec(options[i])[1];
@@ -294,7 +280,7 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
             if(/!/.test(inparens)) {
               shuffle = true;
             }
-            choices += '    <choice explanation-id="' + i.toString() + '" correct="' + correct + '">' + value + '</choice>\n';
+            choices += '    <choice id="choice_' + i.toString() + '" correct="' + correct + '">' + value + '</choice>\n';
           }
         }
         var result = '<multiplechoiceresponse>\n';
@@ -306,27 +292,6 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
         result += choices;
         result += '  </choicegroup>\n';
         result += '</multiplechoiceresponse>\n\n';
-
-//       result += '<targetedfeedbackset>\n';
-
-//       for (i = 0; i < this.itemFeedbackStrings.length; i += 1) {
-//           if(this.itemFeedbackStrings[i].length > 0) {
-//             var truthValueString = "incorrect";
-//             var truthValueClass = "detailed-targeted-feedback";
-//             if(this.itemFeedbackTruthValue[i]) {
-//               var truthValueString = "correct";
-//               var truthValueClass = "detailed-targeted-feedback-correct";
-//             }
-//             result += '<targetedfeedback explanation-id="' + i.toString() + '">\n';
-//             result += '   <div class="' + truthValueClass + '" >\n';
-//             result += '     <p>' + truthValueString + '</p>\n';
-//             result += '     <p>' + this.itemFeedbackStrings[i] + '</p>\n';
-//             result += '   </div>\n';
-//             result += '</targetedfeedback>\n';
-//           }
-//       }
-//        result += '</targetedfeedbackset>\n';
-
         return result;
       });
 
@@ -508,7 +473,7 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
                var truthValueString = "correct";
                var truthValueClass = "detailed-targeted-feedback-correct";
             }
-            xml += '<targetedfeedback explanation-id="' + i.toString() + '">\n';
+            xml += '<targetedfeedback explanation-id="choice_' + i.toString() + '">\n';
             xml += '   <div class="' + truthValueClass + '" >\n';
             xml += '     <p>' + truthValueString + '</p>\n';
             xml += '     <p>' + MarkdownEditingDescriptor.itemFeedbackStrings[i] + '</p>\n';
