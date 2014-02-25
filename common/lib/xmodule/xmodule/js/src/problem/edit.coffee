@@ -477,6 +477,14 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
                var truthValueString = "correct";
                var truthValueClass = "detailed-targeted-feedback-correct";
             }
+
+            tokens = (String(MarkdownEditingDescriptor.itemFeedbackStrings[i])).split(":")
+            alert(tokens[0])
+            if(tokens.length > 1) {
+              truthValueString = tokens[0];
+              MarkdownEditingDescriptor.itemFeedbackStrings[i] = tokens[1];
+            }
+
             xml += '<targetedfeedback explanation-id="choice_' + i.toString() + '">\n';
             xml += '   <div class="' + truthValueClass + '" >\n';
             xml += '     <p>' + truthValueString + '</p>\n';

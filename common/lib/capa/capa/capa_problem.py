@@ -449,11 +449,14 @@ class LoncapaProblem(object):
 
             student_has_not_yet_answered = not self.done
 
-            this_item_not_selected = True
-            for index in range(0, len(self.student_answers.values()[0])):
-                if self.student_answers.values()[0][index] == targeted_feedback_item_explanation_id:
-                    this_item_not_selected = False
-                    break
+            answer_list_count = len(self.student_answers.values())
+            if answer_list_count > 0:
+                this_item_not_selected = True
+                answer_count = len(self.student_answers.values()[0])
+                for index in range(0, answer_count):
+                    if self.student_answers.values()[0][index] == targeted_feedback_item_explanation_id:
+                        this_item_not_selected = False
+                        break
 
             targeted_feedback_not_enabled = targeted_feedback_available and not targeted_feedback_available()
 
