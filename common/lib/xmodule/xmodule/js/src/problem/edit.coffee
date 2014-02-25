@@ -303,12 +303,16 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
           groupString += '  <checkboxgroup direction="vertical">\n';
           options = match.split('\n');
 
+          realOptionIndex = 0;
           for (i = 0; i < options.length; i += 1) {
-              if(options[i].length > 0) {
-                  value = options[i].split(/^\s*\[.?\]\s*/)[1];
-                  correct = /^\s*\[x\]/i.test(options[i]);
-                  groupString += '    <choice correct="' + correct + '"  targetedFeedback="">' + value + '</choice>\n';
-              }
+            if(options[i].length > 0) {
+              options[i] = MarkdownEditingDescriptor.findTargetedFeedbackItem(options[i], i);
+              value = options[i].split(/^\s*\[.?\]\s*/)[1];
+              correct = /^\s*\[x\]/i.test(options[i]);
+              MarkdownEditingDescriptor.itemFeedbackTruthValue.push(correct);
+              groupString += '    <choice id="choice_' + realOptionIndex.toString() + '" correct="' + correct + '">' + value + '</choice>\n';
+              realOptionIndex += 1;
+            }
           }
 
           groupString += '  </checkboxgroup>\n';
@@ -487,7 +491,7 @@ class @MarkdownEditingDescriptor extends XModule.Descriptor
       xml = xml.replace(/\n\n\n/g, '\n');
 
       // surround w/ problem tag
-      xml = '<problem>\n' + xml + '\n</problem>';
+      xml = '<problem version="2">\n' + xml + '\n</problem>';
 
 alert(xml);
 

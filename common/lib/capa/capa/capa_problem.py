@@ -418,35 +418,50 @@ class LoncapaProblem(object):
             answer_ids.append(results.keys())
         return answer_ids
 
+
+
+
+    #def remove_targeted_feedback_item(self, targeted_feedback_item, targeted_feedback_available):
+    #    '''
+    #    If the provided targeted feedback item should *not* be shown to the student at this moment,
+    #    remove the entire XML element from the set of targeted feedback elements (thus making
+    #    it invisible to the student). Otherwise the element remains intact and will be visible
+    #    when the problem page is rendered.
+    #    '''
+    #    student_has_not_yet_answered = not self.done
+    #    this_item_not_selected = targetedfeedback.get('explanation-id') != explanation_id_for_student_answer
+    #    targeted_feedback_not_enabled = targeted_feedback_available and not targeted_feedback_available()
+    #    if student_has_not_yet_answered or this_item_not_selected or targeted_feedback_not_enabled:
+    #        targetedfeedbackset.remove(targetedfeedback)
+    #
+
+
+
+
+
+
     def do_targeted_feedback(self, targeted_feedback_available=None):
         """
-        Implements the targeted-feedback=N in-place on  <multiplechoiceresponse> --
-        choice-level explanations shown to a student after submission.
-        Does nothing if there is no targeted-feedback attribute.
         """
-        from pdb import set_trace; set_trace()
-
-        #student_answer = self.student_answers.get(choicegroup.get('id'))
-        #explanation_id_for_student_answer = None
-
-        #for answer_id in self.student_answers.values():
-        #    candidate_targeted_feedback_item = self.tree.xpath('//targetedfeedbackset/targetedfeedback[@id="' + answer_id + '"]')
-
-
-
-            #if candidate_targeted_feedback_item:
-            #    candidate_targeted_feedback_item.getparent().remove(candidate_targeted_feedback_item)
-
-
-
-
-
-
         for targeted_feedback_item in self.tree.xpath('//targetedfeedbackset/targetedfeedback'):
-            targeted_feedback_item_explanation_id = targeted_feedback_item.get('explanation-id')
-            if self.student_answers.values().count(u'" + targeted_feedback_item_explanation_id + "') == 0:
-                targeted_feedback_item.getparent().remove(targeted_feedback_item)
 
+            targeted_feedback_item_explanation_id = targeted_feedback_item.get('explanation-id')
+
+            student_has_not_yet_answered = not self.done
+
+            this_item_not_selected = True
+            for index in range(0, len(self.student_answers.values()[0])):
+                if self.student_answers.values()[0][index] == targeted_feedback_item_explanation_id:
+                    this_item_not_selected = False
+                    break
+
+            targeted_feedback_not_enabled = targeted_feedback_available and not targeted_feedback_available()
+
+            if student_has_not_yet_answered or this_item_not_selected or targeted_feedback_not_enabled:
+                targeted_feedback_item.getparent().remove(targeted_feedback_item)
+            else:
+                #from pdb import set_trace; set_trace()
+                pass
 
 
 
