@@ -17,4 +17,5 @@ Creating Course Content
    create_html_component
    create_video
    create_discussion
+   a_b_tests.rst
 
