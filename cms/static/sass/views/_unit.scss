@@ -1003,7 +1003,6 @@ body.unit {
       margin: ($baseline/4) 0 ($baseline/4) ($baseline/4);
 
       .action-button {
-        @include transition(all $tmg-f2 ease-in-out 0s);
         display: block;
         padding: 0 $baseline/2;
         width: auto;
@@ -1352,11 +1351,16 @@ div.wrapper-comp-editor.is-inactive ~ div.launch-latex-compiler{
 body.unit .xblock-type-container {
   @extend %wrap-xblock;
   margin: 0;
+  box-shadow: none;
 
   &:hover {
     @include transition(all $tmg-f2 linear 0s);
     border-color: $blue;
-    box-shadow: 0 0 1px $shadow-d1;
+
+    .container-drag {
+      background-color: $blue;
+      border-color: $blue;
+    }
   }
 
   .xblock-header {
@@ -1367,6 +1371,25 @@ body.unit .xblock-type-container {
     .xblock-details {
       font-size: .9em;
     }
+
+  }
+
+  // UI: container xblock drag handle
+
+  // TODO: abstract out drag handles into generic control used on unit, container, outline pages.
+  .container-drag {
+    position: absolute;
+    display: block;
+    top: 0px;
+    right: -16px;
+    z-index: 10;
+    width: 16px;
+    height: 50px;
+    border-radius: 0 3px 3px 0;
+    border: 1px solid $lightBluishGrey2;
+    background: url(../img/white-drag-handles.png) center no-repeat $lightBluishGrey2;
+    cursor: move;
+    @include transition(none);
   }
 
   .xblock-render {
