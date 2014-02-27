@@ -1297,6 +1297,7 @@ MAX_FAILED_LOGIN_ATTEMPTS_LOCKOUT_PERIOD_SECS = 15 * 60
 
 ##### LMS DEADLINE DISPLAY TIME_ZONE #######
 TIME_ZONE_DISPLAYED_FOR_DEADLINES = 'UTC'
+<<<<<<< HEAD
 
 
 # Source:
@@ -1497,3 +1498,5 @@ except ImportError:
     pass
 else:
     INSTALLED_APPS += ('edx_jsdraw',)
+=======
+>>>>>>> parent of 25407ef... BLD-642: Allow multiple transcripts with video.
