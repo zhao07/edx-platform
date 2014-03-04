@@ -242,12 +242,19 @@ def single_thread(request, course_id, discussion_id, thread_id):
     # Currently, the front end always loads responses via AJAX, even for this
     # page; it would be a nice optimization to avoid that extra round trip to
     # the comments service.
-    thread = cc.Thread.find(thread_id).retrieve(
-        recursive=request.is_ajax(),
-        user_id=request.user.id,
-        response_skip=request.GET.get("resp_skip"),
-        response_limit=request.GET.get("resp_limit")
-    )
+    try:
+        thread = cc.Thread.find(thread_id).retrieve(
+            recursive=request.is_ajax(),
+            user_id=request.user.id,
+            response_skip=request.GET.get("resp_skip"),
+            response_limit=request.GET.get("resp_limit")
+        )
+    except cc.CommentClientRequestError, e:
+        if e.status_code == 404 and not request.is_ajax():
+            raise Http404
+        else:
+            raise
+
 
     if request.is_ajax():
         with newrelic.agent.FunctionTrace(nr_transaction, "get_annotated_content_infos"):
