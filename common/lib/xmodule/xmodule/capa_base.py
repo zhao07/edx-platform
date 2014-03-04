@@ -914,7 +914,7 @@ class CapaMixin(CapaFields):
         if self.last_submission_time is not None and self.submission_wait_seconds != 0:
             if (current_time - self.last_submission_time).total_seconds() < self.submission_wait_seconds:
                 seconds_left = int(self.submission_wait_seconds - (current_time - self.last_submission_time).total_seconds())
-                msg = u'You must wait at least {w} between submissions. {s} remaining.'.format(
+                msg = _(u'You must wait at least {w} between submissions. {s} remaining.').format(
                     w=self.pretty_print_seconds(self.submission_wait_seconds), s=self.pretty_print_seconds(seconds_left))
                 return {'success': msg, 'html': ''}  # Prompts a modal dialog in ajax callback
 
@@ -1023,10 +1023,10 @@ class CapaMixin(CapaFields):
         """
         Returns time formatted nicely.
         """
-        if(num_seconds < 60):
+        if num_seconds < 60:
             plural = "s" if num_seconds > 1 else ""
             return "%i second%s" % (num_seconds, plural)
-        elif(num_seconds < 60 * 60):
+        elif num_seconds < 60 * 60:
             min_display = int(num_seconds / 60)
             sec_display = num_seconds % 60
             plural = "s" if min_display > 1 else ""
