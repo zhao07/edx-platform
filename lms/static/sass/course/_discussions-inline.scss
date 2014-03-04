@@ -52,6 +52,7 @@
     /* Course content p has a default margin-bottom of 1.416em, this is just to reset that */
     .discussion-thread {
       padding: 0;
+      margin-bottom: $baseline;
       @include transition(all .25s);
 
       .dogear,
@@ -69,7 +70,6 @@
 
         .discussion-article {
           border: 1px solid #b2b2b2;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
           border-radius: 3px;
         }
       }
@@ -162,7 +162,7 @@
           display: none;
         }
 
-        
+
       }
     }
   }
@@ -436,7 +436,7 @@
       background-repeat: no-repeat;
       background-position: 0px 0px;
       width: 20px;
-      height: 20px;    
+      height: 20px;
     }
 
     .wmd-spacer1 {
@@ -492,7 +492,7 @@
     // this is being hidden now because the inline styles to position the icons are not being written
     display: none;
     position: relative;
-    height: 12px;    
+    height: 12px;
   }
 
   .wmd-button {
