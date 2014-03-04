@@ -916,7 +916,7 @@ class CapaMixin(CapaFields):
                 seconds_left = int(self.submission_wait_seconds - (current_time - self.last_submission_time).total_seconds())
                 msg = _(u'You must wait at least {w} between submissions. {s} remaining.').format(
                     w=self.pretty_print_seconds(self.submission_wait_seconds), s=self.pretty_print_seconds(seconds_left))
-                return {'success': msg, 'html': ''}  # Prompts a modal dialog in ajax callback
+                return {'success': msg, 'html': ''}
 
         try:
             correct_map = self.lcp.grade_answers(answers)
@@ -1021,27 +1021,29 @@ class CapaMixin(CapaFields):
 
     def pretty_print_seconds(self, num_seconds):
         """
-        Returns time formatted nicely.
+        Returns time duration nicely formated, e.g. "3 minutes 4 seconds"
         """
-        if num_seconds < 60:
-            plural = "s" if num_seconds > 1 else ""
-            return "%i second%s" % (num_seconds, plural)
-        elif num_seconds < 60 * 60:
-            min_display = int(num_seconds / 60)
-            sec_display = num_seconds % 60
-            plural = "s" if min_display > 1 else ""
-            if sec_display == 0:
-                return "%i minute%s" % (min_display, plural)
-            else:
-                return "%i min, %i sec" % (min_display, sec_display)
-        else:
-            hr_display = int(num_seconds / 3600)
-            min_display = int((num_seconds % 3600) / 60)
-            sec_display = num_seconds % 60
-            if sec_display == 0:
-                return "%i hr, %i min" % (hr_display, min_display)
-            else:
-                return "%i hr, %i min, %i sec" % (hr_display, min_display, sec_display)
+        # Here _ is the N variant ungettext that does pluralization with a 3-arg call
+        _ = self.runtime.service(self, "i18n").ungettext
+        hours = num_seconds // 3600
+        sub_hour = num_seconds % 3600
+        minutes = sub_hour // 60
+        seconds = sub_hour % 60
+        display = ""
+        if hours > 0:
+            display += _("%i hour", "%i hours", hours) % hours
+        if minutes > 0:
+            if display != "":
+                display += " "
+            # translators: "minute" of time
+            display += _("%i minute", "%i minutes", minutes) % minutes
+        # Taking care to make "0 seconds" instead of "" for 0 time
+        if seconds > 0 or (hours == 0 and minutes == 0):
+            if display != "":
+                display += " "
+            # translators: "second" of time
+            display += _("%i second", "%i seconds", seconds) % seconds
+        return display
 
     def get_submission_metadata_safe(self, answers, correct_map):
         """
