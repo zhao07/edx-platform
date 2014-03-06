@@ -1,5 +1,6 @@
 """Implements basics of Capa, including class CapaModule."""
 import cgi
+import copy
 import datetime
 import hashlib
 import json
@@ -734,7 +735,7 @@ class CapaMixin(CapaFields):
         """
         event_info = dict()
         event_info['problem_id'] = self.location.url()
-        self.runtime.track_function('showanswer', event_info)
+        self.track_function_unmask('showanswer', event_info)
         if not self.answer_available():
             raise NotFoundError('Answer is not available')
         else:
@@ -891,13 +892,13 @@ class CapaMixin(CapaFields):
         # Too late. Cannot submit
         if self.closed():
             event_info['failure'] = 'closed'
-            self.runtime.track_function('problem_check_fail', event_info)
+            self.track_function_unmask('problem_check_fail', event_info)
             raise NotFoundError(_("Problem is closed."))
 
         # Problem submitted. Student should reset before checking again
         if self.done and self.rerandomize == "always":
             event_info['failure'] = 'unreset'
-            self.runtime.track_function('problem_check_fail', event_info)
+            self.track_function_unmask('problem_check_fail', event_info)
             raise NotFoundError(_("Problem must be reset before it can be checked again."))
 
         # Problem queued. Students must wait a specified waittime before they are allowed to submit
@@ -971,8 +972,7 @@ class CapaMixin(CapaFields):
         event_info['success'] = success
         event_info['attempts'] = self.attempts
         event_info['submission'] = self.get_submission_metadata_safe(answers_without_files, correct_map)
-        self.unmask_log(event_info)
-        self.runtime.track_function('problem_check', event_info)
+        self.track_function_unmask('problem_check', event_info)
 
         if hasattr(self.runtime, 'psychometrics_handler'):  # update PsychometricsData using callback
             self.runtime.psychometrics_handler(self.get_state_for_lcp())
@@ -982,11 +982,21 @@ class CapaMixin(CapaFields):
 
         return {'success': success, 'contents': html}
 
-    def unmask_log(self, event_info):
+    def track_function_unmask(self, title, event_info):
         """
-        Translate the logging event_info to account for masking
-        and record the display_order.
-        This only changes names for responses that are masked, otherwise a NOP.
+        Call to runtime.track_function route through here so that the
+        choice names can be unmasked.
+        """
+        # Do the unmask translates on a copy of event_info,
+        # avoiding problems where an event_info is unmasked twice.
+        event_unmasked = copy.deepcopy(event_info)
+        self.unmask_event(event_unmasked)
+        self.runtime.track_function(title, event_unmasked)
+
+    def unmask_event(self, event_info):
+        """
+        Translates in-place the event_info to account for masking
+        and adds information about permutation options in force.
         """
         # answers is like: {u'i4x-Stanford-CS99-problem-dada976e76f34c24bc8415039dee1300_2_1': u'mask_0'}
         # Each response values has an answer_id which matches the key in answers.
@@ -1018,6 +1028,7 @@ class CapaMixin(CapaFields):
                 if not 'permutation' in event_info:
                     event_info['permutation'] = {}
                 event_info['permutation'][response.answer_id] = (permutation_option, response.unmask_order())
+
 
     def pretty_print_seconds(self, num_seconds):
         """
@@ -1151,13 +1162,13 @@ class CapaMixin(CapaFields):
 
         if not self.lcp.supports_rescoring():
             event_info['failure'] = 'unsupported'
-            self.runtime.track_function('problem_rescore_fail', event_info)
+            self.track_function_unmask('problem_rescore_fail', event_info)
             # Translators: 'rescoring' refers to the act of re-submitting a student's solution so it can get a new score.
             raise NotImplementedError(_("Problem's definition does not support rescoring."))
 
         if not self.done:
             event_info['failure'] = 'unanswered'
-            self.runtime.track_function('problem_rescore_fail', event_info)
+            self.track_function_unmask('problem_rescore_fail', event_info)
             raise NotFoundError(_("Problem must be answered before it can be graded again."))
 
         # get old score, for comparison:
@@ -1171,12 +1182,12 @@ class CapaMixin(CapaFields):
         except (StudentInputError, ResponseError, LoncapaProblemError) as inst:
             log.warning("Input error in capa_module:problem_rescore", exc_info=True)
             event_info['failure'] = 'input_error'
-            self.runtime.track_function('problem_rescore_fail', event_info)
+            self.track_function_unmask('problem_rescore_fail', event_info)
             return {'success': u"Error: {0}".format(inst.message)}
 
         except Exception as err:
             event_info['failure'] = 'unexpected'
-            self.runtime.track_function('problem_rescore_fail', event_info)
+            self.track_function_unmask('problem_rescore_fail', event_info)
             if self.runtime.DEBUG:
                 msg = u"Error checking problem: {0}".format(err.message)
                 msg += u'\nTraceback:\n' + traceback.format_exc()
@@ -1204,7 +1215,7 @@ class CapaMixin(CapaFields):
         event_info['correct_map'] = correct_map.get_dict()
         event_info['success'] = success
         event_info['attempts'] = self.attempts
-        self.runtime.track_function('problem_rescore', event_info)
+        self.track_function_unmask('problem_rescore', event_info)
 
         # psychometrics should be called on rescoring requests in the same way as check-problem
         if hasattr(self.runtime, 'psychometrics_handler'):  # update PsychometricsData using callback
@@ -1229,7 +1240,7 @@ class CapaMixin(CapaFields):
         # Too late. Cannot submit
         if self.closed() and not self.max_attempts == 0:
             event_info['failure'] = 'closed'
-            self.runtime.track_function('save_problem_fail', event_info)
+            self.track_function_unmask('save_problem_fail', event_info)
             return {
                 'success': False,
                 # Translators: 'closed' means the problem's due date has passed. You may no longer attempt to solve the problem.
@@ -1240,7 +1251,7 @@ class CapaMixin(CapaFields):
         # again.
         if self.done and self.rerandomize == "always":
             event_info['failure'] = 'done'
-            self.runtime.track_function('save_problem_fail', event_info)
+            self.track_function_unmask('save_problem_fail', event_info)
             return {
                 'success': False,
                 'msg': _("Problem needs to be reset prior to save.")
@@ -1250,7 +1261,7 @@ class CapaMixin(CapaFields):
 
         self.set_state_from_lcp()
 
-        self.runtime.track_function('save_problem_success', event_info)
+        self.track_function_unmask('save_problem_success', event_info)
         msg = _("Your answers have been saved.")
         if not self.max_attempts == 0:
             msg = _("Your answers have been saved but not graded. Click 'Check' to grade them.")
@@ -1278,7 +1289,7 @@ class CapaMixin(CapaFields):
 
         if self.closed():
             event_info['failure'] = 'closed'
-            self.runtime.track_function('reset_problem_fail', event_info)
+            self.track_function_unmask('reset_problem_fail', event_info)
             return {
                 'success': False,
                 # Translators: 'closed' means the problem's due date has passed. You may no longer attempt to solve the problem.
@@ -1287,7 +1298,7 @@ class CapaMixin(CapaFields):
 
         if not self.done:
             event_info['failure'] = 'not_done'
-            self.runtime.track_function('reset_problem_fail', event_info)
+            self.track_function_unmask('reset_problem_fail', event_info)
             return {
                 'success': False,
                 'error': _("Refresh the page and make an attempt before resetting."),
@@ -1304,7 +1315,7 @@ class CapaMixin(CapaFields):
         self.set_state_from_lcp()
 
         event_info['new_state'] = self.lcp.get_state()
-        self.runtime.track_function('reset_problem', event_info)
+        self.track_function_unmask('reset_problem', event_info)
 
         return {
             'success': True,
