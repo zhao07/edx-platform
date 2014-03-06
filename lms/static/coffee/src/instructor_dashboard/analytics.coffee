@@ -34,7 +34,7 @@ class ProfileDistributionWidget
     @reset_display()
 
     @get_profile_distributions @feature,
-      error: std_ajax_err => @show_error "Error fetching distribution."
+      error: std_ajax_err => @show_error gettext("Error fetching distribution.")
       success: (data) =>
         feature_res = data.feature_results
         if feature_res.type is 'EASY_CHOICE'
@@ -74,7 +74,7 @@ class ProfileDistributionWidget
           ]
         else
           console.warn("unable to show distribution #{feature_res.type}")
-          @show_error 'Unavailable metric display.'
+          @show_error gettext('Metric display unavailable.')
 
   # fetch distribution data from server.
   # `handler` can be either a callback for success
@@ -99,6 +99,63 @@ class GradeDistributionDisplay
     template_html = $('#grade-distributions-widget-template').text()
     @$container.html Mustache.render template_html, template_params
     @$problem_selector = @$container.find '.problem-selector'
+    @$dump_legacy_analytics_btn = @$container.find("input[name='dump-analytics']'")
+    @$legacy_analytics_table = @$container.find '.data-display-table'
+    @$legacy_analytics_text = @$container.find '.data-display-text'
+    # Empty this table of anything that was here before
+    @$legacy_analytics_table.empty()
+    @$legacy_analytics_text.empty()
+
+    # attach click handlers
+    @$dump_legacy_analytics_btn.click (e) =>
+      url = @$dump_legacy_analytics_btn.data 'endpoint'
+
+      # Clear display of anything that was here before
+      @$legacy_analytics_table.empty()
+      @$legacy_analytics_text.empty()
+      @$legacy_analytics_table.text gettext('Loading...')
+
+      $.ajax
+        dataType: 'json'
+        url: url
+        error: std_ajax_err =>
+          @$legacy_analytics_table.empty()
+          @$container.find('display-errors').empty()
+          @$container.find('display-errors').text gettext("Error fetching analytics.")
+        success: (data) =>
+          @$legacy_analytics_table.empty()
+          @$legacy_analytics_text.empty()
+          # Display data points
+          @$legacy_analytics_text.html data['display_html']
+
+
+          # # display on a SlickGrid
+          # options =
+          #   enableCellNavigation: true
+          #   enableColumnReorder: false
+          #   forceFitColumns: true
+          #   rowHeight: 35
+
+          # columns = [
+          #   id: 'problem'
+          #   field: 'problem'
+          #   name: 'Problem'
+          # ,
+          #   id: 'max'
+          #   field: 'max'
+          #   name: 'Max Points'
+          # ,
+          #   id: 'earned'
+          #   field: 'earned'
+          #   name: 'Points Earned (Num Students)'
+          # ]
+          # # Sarina -- here --- ugh.
+          # grid_data = data.students
+
+          # $table_placeholder = $ '<div/>', class: 'slickgrid'
+          # @$legacy_analytics_table.append $table_placeholder
+          # grid = new Slick.Grid($table_placeholder, grid_data, columns, options)
+          # # grid.autosizeColumns()
 
   reset_display: ->
     @$container.find('.display-errors').empty()
@@ -110,7 +167,7 @@ class GradeDistributionDisplay
 
   load: ->
     @get_grade_distributions
-      error: std_ajax_err => @show_error "Error fetching grade distributions."
+      error: std_ajax_err => @show_error gettext("Error fetching grade distributions.")
       success: (data) =>
         @$container.find('.last-updated').text "Last Updated: #{data.time}"
 
@@ -225,6 +282,7 @@ class Analytics
       gdw.load()
 
   onClickTitle: ->
+    # Refresh analytics displays
     @refresh()
 
 

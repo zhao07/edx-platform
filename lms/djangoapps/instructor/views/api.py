@@ -10,6 +10,8 @@ import json
 import logging
 import re
 import requests
+from collections import OrderedDict
+from requests.status_codes import codes
 from django.conf import settings
 from django_future.csrf import ensure_csrf_cookie
 from django.views.decorators.cache import cache_control
@@ -1001,6 +1003,63 @@ def proxy_legacy_analytics(request, course_id):
             status=500
         )
 
+@ensure_csrf_cookie
+@cache_control(no_cache=True, no_store=True, must_revalidate=True)
+@require_level('staff')
+@common_exceptions_400
+def get_legacy_analytics_dump(request, course_id):
+    """
+    Dumps the analytics info from the legacy dashboard.
+    """
+    def get_analytics_result(analytics_name):
+        """Return data for an Analytic piece, or None if it doesn't exist. It
+        logs and swallows errors.
+        """
+        url = settings.ANALYTICS_SERVER_URL + \
+            u"get?aname={}&course_id={}&apikey={}".format(analytics_name,
+                                                         course_id,
+                                                         settings.ANALYTICS_API_KEY)
+        try:
+            res = requests.get(url)
+        except Exception:
+            log.exception("Error trying to access analytics at %s", url)
+            return None
+
+        if res.status_code == codes.OK:
+            # WARNING: do not use req.json because the preloaded json doesn't
+            # preserve the order of the original record (hence OrderedDict).
+            return json.loads(res.content, object_pairs_hook=OrderedDict)
+        else:
+            log.error("Error fetching %s, code: %s, msg: %s",
+                      url, res.status_code, res.content)
+        return None
+
+    analytics_results = {}
+    DASHBOARD_ANALYTICS = [
+        "StudentsDailyActivity",  # active students by day
+        "StudentsActive",  # num students active in time period (default = 1wk)
+        "StudentsEnrolled",  # num students enrolled
+        "ProblemGradeDistribution",  # foreach problem, grade distribution
+    ]
+    for analytic_name in DASHBOARD_ANALYTICS:
+        analytics_results[analytic_name] = get_analytics_result(analytic_name)
+    display_html = ''
+    if analytics_results.get("StudentsEnrolled"):
+        # Translators: A number appears after this string
+        display_html += "<p>" + _("Students enrolled (historical count, includes those who have since unenrolled):") + str(analytics_results["StudentsEnrolled"]) + "</p><br />"
+
+    if analytics_results.get("StudentsActive"):
+        # Translators: A number appears after this string
+        display_html += "<p>" + _("Students active in the last week:") + str(analytics_results["StudentsActive"]) + "</p><br />"
+
+    if analytics_results.get("ProblemGradeDistribution"):
+        # Translators: A timestamp appears after this string
+        display_html += "<p><em>" + _("Data Last Generated:") + str(analytics_results["StudentsDropoffPerDay"]["time"]) + "</em></p><br />"
+
+    return JsonResponse({
+        'ProblemGradeDistribution': analytics_results['ProblemGradeDistribution'],
+        'display_html': display_html
+    })
 
 def _display_unit(unit):
     """

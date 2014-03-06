@@ -19,6 +19,9 @@
   <div class="grade-distributions-widget">
     <div class="header">
       <h2 class="title"> ${_("Grade Distribution")} </h2>
+      <p>${_("The chart below displays the score distribution for each standard problem in your class, specified by the problem's url name.")}
+	${_("Scores are shown without weighting applied, so if your problem contains 2 questions, it will display has having a total of 2 points.")}</p>
+      <br />
       ${_("Problem")}: <select class="problem-selector">
         <option> ${_("Loading problem list...")} </option>
       </select>
@@ -29,12 +32,17 @@
       <div class="display-text"></div>
       <div class="display-graph"></div>
     </div>
+  <p>${_("Click this button to see a table display of grade distributions for all problems in the course.")}</p>
+  <p><input type="button" name="dump-analytics" value="${_("Grade Distributions for All Problems")}" data-endpoint="${ section_data['get_legacy_analytics_dump_url'] }"></p>
+  <div class="data-display-text" id="legacy-analytics-text"></div>
+  <div class="data-display-table" id="legacy-analytics-table"></div>
   </div>
 </script>
 
 <div class="grade-distributions-widget-container"
   data-endpoint="${ section_data['proxy_legacy_analytics_url'] }"
-></div>
+>
+</div>
 
 <div class="profile-distribution-widget-container"
   data-title="${_("Year of Birth")}"

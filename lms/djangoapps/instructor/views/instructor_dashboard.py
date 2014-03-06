@@ -230,6 +230,7 @@ def _section_analytics(course_id, access):
         'access': access,
         'get_distribution_url': reverse('get_distribution', kwargs={'course_id': course_id}),
         'proxy_legacy_analytics_url': reverse('proxy_legacy_analytics', kwargs={'course_id': course_id}),
+        'get_legacy_analytics_dump_url': reverse('get_legacy_analytics_dump', kwargs={'course_id': course_id}),
     }
     return section_data
 
