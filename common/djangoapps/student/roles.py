@@ -192,7 +192,6 @@ class OrgRole(GroupBasedRole):
     A named role in a particular org
     """
     def __init__(self, role, location):
-        location = Location(location)
         super(OrgRole, self).__init__([u'{}_{}'.format(role, location.org)])
 
 
