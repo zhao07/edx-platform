@@ -124,11 +124,14 @@ class TargetedFeedbackRenderer(object):
             xhtml = etree.XML(html)
         except Exception as err:
             if self.system.DEBUG:
-                msg = '<html><div class="inline-error"><p>Error %s</p>' % (
-                    str(err).replace('<', '&lt;'))
-                msg += ('<p>Failed to construct targeted feedback from <pre>%s</pre></p>' %
-                        html.replace('<', '&lt;'))
-                msg += "</div></html>"
+                msg = """
+                    <html>
+                      <div class="inline-error">
+                        <p>Error {err}</p>
+                        <p>Failed to construct targeted feedback from <pre>{html}</pre></p>
+                      </div>
+                    </html>
+                """.format(err=cgi.escape(err), html=cgi.escape(html))
                 log.error(msg)
                 return etree.XML(msg)
             else:
