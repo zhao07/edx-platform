@@ -481,7 +481,7 @@ class CapaAnswerPoolTest(unittest.TestCase):
                 <choice correct="true">correct-3</choice>
               </choicegroup>
             </multiplechoiceresponse>
-            
+
             <multiplechoiceresponse>
               <choicegroup type="MultipleChoice" answer-pool="3">
                 <choice correct="false">wrong-1</choice>
@@ -493,7 +493,7 @@ class CapaAnswerPoolTest(unittest.TestCase):
                 <choice correct="true">correct-3</choice>
               </choicegroup>
             </multiplechoiceresponse>
-            
+
             <multiplechoiceresponse>
               <choicegroup type="MultipleChoice" answer-pool="2">
                 <choice correct="false">wrong-1</choice>

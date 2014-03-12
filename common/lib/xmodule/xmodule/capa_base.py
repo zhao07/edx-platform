@@ -1007,7 +1007,7 @@ class CapaMixin(CapaFields):
                 # but check for the existence of the things we need to un-mask.
 
                 # Look for answers/id
-                answer =  event_info.get('answers', {}).get(response.answer_id)
+                answer = event_info.get('answers', {}).get(response.answer_id)
                 if answer is not None:
                     event_info['answers'][response.answer_id] = response.unmask_name(answer)
 
@@ -1022,13 +1022,12 @@ class CapaMixin(CapaFields):
                 permutation_option = 'shuffle'
             elif hasattr(response, 'has_answerpool'):
                 permutation_option = 'answerpool'
-                
+
             if permutation_option is not None:
                 # Add permutation record tuple: (one of:'shuffle'/'answerpool', [ as-displayed list])
                 if not 'permutation' in event_info:
                     event_info['permutation'] = {}
                 event_info['permutation'][response.answer_id] = (permutation_option, response.unmask_order())
-
 
     def pretty_print_seconds(self, num_seconds):
         """

@@ -33,13 +33,13 @@ class XModuleQuizAttemptsDelayTest(unittest.TestCase):
         num_attempts = 0
 
         # Many attempts remaining
-        module = CapaFactory.create(attempts=num_attempts, max_attempts=99, last_submission_time=None)
+        module = CapaFactoryWithDelay.create(attempts=num_attempts, max_attempts=99, last_submission_time=None)
 
         # Simulate problem is not completed yet
         module.done = False
 
         # Expect that we can submit
-        get_request_dict = {CapaFactory.input_key(): '3.14'}
+        get_request_dict = {CapaFactoryWithDelay.input_key(): '3.14'}
         result = module.check_problem(get_request_dict)
 
         # Successfully submitted and answered
@@ -53,14 +53,14 @@ class XModuleQuizAttemptsDelayTest(unittest.TestCase):
         last_submitted_time = datetime.datetime.now(UTC)
 
         # Many attempts remaining
-        module = CapaFactory.create(attempts=num_attempts, max_attempts=99,
-                                    last_submission_time=last_submitted_time, submission_wait_seconds=0)
+        module = CapaFactoryWithDelay.create(attempts=num_attempts, max_attempts=99,
+                                             last_submission_time=last_submitted_time, submission_wait_seconds=0)
 
         # Simulate problem is not completed yet
         module.done = False
 
         # Expect that we can submit
-        get_request_dict = {CapaFactory.input_key(): '3.14'}
+        get_request_dict = {CapaFactoryWithDelay.input_key(): '3.14'}
         result = module.check_problem(get_request_dict)
 
         # Successfully submitted and answered
@@ -74,14 +74,14 @@ class XModuleQuizAttemptsDelayTest(unittest.TestCase):
         last_submitted_time = datetime.datetime.now(UTC)
 
         # Many attempts remaining
-        module = CapaFactory.create(attempts=num_attempts, max_attempts=99,
-                                    last_submission_time=last_submitted_time, submission_wait_seconds=123)
+        module = CapaFactoryWithDelay.create(attempts=num_attempts, max_attempts=99,
+                                             last_submission_time=last_submitted_time, submission_wait_seconds=123)
 
         # Simulate problem is not completed yet
         module.done = False
 
         # Check the problem
-        get_request_dict = {CapaFactory.input_key(): '3.14'}
+        get_request_dict = {CapaFactoryWithDelay.input_key(): '3.14'}
         result = module.check_problem(get_request_dict)
 
         # You should get a dialog that tells you to wait
@@ -98,14 +98,14 @@ class XModuleQuizAttemptsDelayTest(unittest.TestCase):
         considered_now = datetime.datetime(2013, 12, 6, 0, 18, 36)
 
         # Many attempts remaining
-        module = CapaFactory.create(attempts=num_attempts, max_attempts=99,
-                                    last_submission_time=last_submitted_time, submission_wait_seconds=180)
+        module = CapaFactoryWithDelay.create(attempts=num_attempts, max_attempts=99,
+                                             last_submission_time=last_submitted_time, submission_wait_seconds=180)
 
         # Simulate problem is not completed yet
         module.done = False
 
         # Check the problem
-        get_request_dict = {CapaFactory.input_key(): '3.14'}
+        get_request_dict = {CapaFactoryWithDelay.input_key(): '3.14'}
         result = module.check_problem(get_request_dict, considered_now)
 
         # You should get a dialog that tells you to wait 2 minutes
@@ -122,14 +122,14 @@ class XModuleQuizAttemptsDelayTest(unittest.TestCase):
         considered_now = datetime.datetime(2013, 12, 6, 0, 20, 35)
 
         # Many attempts remaining
-        module = CapaFactory.create(attempts=num_attempts, max_attempts=99,
-                                    last_submission_time=last_submitted_time, submission_wait_seconds=180)
+        module = CapaFactoryWithDelay.create(attempts=num_attempts, max_attempts=99,
+                                             last_submission_time=last_submitted_time, submission_wait_seconds=180)
 
         # Simulate problem is not completed yet
         module.done = False
 
         # Check the problem
-        get_request_dict = {CapaFactory.input_key(): '3.14'}
+        get_request_dict = {CapaFactoryWithDelay.input_key(): '3.14'}
         result = module.check_problem(get_request_dict, considered_now)
 
         # You should get a dialog that tells you to wait 2 minutes
@@ -146,14 +146,14 @@ class XModuleQuizAttemptsDelayTest(unittest.TestCase):
         considered_now = datetime.datetime(2013, 12, 6, 0, 20, 36)
 
         # Many attempts remaining
-        module = CapaFactory.create(attempts=num_attempts, max_attempts=99,
-                                    last_submission_time=last_submitted_time, submission_wait_seconds=180)
+        module = CapaFactoryWithDelay.create(attempts=num_attempts, max_attempts=99,
+                                             last_submission_time=last_submitted_time, submission_wait_seconds=180)
 
         # Simulate problem is not completed yet
         module.done = False
 
         # Expect that we can submit
-        get_request_dict = {CapaFactory.input_key(): '3.14'}
+        get_request_dict = {CapaFactoryWithDelay.input_key(): '3.14'}
         result = module.check_problem(get_request_dict, considered_now)
 
         # Successfully submitted and answered
@@ -170,14 +170,14 @@ class XModuleQuizAttemptsDelayTest(unittest.TestCase):
         considered_now = datetime.datetime(2013, 12, 6, 0, 24, 0)
 
         # Many attempts remaining
-        module = CapaFactory.create(attempts=num_attempts, max_attempts=99,
-                                    last_submission_time=last_submitted_time, submission_wait_seconds=180)
+        module = CapaFactoryWithDelay.create(attempts=num_attempts, max_attempts=99,
+                                             last_submission_time=last_submitted_time, submission_wait_seconds=180)
 
         # Simulate problem is not completed yet
         module.done = False
 
         # Expect that we can submit
-        get_request_dict = {CapaFactory.input_key(): '3.14'}
+        get_request_dict = {CapaFactoryWithDelay.input_key(): '3.14'}
         result = module.check_problem(get_request_dict, considered_now)
 
         # Successfully submitted and answered
@@ -194,15 +194,15 @@ class XModuleQuizAttemptsDelayTest(unittest.TestCase):
         considered_now = datetime.datetime(2013, 12, 6, 0, 24, 0)
 
         # Many attempts remaining
-        module = CapaFactory.create(attempts=num_attempts, max_attempts=99,
-                                    last_submission_time=last_submitted_time, submission_wait_seconds=180)
+        module = CapaFactoryWithDelay.create(attempts=num_attempts, max_attempts=99,
+                                             last_submission_time=last_submitted_time, submission_wait_seconds=180)
 
         # Simulate problem is not completed yet
         module.done = False
 
         # Expect that we cannot submit
         with self.assertRaises(xmodule.exceptions.NotFoundError):
-            get_request_dict = {CapaFactory.input_key(): '3.14'}
+            get_request_dict = {CapaFactoryWithDelay.input_key(): '3.14'}
             module.check_problem(get_request_dict, considered_now)
 
         # Expect that number of attempts NOT incremented
@@ -217,14 +217,14 @@ class XModuleQuizAttemptsDelayTest(unittest.TestCase):
         considered_now = datetime.datetime(2013, 12, 6, 2, 15, 35)
 
         # Many attempts remaining
-        module = CapaFactory.create(attempts=num_attempts, max_attempts=99,
-                                    last_submission_time=last_submitted_time, submission_wait_seconds=60 * 60 * 2)
+        module = CapaFactoryWithDelay.create(attempts=num_attempts, max_attempts=99,
+                                             last_submission_time=last_submitted_time, submission_wait_seconds=60 * 60 * 2)
 
         # Simulate problem is not completed yet
         module.done = False
 
         # Check the problem
-        get_request_dict = {CapaFactory.input_key(): '3.14'}
+        get_request_dict = {CapaFactoryWithDelay.input_key(): '3.14'}
         result = module.check_problem(get_request_dict, considered_now)
 
         # You should get a dialog that tells you to wait 2 minutes
@@ -241,14 +241,14 @@ class XModuleQuizAttemptsDelayTest(unittest.TestCase):
         considered_now = datetime.datetime(2013, 12, 6, 1, 15, 40)
 
         # Many attempts remaining
-        module = CapaFactory.create(attempts=num_attempts, max_attempts=99,
-                                    last_submission_time=last_submitted_time, submission_wait_seconds=60 * 60 * 2 + 63)
+        module = CapaFactoryWithDelay.create(attempts=num_attempts, max_attempts=99,
+                                             last_submission_time=last_submitted_time, submission_wait_seconds=60 * 60 * 2 + 63)
 
         # Simulate problem is not completed yet
         module.done = False
 
         # Check the problem
-        get_request_dict = {CapaFactory.input_key(): '3.14'}
+        get_request_dict = {CapaFactoryWithDelay.input_key(): '3.14'}
         result = module.check_problem(get_request_dict, considered_now)
 
         # You should get a dialog that tells you to wait 2 minutes
@@ -265,14 +265,14 @@ class XModuleQuizAttemptsDelayTest(unittest.TestCase):
         considered_now = last_submitted_time
 
         # Many attempts remaining
-        module = CapaFactory.create(attempts=num_attempts, max_attempts=99,
-                                    last_submission_time=last_submitted_time, submission_wait_seconds=60)
+        module = CapaFactoryWithDelay.create(attempts=num_attempts, max_attempts=99,
+                                             last_submission_time=last_submitted_time, submission_wait_seconds=60)
 
         # Simulate problem is not completed yet
         module.done = False
 
         # Check the problem
-        get_request_dict = {CapaFactory.input_key(): '3.14'}
+        get_request_dict = {CapaFactoryWithDelay.input_key(): '3.14'}
         result = module.check_problem(get_request_dict, considered_now)
 
         # You should get a dialog that tells you to wait 2 minutes
@@ -281,9 +281,11 @@ class XModuleQuizAttemptsDelayTest(unittest.TestCase):
         self.assertEqual(module.attempts, num_attempts)
 
 
-class CapaFactory(object):
+class CapaFactoryWithDelay(object):
     """
-    A helper class to create problem modules with various parameters for testing.
+    Create problem modules class, specialized for delay_between_attempts
+    test cases. This factory seems different enough from the one in
+    test_capa_module that unifying them is unattractive.
     """
 
     sample_problem_xml = textwrap.dedent("""\

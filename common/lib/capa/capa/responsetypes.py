@@ -749,14 +749,14 @@ class MultipleChoiceResponse(LoncapaResponse):
             # Is Masking enabled? -- check for shuffle or answer-pool features
             ans_str = response.get("answer-pool")
             if response.get("shuffle") == "true" or (ans_str is not None and ans_str != "0"):
-                self.has_mask = True
-                self.mask_dict = {}
+                self.has_mask = True  # pylint: disable=W0201
+                self.mask_dict = {}   # pylint: disable=W0201
                 # We do not want the random mask names to be the same
                 # for all responses in a problem (sharing the one seed),
                 # like mask_2 in view-source turns out to always be the correct choice.
                 # But it must be repeatable and a function of the seed.
                 # Therefore we add the _1 _2 number from the .id to the seed.
-                add =  int(self.id[self.id.rindex("_") + 1:])
+                add = int(self.id[self.id.rindex("_") + 1:])
                 rng = random.Random(self.context["seed"] + add)
                 # e.g. mask_ids = [3, 1, 0, 2]
                 mask_ids = range(len(response))
@@ -852,7 +852,7 @@ class MultipleChoiceResponse(LoncapaResponse):
             # Both to avoid double-processing, and to feed the logs.
             if hasattr(self, 'has_shuffle'):
                 return
-            self.has_shuffle = True
+            self.has_shuffle = True  # pylint: disable=W0201
             # Move elements from tree to list for shuffling, then put them back.
             ordering = list(choicegroup.getchildren())
             for choice in ordering:
@@ -927,8 +927,8 @@ class MultipleChoiceResponse(LoncapaResponse):
             # Both to avoid double-processing, and to feed the logs.
             if hasattr(self, 'has_answerpool'):
                 return
-            self.has_answerpool = True
-            
+            self.has_answerpool = True  # pylint: disable=W0201
+
             choices_list = list(choicegroup.getchildren())
 
             # Remove all choices in the choices_list (we will add some back in later)
@@ -979,7 +979,7 @@ class MultipleChoiceResponse(LoncapaResponse):
         # There must be at least one correct and one incorrect choice.
         # TODO: perhaps this makes more sense for *all* problems, not just down in this corner.
         if len(correct_choices) < 1 or len(incorrect_choices) < 1:
-            raise responsetypes.LoncapaProblemError("Choicegroup must include at last 1 correct and 1 incorrect choice")
+            raise LoncapaProblemError("Choicegroup must include at last 1 correct and 1 incorrect choice")
 
         # Limit the number of incorrect choices to what we actually have
         num_incorrect = num_pool - 1

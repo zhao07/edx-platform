@@ -6,6 +6,7 @@ import textwrap
 from . import test_capa_system, new_loncapa_problem
 from capa.responsetypes import LoncapaProblemError
 
+
 class CapaShuffleTest(unittest.TestCase):
     """Capa problem tests for shuffling and choice-name masking."""
 
@@ -277,7 +278,7 @@ class CapaShuffleTest(unittest.TestCase):
         self.assertRegexpMatches(html, r"<div>.*\[.*'Banana'.*'Apple'.*'Chocolate'.*'Donut'.*\].*</div>.*" +
                                        r"<div>.*\[.*'C'.*'A'.*'D'.*'B'.*\].*</div>")
         # Look at the responses in their authored order
-        responses = sorted(problem.responders.values(), key = lambda resp: int(resp.id[resp.id.rindex('_')+1:]) )
+        responses = sorted(problem.responders.values(), key=lambda resp: int(resp.id[resp.id.rindex('_') + 1:]))
         self.assertTrue(hasattr(responses[0], 'has_mask'))
         self.assertTrue(hasattr(responses[0], 'has_shuffle'))
         self.assertTrue(hasattr(responses[1], 'has_mask'))
