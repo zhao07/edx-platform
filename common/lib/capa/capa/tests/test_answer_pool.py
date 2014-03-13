@@ -206,7 +206,7 @@ class CapaAnswerPoolTest(unittest.TestCase):
         self.assertFalse(hasattr(response, 'has_mask'))
         self.assertFalse(hasattr(response, 'has_answerpool'))
 
-    def test_invalid_answer_pool(self):
+    def test_invalid_answer_pool_value(self):
         xml_str = textwrap.dedent("""
             <problem>
 
@@ -245,7 +245,24 @@ class CapaAnswerPoolTest(unittest.TestCase):
 
         with self.assertRaises(LoncapaProblemError):
             problem = new_loncapa_problem(xml_str)
-            problem.get_html()
+
+    def test_invalid_answer_pool_none_correct(self):
+        xml_str = textwrap.dedent("""
+            <problem>
+            <p>What is the correct answer?</p>
+            <multiplechoiceresponse>
+              <choicegroup type="MultipleChoice" answer-pool="4">
+                <choice correct="false">wrong-1</choice>
+                <choice correct="false">wrong-2</choice>
+                <choice correct="false">wrong!!</choice>
+                <choice correct="false">wrong-3</choice>
+                <choice correct="false">wrong-4</choice>
+              </choicegroup>
+            </multiplechoiceresponse>
+        </problem>
+        """)
+        with self.assertRaises(LoncapaProblemError):
+            problem = new_loncapa_problem(xml_str)
 
     def test_answer_pool_5_choices_1_multiplechoiceresponse_seed1(self):
         xml_str = textwrap.dedent("""

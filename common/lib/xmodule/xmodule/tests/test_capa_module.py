@@ -1416,7 +1416,7 @@ class CapaModuleTest(unittest.TestCase):
         module = CapaFactory.create(xml=xml)
         with patch.object(module.runtime, 'track_function') as mock_track_function:
             get_request_dict = {CapaFactory.input_key(): 'mask_1'}  # the correct choice
-            result = module.check_problem(get_request_dict)
+            module.check_problem(get_request_dict)
             mock_call = mock_track_function.mock_calls[0]
             event_info = mock_call[1][1]
             # 'answers' key modified to use unmasked name
@@ -1443,7 +1443,7 @@ class CapaModuleTest(unittest.TestCase):
         module = CapaFactory.create(xml=xml)
         with patch.object(module.runtime, 'track_function') as mock_track_function:
             get_request_dict = {CapaFactory.input_key(): 'mask_0'}
-            result = module.check_problem(get_request_dict)
+            module.check_problem(get_request_dict)
             mock_call = mock_track_function.mock_calls[0]
             event_info = mock_call[1][1]
             # Existence of the permutation key is a marker that unmasking happened
@@ -1466,7 +1466,7 @@ class CapaModuleTest(unittest.TestCase):
         module = CapaFactory.create(xml=xml)
         with patch.object(module.runtime, 'track_function') as mock_track_function:
             get_request_dict = {CapaFactory.input_key(): 'mask_0'}
-            result = module.check_problem(get_request_dict)
+            module.check_problem(get_request_dict)
             mock_call = mock_track_function.mock_calls[0]
             event_info = mock_call[1][1]
             print event_info

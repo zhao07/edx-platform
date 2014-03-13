@@ -304,4 +304,3 @@ class CapaShuffleTest(unittest.TestCase):
 
         with self.assertRaises(LoncapaProblemError):
             problem = new_loncapa_problem(xml_str)
-            problem.get_html()

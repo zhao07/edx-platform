@@ -11,6 +11,7 @@ from .registry import TagRegistry
 import logging
 import re
 
+from cgi import escape as cgi_escape
 from lxml import etree
 import xml.sax.saxutils as saxutils
 from .registry import TagRegistry
@@ -131,7 +132,7 @@ class TargetedFeedbackRenderer(object):
                         <p>Failed to construct targeted feedback from <pre>{html}</pre></p>
                       </div>
                     </html>
-                """.format(err=cgi.escape(err), html=cgi.escape(html))
+                """.format(err=cgi_escape(err), html=cgi_escape(html))
                 log.error(msg)
                 return etree.XML(msg)
             else:
