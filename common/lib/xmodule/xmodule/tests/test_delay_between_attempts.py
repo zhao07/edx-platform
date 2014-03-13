@@ -331,56 +331,22 @@ class CapaFactoryWithDelay(object):
 
     @classmethod
     def create(cls,
-               graceperiod=None,
-               due=None,
                max_attempts=None,
-               showanswer=None,
-               rerandomize=None,
-               force_save_button=None,
                attempts=None,
                problem_state=None,
                correct=False,
-               done=None,
-               text_customization=None,
                last_submission_time=None,
                submission_wait_seconds=None
                ):
         """
-        All parameters are optional, and are added to the created problem if specified.
-
-        Arguments:
-            graceperiod:
-            due:
-            max_attempts:
-            showanswer:
-            force_save_button:
-            rerandomize: all strings, as specified in the policy for the problem
-
-            problem_state: a dict to to be serialized into the instance_state of the
-                module.
-
-            attempts: also added to instance state.  Will be converted to an int.
+        Optional parameters here are cut down to what we actually use vs. the regular CapaFactory.
         """
         location = Location(["i4x", "edX", "capa_test", "problem",
                              "SampleProblem{0}".format(cls.next_num())])
         field_data = {'data': cls.sample_problem_xml}
 
-        if graceperiod is not None:
-            field_data['graceperiod'] = graceperiod
-        if due is not None:
-            field_data['due'] = due
         if max_attempts is not None:
             field_data['max_attempts'] = max_attempts
-        if showanswer is not None:
-            field_data['showanswer'] = showanswer
-        if force_save_button is not None:
-            field_data['force_save_button'] = force_save_button
-        if rerandomize is not None:
-            field_data['rerandomize'] = rerandomize
-        if done is not None:
-            field_data['done'] = done
-        if text_customization is not None:
-            field_data['text_customization'] = text_customization
         if last_submission_time is not None:
             field_data['last_submission_time'] = last_submission_time
         if submission_wait_seconds is not None:
