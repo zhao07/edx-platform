@@ -8,11 +8,11 @@
 
 <%block name="bodyclass">courseware ${course.css_class or ''}</%block>
 <%block name="title"><title>
-    % if section_title: 
+    % if section_title:
 ${page_title_breadcrumbs(section_title, course_name())}
     % else:
 ${page_title_breadcrumbs(course_name())}
-    %endif 
+    %endif
 </title></%block>
 
 <%block name="headextra">
@@ -203,6 +203,7 @@ ${fragment.foot_html()}
 % endif
 
     <section class="course-content" id="course-content">
+      <div class="wrap-instructor-info studio-view"><a class="instructor-info-action" href="">View Unit in Studio</a></div>
       ${fragment.body_html()}
     </section>
   </div>

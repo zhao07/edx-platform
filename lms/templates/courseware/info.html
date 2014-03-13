@@ -29,6 +29,8 @@ $(document).ready(function(){
   <div class="info-wrapper">
     % if user.is_authenticated():
     <section class="updates">
+      <div class="wrap-instructor-info"><a class="instructor-info-action studio-view" href="">View Updates in Studio</a></div>
+
       <h1>${_("Course Updates &amp; News")}</h1>
       ${get_course_info_section(request, course, 'updates')}
     </section>
