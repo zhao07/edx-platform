@@ -1447,7 +1447,7 @@ class CapaModuleTest(unittest.TestCase):
             mock_call = mock_track_function.mock_calls[0]
             event_info = mock_call[1][1]
             # Existence of the permutation key is a marker that unmasking happened
-            self.assertNotNone(event_info['permutation'][CapaFactory.answer_key()])
+            self.assertIsNotNone(event_info['permutation'][CapaFactory.answer_key()])
 
     def test_check_unmask_answerpool(self):
         """Check unmasking plumb-through for answer-pool."""
@@ -1474,8 +1474,8 @@ class CapaModuleTest(unittest.TestCase):
             self.assertEqual(event_info['answers'][CapaFactory.answer_key()], 'choice_2')
             # 'permutation' key added to record how problem was shown
             self.assertEquals(event_info['permutation'][CapaFactory.answer_key()],
-                              ('xanswerpool', ['choice_1', 'choice_3', 'choice_2', 'choice_0']))
-            self.assertEquals(event_info['success'], 'inccorrect')
+                              ('answerpool', ['choice_1', 'choice_3', 'choice_2', 'choice_0']))
+            self.assertEquals(event_info['success'], 'incorrect')
 
 
 class ComplexEncoderTest(unittest.TestCase):
