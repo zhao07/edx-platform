@@ -82,6 +82,7 @@ class CapaFactory(object):
                attempts=None,
                problem_state=None,
                correct=False,
+               xml=None,
                **kwargs
                ):
         """
@@ -102,7 +103,9 @@ class CapaFactory(object):
         """
         location = Location(["i4x", "edX", "capa_test", "problem",
                              "SampleProblem{0}".format(cls.next_num())])
-        field_data = {'data': cls.sample_problem_xml}
+        if xml is None:
+            xml = cls.sample_problem_xml
+        field_data = {'data': xml}
         field_data.update(kwargs)
         descriptor = Mock(weight="1")
         if problem_state is not None:
@@ -1392,6 +1395,87 @@ class CapaModuleTest(unittest.TestCase):
         """
         module = CapaFactory.create()
         self.assertEquals(module.get_problem("data"), {'html': module.get_problem_html(encapsulate=False)})
+
+    def test_check_unmask(self):
+        """
+        Check that shuffle unmasking is plumbed through: when check_problem is called,
+        unmasked data should appear in the track_function event_info.
+        """
+        xml = textwrap.dedent("""
+            <problem>
+            <multiplechoiceresponse>
+              <choicegroup type="MultipleChoice" shuffle="true">
+                <choice correct="false">Apple</choice>
+                <choice correct="false">Banana</choice>
+                <choice correct="false">Chocolate</choice>
+                <choice correct ="true">Donut</choice>
+              </choicegroup>
+            </multiplechoiceresponse>
+            </problem>
+        """)
+        module = CapaFactory.create(xml=xml)
+        with patch.object(module.runtime, 'track_function') as mock_track_function:
+            get_request_dict = {CapaFactory.input_key(): 'mask_1'}  # the correct choice
+            result = module.check_problem(get_request_dict)
+            mock_call = mock_track_function.mock_calls[0]
+            event_info = mock_call[1][1]
+            # 'answers' key modified to use unmasked name
+            self.assertEqual(event_info['answers'][CapaFactory.answer_key()], 'choice_3')
+            # 'permutation' key added to record how problem was shown
+            self.assertEquals(event_info['permutation'][CapaFactory.answer_key()],
+                              ('shuffle', ['choice_3', 'choice_1', 'choice_2', 'choice_0']))
+            self.assertEquals(event_info['success'], 'correct')
+
+    def test_save_unmask(self):
+        """On problem save, unmasked data should appear on track_function."""
+        xml = textwrap.dedent("""
+            <problem>
+            <multiplechoiceresponse>
+              <choicegroup type="MultipleChoice" shuffle="true">
+                <choice correct="false">Apple</choice>
+                <choice correct="false">Banana</choice>
+                <choice correct="false">Chocolate</choice>
+                <choice correct ="true">Donut</choice>
+              </choicegroup>
+            </multiplechoiceresponse>
+            </problem>
+        """)
+        module = CapaFactory.create(xml=xml)
+        with patch.object(module.runtime, 'track_function') as mock_track_function:
+            get_request_dict = {CapaFactory.input_key(): 'mask_0'}
+            result = module.check_problem(get_request_dict)
+            mock_call = mock_track_function.mock_calls[0]
+            event_info = mock_call[1][1]
+            # Existence of the permutation key is a marker that unmasking happened
+            self.assertNotNone(event_info['permutation'][CapaFactory.answer_key()])
+
+    def test_check_unmask_answerpool(self):
+        """Check unmasking plumb-through for answer-pool."""
+        xml = textwrap.dedent("""
+            <problem>
+            <multiplechoiceresponse>
+              <choicegroup type="MultipleChoice" answer-pool="4">
+                <choice correct="false">Apple</choice>
+                <choice correct="false">Banana</choice>
+                <choice correct="false">Chocolate</choice>
+                <choice correct ="true">Donut</choice>
+              </choicegroup>
+            </multiplechoiceresponse>
+            </problem>
+        """)
+        module = CapaFactory.create(xml=xml)
+        with patch.object(module.runtime, 'track_function') as mock_track_function:
+            get_request_dict = {CapaFactory.input_key(): 'mask_0'}
+            result = module.check_problem(get_request_dict)
+            mock_call = mock_track_function.mock_calls[0]
+            event_info = mock_call[1][1]
+            print event_info
+            # 'answers' key modified to use unmasked name
+            self.assertEqual(event_info['answers'][CapaFactory.answer_key()], 'choice_2')
+            # 'permutation' key added to record how problem was shown
+            self.assertEquals(event_info['permutation'][CapaFactory.answer_key()],
+                              ('xanswerpool', ['choice_1', 'choice_3', 'choice_2', 'choice_0']))
+            self.assertEquals(event_info['success'], 'inccorrect')
 
 
 class ComplexEncoderTest(unittest.TestCase):

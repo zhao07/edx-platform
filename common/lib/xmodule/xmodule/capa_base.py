@@ -984,7 +984,7 @@ class CapaMixin(CapaFields):
 
     def track_function_unmask(self, title, event_info):
         """
-        Call to runtime.track_function route through here so that the
+        All calls to runtime.track_function route through here so that the
         choice names can be unmasked.
         """
         # Do the unmask translates on a copy of event_info,
@@ -1024,7 +1024,7 @@ class CapaMixin(CapaFields):
                 permutation_option = 'answerpool'
 
             if permutation_option is not None:
-                # Add permutation record tuple: (one of:'shuffle'/'answerpool', [ as-displayed list])
+                # Add permutation record tuple: (one of:'shuffle'/'answerpool', [as-displayed list])
                 if not 'permutation' in event_info:
                     event_info['permutation'] = {}
                 event_info['permutation'][response.answer_id] = (permutation_option, response.unmask_order())
