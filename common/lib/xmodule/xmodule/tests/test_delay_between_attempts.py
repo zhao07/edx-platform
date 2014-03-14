@@ -353,8 +353,6 @@ class CapaFactoryWithDelay(object):
             field_data['submission_wait_seconds'] = submission_wait_seconds
 
         descriptor = Mock(weight="1")
-        if problem_state is not None:
-            field_data.update(problem_state)
         if attempts is not None:
             # converting to int here because I keep putting "0" and "1" in the tests
             # since everything else is a string.

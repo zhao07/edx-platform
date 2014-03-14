@@ -1443,10 +1443,35 @@ class CapaModuleTest(unittest.TestCase):
         module = CapaFactory.create(xml=xml)
         with patch.object(module.runtime, 'track_function') as mock_track_function:
             get_request_dict = {CapaFactory.input_key(): 'mask_0'}
-            module.check_problem(get_request_dict)
+            module.save_problem(get_request_dict)
             mock_call = mock_track_function.mock_calls[0]
             event_info = mock_call[1][1]
             # Existence of the permutation key is a marker that unmasking happened
+            self.assertIsNotNone(event_info['permutation'][CapaFactory.answer_key()])
+
+    def test_rescore_unmask(self):
+        """On problem save, unmasked data should appear on track_function."""
+        xml = textwrap.dedent("""
+            <problem>
+            <multiplechoiceresponse>
+              <choicegroup type="MultipleChoice" shuffle="true">
+                <choice correct="false">Apple</choice>
+                <choice correct="false">Banana</choice>
+                <choice correct="false">Chocolate</choice>
+                <choice correct ="true">Donut</choice>
+              </choicegroup>
+            </multiplechoiceresponse>
+            </problem>
+        """)
+        module = CapaFactory.create(xml=xml)
+        get_request_dict = {CapaFactory.input_key(): 'mask_1'}
+        module.check_problem(get_request_dict)
+        # Now rescore it, checking the call to track_function
+        with patch.object(module.runtime, 'track_function') as mock_track_function:
+            module.rescore_problem()
+            mock_call = mock_track_function.mock_calls[0]
+            event_info = mock_call[1][1]
+            self.assertEquals(mock_call[1][0], 'problem_rescore')
             self.assertIsNotNone(event_info['permutation'][CapaFactory.answer_key()])
 
     def test_check_unmask_answerpool(self):
