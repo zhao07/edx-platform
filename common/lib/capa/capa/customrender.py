@@ -123,7 +123,7 @@ class TargetedFeedbackRenderer(object):
             etree.tostring(self.xml))
         try:
             xhtml = etree.XML(html)
-        except Exception as err:
+        except Exception as err:  # pylint: disable=broad-except
             if self.system.DEBUG:
                 msg = """
                     <html>

@@ -286,6 +286,7 @@ class CapaFactoryWithDelay(object):
     Create problem modules class, specialized for delay_between_attempts
     test cases. This factory seems different enough from the one in
     test_capa_module that unifying them is unattractive.
+    Removed the unused optional arguments.
     """
 
     sample_problem_xml = textwrap.dedent("""\
@@ -333,7 +334,6 @@ class CapaFactoryWithDelay(object):
     def create(cls,
                max_attempts=None,
                attempts=None,
-               problem_state=None,
                correct=False,
                last_submission_time=None,
                submission_wait_seconds=None
@@ -368,7 +368,7 @@ class CapaFactoryWithDelay(object):
         )
 
         if correct:
-            # TODO: probably better to actually set the internal state properly, but...
+            # Could set the internal state formally, but here we just jam in the score.
             module.get_score = lambda: {'score': 1, 'total': 1}
         else:
             module.get_score = lambda: {'score': 0, 'total': 1}

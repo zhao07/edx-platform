@@ -912,6 +912,7 @@ class CapaMixin(CapaFields):
                 return {'success': msg, 'html': ''}  # Prompts a modal dialog in ajax callback
 
         # Wait time between resets
+        # pylint disable=maybe-no-member
         if self.last_submission_time is not None and self.submission_wait_seconds != 0:
             if (current_time - self.last_submission_time).total_seconds() < self.submission_wait_seconds:
                 seconds_left = int(self.submission_wait_seconds - (current_time - self.last_submission_time).total_seconds())

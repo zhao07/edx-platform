@@ -973,13 +973,16 @@ class MultipleChoiceResponse(LoncapaResponse):
                 correct_choices.append(choice)
             else:
                 incorrect_choices.append(choice)
-                # TODO: check if we should require correct == "false"
+                # In my small test, capa seems to treat the absence of any correct=
+                # attribute as equivalent to ="false", so that's what we do here.
 
         # We throw an error if the problem is highly ill-formed.
         # There must be at least one correct and one incorrect choice.
-        # TODO: perhaps this makes more sense for *all* problems, not just down in this corner.
+        # TODO: pylint: disable=fixme Not an active-todo, just an idea for the future:
+        # Perhaps this constraint should be generalized to all multichoice, not just down in this corner.
+        # Or perhaps the anything-goes treatment would be more correct here.
         if len(correct_choices) < 1 or len(incorrect_choices) < 1:
-            raise LoncapaProblemError("Choicegroup must include at last 1 correct and 1 incorrect choice")
+            raise LoncapaProblemError("Choicegroup must include at least 1 correct and 1 incorrect choice")
 
         # Limit the number of incorrect choices to what we actually have
         num_incorrect = num_pool - 1

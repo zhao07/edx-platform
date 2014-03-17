@@ -244,7 +244,7 @@ class CapaAnswerPoolTest(unittest.TestCase):
         """)
 
         with self.assertRaises(LoncapaProblemError):
-            problem = new_loncapa_problem(xml_str)
+            new_loncapa_problem(xml_str)
 
     def test_invalid_answer_pool_none_correct(self):
         xml_str = textwrap.dedent("""
@@ -262,7 +262,7 @@ class CapaAnswerPoolTest(unittest.TestCase):
         </problem>
         """)
         with self.assertRaises(LoncapaProblemError):
-            problem = new_loncapa_problem(xml_str)
+            new_loncapa_problem(xml_str)
 
     def test_answer_pool_5_choices_1_multiplechoiceresponse_seed1(self):
         xml_str = textwrap.dedent("""
