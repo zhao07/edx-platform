@@ -283,6 +283,39 @@ class CapaTargetedFeedbackTest(unittest.TestCase):
         print the_html
         self.assertRegexpMatches(the_html, r"<targetedfeedbackset>\s*</targetedfeedbackset>")
 
+    def test_targeted_feedback_no_solution_element(self):
+        xml_str = textwrap.dedent("""
+            <problem>
+            <p>What is the correct answer?</p>
+            <multiplechoiceresponse targeted-feedback="">
+              <choicegroup type="MultipleChoice">
+                <choice correct="false">wrong-1</choice>
+                <choice correct="false">wrong-2</choice>
+                <choice correct="true"  explanation-id="feedbackC">correct-1</choice>
+                <choice correct="false">wrong-3</choice>
+              </choicegroup>
+            </multiplechoiceresponse>
+
+            <targetedfeedbackset>
+                <targetedfeedback explanation-id="feedbackC">
+                <div class="detailed-targeted-feedback">
+                    <p>Targeted Feedback</p>
+                </div>
+                </targetedfeedback>
+            </targetedfeedbackset>
+            </problem>
+        """)
+
+        # Solution element not found
+        problem = new_loncapa_problem(xml_str)
+        problem.done = True
+        problem.student_answers = {'1_2_1': 'choice_2'}
+        the_html = problem.get_html()
+        without_new_lines = the_html.replace("\n", "")
+        # </div> right after </targetedfeedbackset>
+        self.assertRegexpMatches(without_new_lines,
+                                 r"<div>.*<targetedfeedbackset>.*</targetedfeedbackset>\s*</div>")
+
     def test_targeted_feedback_student_answer2(self):
         xml_str = textwrap.dedent("""
             <problem>
