@@ -584,6 +584,16 @@ section.instructor-dashboard-content-2 {
     padding: 3px;
   }
 
+  .metrics-overlay {
+    position: absolute; 
+    top: 0; 
+    right: 0; 
+    bottom: 0; 
+    left: 0; 
+    background-color: rgba(255,255,255, .75); 
+    display: none;
+  }
+
   .stacked-bar-graph-legend {
     fill: white;
   }
