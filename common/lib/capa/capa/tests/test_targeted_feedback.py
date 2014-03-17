@@ -212,6 +212,77 @@ class CapaTargetedFeedbackTest(unittest.TestCase):
         the_html2 = problem.get_html()
         self.assertEquals(the_html, the_html2)
 
+    def test_targeted_feedback_id_typos(self):
+        """Cases where the explanation-id's don't match anything."""
+        xml_str = textwrap.dedent("""
+            <problem>
+            <p>What is the correct answer?</p>
+            <multiplechoiceresponse targeted-feedback="">
+              <choicegroup type="MultipleChoice">
+                <choice correct="false" explanation-id="feedback1TYPO">wrong-1</choice>
+                <choice correct="false" explanation-id="feedback2">wrong-2</choice>
+                <choice correct="true" explanation-id="feedbackCTYPO">correct-1</choice>
+                <choice correct="false" explanation-id="feedback3">wrong-3</choice>
+              </choicegroup>
+            </multiplechoiceresponse>
+
+            <targetedfeedbackset>
+                <targetedfeedback explanation-id="feedback1">
+                <div class="detailed-targeted-feedback">
+                    <p>Targeted Feedback</p>
+                    <p>This is the 1st WRONG solution</p>
+                </div>
+                </targetedfeedback>
+
+                <targetedfeedback explanation-id="feedback2">
+                <div class="detailed-targeted-feedback">
+                    <p>Targeted Feedback</p>
+                    <p>This is the 2nd WRONG solution</p>
+                </div>
+                </targetedfeedback>
+
+                <targetedfeedback explanation-id="feedback3">
+                <div class="detailed-targeted-feedback">
+                    <p>Targeted Feedback</p>
+                    <p>This is the 3rd WRONG solution</p>
+                </div>
+                </targetedfeedback>
+
+                <targetedfeedback explanation-id="feedbackC">
+                <div class="detailed-targeted-feedback-correct">
+                    <p>Targeted Feedback</p>
+                    <p>Feedback on your correct solution...</p>
+                </div>
+                </targetedfeedback>
+
+            </targetedfeedbackset>
+
+            <solution explanation-id="feedbackC">
+            <div class="detailed-solution">
+                <p>Explanation</p>
+                <p>This is the solution explanation</p>
+                <p>Not much to explain here, sorry!</p>
+            </div>
+            </solution>
+        </problem>
+        """)
+
+        # explanation-id does not match anything: fall back to empty targetedfeedbackset
+        problem = new_loncapa_problem(xml_str)
+        problem.done = True
+        problem.student_answers = {'1_2_1': 'choice_0'}
+        the_html = problem.get_html()
+        print the_html
+        self.assertRegexpMatches(the_html, r"<targetedfeedbackset>\s*</targetedfeedbackset>")
+
+        # New problem with same XML -- try the correct choice.
+        problem = new_loncapa_problem(xml_str)
+        problem.done = True
+        problem.student_answers = {'1_2_1': 'choice_2'}  # correct
+        the_html = problem.get_html()
+        print the_html
+        self.assertRegexpMatches(the_html, r"<targetedfeedbackset>\s*</targetedfeedbackset>")
+
     def test_targeted_feedback_student_answer2(self):
         xml_str = textwrap.dedent("""
             <problem>
