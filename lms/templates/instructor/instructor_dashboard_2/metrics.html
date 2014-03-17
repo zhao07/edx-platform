@@ -24,6 +24,8 @@
           <div class="metrics-right" id="metric_grade_${i}" data-section-has-problem=${section_data['section_has_problem'][i]}>
             <h3>${_("Grade Distribution per Problem")}</h3>
           </div>
+          <div class="metrics-overlay">
+          </div>
         </div>
     %endfor
       <script>
@@ -57,6 +59,10 @@
 
               setTimeout(function() {
                 $('#graph_load, #graph_reload').toggle();
+                $('.metrics-left .stacked-bar').on("click",function () {
+                	var moduleID = $('rect', this).attr('id');
+				    alert(moduleID);
+				});
               }, 5000);
             }
 

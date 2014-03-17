@@ -251,6 +251,7 @@ def get_d3_sequential_open_distrib(course_id):
                 'color': 0,
                 'value': num_students,
                 'tooltip': tooltip,
+                'subsection_url': subsection.location.url(),
             })
             subsection = {
                 'xValue': "SS {0}".format(c_subsection),
