@@ -25,7 +25,7 @@ from pytz import UTC
 
 class XModuleQuizAttemptsDelayTest(unittest.TestCase):
     """
-    Class to test delay between quiz attempts
+    Class to test delay between quiz attempts.
     """
 
     def create_and_check(self,
