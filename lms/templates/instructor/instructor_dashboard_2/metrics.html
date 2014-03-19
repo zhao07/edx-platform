@@ -1,4 +1,8 @@
 <%! from django.utils.translation import ugettext as _ %>
+<%!
+  from django.core.urlresolvers import reverse
+%>
+
 <%page args="section_data"/>
 
 <script>
@@ -25,6 +29,8 @@
             <h3>${_("Grade Distribution per Problem")}</h3>
           </div>
           <div class="metrics-overlay">
+          	<a class="close-button" href="#"><i class="icon-remove"></i><span class="sr">${_("Close")}</span></a>
+          	<div class="metrics-overlay-content"></div>
           </div>
         </div>
     %endfor
@@ -60,9 +66,27 @@
               setTimeout(function() {
                 $('#graph_load, #graph_reload').toggle();
                 $('.metrics-left .stacked-bar').on("click",function () {
-                	var moduleID = $('rect', this).attr('id');
-				    alert(moduleID);
-				});
+                	var module_id = $('rect', this).attr('id');
+                	var metrics_overlay = $(this).closest('.metrics-left').siblings('.metrics-overlay');
+
+                    $.ajax({
+                      url: "${reverse('get_students_opened_subsection')}",
+                      type: "GET",
+                      data: {module_id: module_id},
+                      dataType: "json",
+                      
+                      success: function(response) {
+                      	var overlay_content = '<p>' + 'Name' + " " + 'Username' + '</p>';
+                      	$('.metrics-overlay-content', metrics_overlay).append(overlay_content);
+                      	
+                      	$.each( response.results, function( index, value ){
+                      	  overlay_content = '<p>' + value['name'] + " " + value['username'] + '</p>';
+                          $('.metrics-overlay-content', metrics_overlay).append(overlay_content);
+                        });
+                      	metrics_overlay.show();
+                      },
+                    })
+                });
               }, 5000);
             }
 
@@ -81,6 +105,11 @@
 	   			$('.instructor-nav a[data-section="metrics"]').click();
 	   		}
 	   	});
+	   	
+	   	$('.metrics-overlay .close-button').click(function() {
+        	event.preventDefault();
+        	$(this).parent().hide();
+        });
       </script>
 
   %endif

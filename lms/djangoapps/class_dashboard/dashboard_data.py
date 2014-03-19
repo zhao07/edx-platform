@@ -1,6 +1,7 @@
 """
 Computes the data to display on the Instructor Dashboard
 """
+from util.json_request import JsonResponse
 
 from courseware import models
 from django.db.models import Count
@@ -400,3 +401,32 @@ def get_array_section_has_problem(course_id):
         i += 1
 
     return b_section_has_problem
+
+def get_students_opened_subsection(request):
+    """
+    Get a list of students that opened a particular subsection.
+    Returns a dict of students' name, username.
+    """
+    module_id = request.GET.get('module_id')
+    
+    # Query for "opened a subsection" students
+    students = models.StudentModule.objects.select_related('student').filter(
+        module_state_key__exact=module_id,
+        module_type__exact='sequential',
+    ).values('student__username', 'student__profile__name'
+    ).order_by('student__profile__name')
+     
+    results = []
+    for student in students:
+        
+        results.append({
+            'name': student['student__profile__name'],
+            'username': student['student__username'],
+        })
+        
+    response_payload = {
+        'results': results,
+    }
+    
+    return JsonResponse(response_payload)
+
