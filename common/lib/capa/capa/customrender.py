@@ -104,10 +104,10 @@ registry.register(SolutionRenderer)
 
 
 class TargetedFeedbackRenderer(object):
-    '''
+    """
     A targeted feedback is just a <span>...</span> that is used for displaying an
     extended piece of feedback to students if they incorrectly answered a question.
-    '''
+    """
     tags = ['targetedfeedback']
 
     def __init__(self, system, xml):
@@ -118,9 +118,7 @@ class TargetedFeedbackRenderer(object):
         """
         Return the contents of this tag, rendered to html, as an etree element.
         """
-
-        html = '<section class="targeted-feedback-span"><span>%s</span></section>' % (
-            etree.tostring(self.xml))
+        html = '<section class="targeted-feedback-span"><span>{}</span></section>'.format(etree.tostring(self.xml))
         try:
             xhtml = etree.XML(html)
         except Exception as err:  # pylint: disable=broad-except
