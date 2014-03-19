@@ -1003,7 +1003,7 @@ class CapaMixin(CapaFields):
         # Each response values has an answer_id which matches the key in answers.
         for response in self.lcp.responders.values():
             # Un-mask choice names in event_info for masked responses.
-            if hasattr(response, 'has_mask'):
+            if response.has_mask():
                 # We don't assume much about the structure of event_info,
                 # but check for the existence of the things we need to un-mask.
 
@@ -1019,9 +1019,9 @@ class CapaMixin(CapaFields):
 
             # Add 'permutation' to event_info for permuted responses.
             permutation_option = None
-            if hasattr(response, 'has_shuffle'):
+            if response.has_shuffle():
                 permutation_option = 'shuffle'
-            elif hasattr(response, 'has_answerpool'):
+            elif response.has_answerpool():
                 permutation_option = 'answerpool'
 
             if permutation_option is not None:

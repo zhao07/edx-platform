@@ -411,6 +411,19 @@ class LoncapaResponse(object):
 
         return response_msg_div
 
+    # These accessor functions allow polymorphic checking of response
+    # objects without having to call hasattr() directly.
+    def has_mask(self):
+        """True if the response has masking."""
+        return hasattr(self, '_has_mask')
+
+    def has_shuffle(self):
+        """True if the response has a shuffle transformation."""
+        return hasattr(self, '_has_shuffle')
+
+    def has_answerpool(self):
+        """True if the response has an answer-pool transformation."""
+        return hasattr(self, '_has_answerpool')
 
 #-----------------------------------------------------------------------------
 
@@ -749,8 +762,8 @@ class MultipleChoiceResponse(LoncapaResponse):
             # Is Masking enabled? -- check for shuffle or answer-pool features
             ans_str = response.get("answer-pool")
             if response.get("shuffle") == "true" or (ans_str is not None and ans_str != "0"):
-                self.has_mask = True  # pylint: disable=W0201
-                self.mask_dict = {}   # pylint: disable=W0201
+                self._has_mask = True
+                self._mask_dict = {}
                 # We do not want the random mask names to be the same
                 # for all responses in a problem (sharing the one seed),
                 # like mask_2 in view-source turns out to always be the correct choice.
@@ -774,9 +787,9 @@ class MultipleChoiceResponse(LoncapaResponse):
                     i += 1
                 # If using the masked name, e.g. mask_0, save the regular name
                 # to support unmasking later (for the logs).
-                if hasattr(self, "has_mask"):
+                if self.has_mask():
                     mask_name = "mask_" + str(mask_ids.pop())
-                    self.mask_dict[mask_name] = name
+                    self._mask_dict[mask_name] = name
                     choice.set("name", mask_name)
                 else:
                     choice.set("name", name)
@@ -811,7 +824,8 @@ class MultipleChoiceResponse(LoncapaResponse):
     # mask_2 mask_0 ... so that a view-source of the names reveals nothing about
     # the original order. We introduce the masked names right at init time, so the
     # whole software stack works with just the one system of naming.
-    # A response with masking has its .has_mask attribute set.
+    # The .has_mask() test on a response checks for masking, implemented by a
+    # ._has_mask attribute on the response object.
     # We "unmask" the names, back to choice_0 style, only for the logs so they correspond
     # to how the problems look to the author.
     #
@@ -824,7 +838,7 @@ class MultipleChoiceResponse(LoncapaResponse):
         """
         # We could check that masking is enabled, but I figure it's better to
         # fail loudly so the upper layers are alerted to mis-use.
-        return self.mask_dict[name]
+        return self._mask_dict[name]
 
     def unmask_order(self):
         """
@@ -850,9 +864,9 @@ class MultipleChoiceResponse(LoncapaResponse):
                 raise LoncapaProblemError("Do not use shuffle and answer-pool at the same time")
             # Note in the response that shuffling is done.
             # Both to avoid double-processing, and to feed the logs.
-            if hasattr(self, 'has_shuffle'):
+            if self.has_shuffle():
                 return
-            self.has_shuffle = True  # pylint: disable=W0201
+            self._has_shuffle = True
             # Move elements from tree to list for shuffling, then put them back.
             ordering = list(choicegroup.getchildren())
             for choice in ordering:
@@ -925,9 +939,9 @@ class MultipleChoiceResponse(LoncapaResponse):
 
             # Note in the response that answerpool is done.
             # Both to avoid double-processing, and to feed the logs.
-            if hasattr(self, 'has_answerpool'):
+            if self.has_answerpool():
                 return
-            self.has_answerpool = True  # pylint: disable=W0201
+            self._has_answerpool = True
 
             choices_list = list(choicegroup.getchildren())
 

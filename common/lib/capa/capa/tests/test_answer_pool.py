@@ -63,8 +63,8 @@ class CapaAnswerPoolTest(unittest.TestCase):
         self.assertEqual(the_html, problem.get_html(), 'should be able to call get_html() twice')
         # Check about masking
         response = problem.responders.values()[0]
-        self.assertTrue(hasattr(response, 'has_mask'))
-        self.assertTrue(hasattr(response, 'has_answerpool'))
+        self.assertTrue(response.has_mask())
+        self.assertTrue(response.has_answerpool())
         self.assertEqual(response.unmask_order(), ['choice_3', 'choice_5', 'choice_1', 'choice_4'])
 
     def test_answer_pool_4_choices_1_multiplechoiceresponse_seed2(self):
@@ -159,7 +159,8 @@ class CapaAnswerPoolTest(unittest.TestCase):
         self.assertEqual(the_html, problem.get_html(), 'should be able to call get_html() twice')
         # Check about masking
         response = problem.responders.values()[0]
-        self.assertFalse(hasattr(response, 'has_mask'))
+        self.assertFalse(response.has_mask())
+        self.assertFalse(response.has_answerpool())
 
     def test_0_answer_pool_4_choices_1_multiplechoiceresponse(self):
         xml_str = textwrap.dedent("""
@@ -203,8 +204,8 @@ class CapaAnswerPoolTest(unittest.TestCase):
         self.assertRegexpMatches(the_html, r"<div>.*\[.*'wrong-1'.*'wrong-2'.*'correct-1'.*'wrong-3'.*'wrong-4'.*'correct-2'.*\].*</div>")
         self.assertRegexpMatches(the_html, r"<div>\{.*'1_solution_1'.*'1_solution_2'.*\}</div>")
         response = problem.responders.values()[0]
-        self.assertFalse(hasattr(response, 'has_mask'))
-        self.assertFalse(hasattr(response, 'has_answerpool'))
+        self.assertFalse(response.has_mask())
+        self.assertFalse(response.has_answerpool())
 
     def test_invalid_answer_pool_value(self):
         xml_str = textwrap.dedent("""
@@ -306,7 +307,7 @@ class CapaAnswerPoolTest(unittest.TestCase):
         self.assertRegexpMatches(the_html, r"<div>.*\[.*'correct-2'.*'wrong-1'.*'wrong-2'.*.*'wrong-3'.*'wrong-4'.*\].*</div>")
         self.assertRegexpMatches(the_html, r"<div>\{.*'1_solution_2'.*\}</div>")
         response = problem.responders.values()[0]
-        self.assertTrue(hasattr(response, 'has_mask'))
+        self.assertTrue(response.has_mask())
         self.assertEqual(response.unmask_order(), ['choice_5', 'choice_0', 'choice_1', 'choice_3', 'choice_4'])
 
     def test_answer_pool_2_multiplechoiceresponses_seed1(self):
@@ -573,8 +574,8 @@ class CapaAnswerPoolTest(unittest.TestCase):
         self.assertRegexpMatches(the_html, str1)
         # attributes *not* present
         response = problem.responders.values()[0]
-        self.assertFalse(hasattr(response, 'has_mask'))
-        self.assertFalse(hasattr(response, 'has_answerpool'))
+        self.assertFalse(response.has_mask())
+        self.assertFalse(response.has_answerpool())
 
     def test_answer_pool_and_no_answer_pool(self):
         xml_str = textwrap.dedent("""
