@@ -902,6 +902,7 @@ class CapaMixin(CapaFields):
             raise NotFoundError(_("Problem must be reset before it can be checked again."))
 
         # Problem queued. Students must wait a specified waittime before they are allowed to submit
+        # TODO: consider stealing code from below: pretty-print of seconds, cueing of time remaining
         if self.lcp.is_queued():
             prev_submit_time = self.lcp.get_recentmost_queuetime()
 
@@ -909,16 +910,19 @@ class CapaMixin(CapaFields):
             if (current_time - prev_submit_time).total_seconds() < waittime_between_requests:
                 msg = _(u"You must wait at least {wait} seconds between submissions.").format(
                     wait=waittime_between_requests)
-                return {'success': msg, 'html': ''}  # Prompts a modal dialog in ajax callback
+                return {'success': msg, 'html': ''}
 
-        # Wait time between resets
-        # pylint disable=maybe-no-member
+        # Wait time between resets: check if is too soon for submission.
         if self.last_submission_time is not None and self.submission_wait_seconds != 0:
             if (current_time - self.last_submission_time).total_seconds() < self.submission_wait_seconds:
-                seconds_left = int(self.submission_wait_seconds - (current_time - self.last_submission_time).total_seconds())
-                msg = _(u'You must wait at least {w} between submissions. {s} remaining.').format(
-                    w=self.pretty_print_seconds(self.submission_wait_seconds), s=self.pretty_print_seconds(seconds_left))
-                return {'success': msg, 'html': ''}
+                remaining_secs = int(self.submission_wait_seconds - (current_time - self.last_submission_time).total_seconds())
+                msg = _(u'You must wait at least {wait_secs} between submissions. {remaining_secs} remaining.').format(
+                    wait_secs=self.pretty_print_seconds(self.submission_wait_seconds),
+                    remaining_secs=self.pretty_print_seconds(remaining_secs))
+                return {
+                    'success': msg,
+                    'html': ''
+                }
 
         try:
             correct_map = self.lcp.grade_answers(answers)
@@ -1042,18 +1046,18 @@ class CapaMixin(CapaFields):
         seconds = sub_hour % 60
         display = ""
         if hours > 0:
-            display += _("%i hour", "%i hours", hours) % hours
+            display += _("{hour} hour", "{hour} hours", hours).format(hour=hours)
         if minutes > 0:
             if display != "":
                 display += " "
-            # translators: "minute" of time
-            display += _("%i minute", "%i minutes", minutes) % minutes
+            # translators: "minute" refers to a minute of time
+            display += _("{minute} minute", "{minute} minutes", minutes).format(minute=minutes)
         # Taking care to make "0 seconds" instead of "" for 0 time
         if seconds > 0 or (hours == 0 and minutes == 0):
             if display != "":
                 display += " "
-            # translators: "second" of time
-            display += _("%i second", "%i seconds", seconds) % seconds
+            # translators: "second" refers to a second of time
+            display += _("{second} second", "{second} seconds", seconds).format(second=seconds)
         return display
 
     def get_submission_metadata_safe(self, answers, correct_map):

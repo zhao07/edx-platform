@@ -302,5 +302,5 @@ class CapaShuffleTest(unittest.TestCase):
             </problem>
         """)
 
-        with self.assertRaises(LoncapaProblemError):
+        with self.assertRaisesRegexp(LoncapaProblemError, "shuffle and answer-pool"):
             problem = new_loncapa_problem(xml_str)

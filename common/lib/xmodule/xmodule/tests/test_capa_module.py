@@ -1396,24 +1396,26 @@ class CapaModuleTest(unittest.TestCase):
         module = CapaFactory.create()
         self.assertEquals(module.get_problem("data"), {'html': module.get_problem_html(encapsulate=False)})
 
+    # Standard question with shuffle="true" used by a few tests
+    common_shuffle_xml = textwrap.dedent("""
+        <problem>
+        <multiplechoiceresponse>
+          <choicegroup type="MultipleChoice" shuffle="true">
+            <choice correct="false">Apple</choice>
+            <choice correct="false">Banana</choice>
+            <choice correct="false">Chocolate</choice>
+            <choice correct ="true">Donut</choice>
+          </choicegroup>
+        </multiplechoiceresponse>
+        </problem>
+    """)
+
     def test_check_unmask(self):
         """
         Check that shuffle unmasking is plumbed through: when check_problem is called,
         unmasked data should appear in the track_function event_info.
         """
-        xml = textwrap.dedent("""
-            <problem>
-            <multiplechoiceresponse>
-              <choicegroup type="MultipleChoice" shuffle="true">
-                <choice correct="false">Apple</choice>
-                <choice correct="false">Banana</choice>
-                <choice correct="false">Chocolate</choice>
-                <choice correct ="true">Donut</choice>
-              </choicegroup>
-            </multiplechoiceresponse>
-            </problem>
-        """)
-        module = CapaFactory.create(xml=xml)
+        module = CapaFactory.create(xml=self.common_shuffle_xml)
         with patch.object(module.runtime, 'track_function') as mock_track_function:
             get_request_dict = {CapaFactory.input_key(): 'mask_1'}  # the correct choice
             module.check_problem(get_request_dict)
@@ -1428,19 +1430,7 @@ class CapaModuleTest(unittest.TestCase):
 
     def test_save_unmask(self):
         """On problem save, unmasked data should appear on track_function."""
-        xml = textwrap.dedent("""
-            <problem>
-            <multiplechoiceresponse>
-              <choicegroup type="MultipleChoice" shuffle="true">
-                <choice correct="false">Apple</choice>
-                <choice correct="false">Banana</choice>
-                <choice correct="false">Chocolate</choice>
-                <choice correct ="true">Donut</choice>
-              </choicegroup>
-            </multiplechoiceresponse>
-            </problem>
-        """)
-        module = CapaFactory.create(xml=xml)
+        module = CapaFactory.create(xml=self.common_shuffle_xml)
         with patch.object(module.runtime, 'track_function') as mock_track_function:
             get_request_dict = {CapaFactory.input_key(): 'mask_0'}
             module.save_problem(get_request_dict)
@@ -1451,19 +1441,7 @@ class CapaModuleTest(unittest.TestCase):
 
     def test_rescore_unmask(self):
         """On problem save, unmasked data should appear on track_function."""
-        xml = textwrap.dedent("""
-            <problem>
-            <multiplechoiceresponse>
-              <choicegroup type="MultipleChoice" shuffle="true">
-                <choice correct="false">Apple</choice>
-                <choice correct="false">Banana</choice>
-                <choice correct="false">Chocolate</choice>
-                <choice correct ="true">Donut</choice>
-              </choicegroup>
-            </multiplechoiceresponse>
-            </problem>
-        """)
-        module = CapaFactory.create(xml=xml)
+        module = CapaFactory.create(xml=self.common_shuffle_xml)
         get_request_dict = {CapaFactory.input_key(): 'mask_1'}
         module.check_problem(get_request_dict)
         # Now rescore it, checking the call to track_function
