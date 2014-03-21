@@ -1,7 +1,4 @@
 <%! from django.utils.translation import ugettext as _ %>
-<%!
-  from django.core.urlresolvers import reverse
-%>
 
 <%page args="section_data"/>
 
@@ -30,6 +27,7 @@
           </div>
           <div class="metrics-overlay">
           	<a class="close-button" href="#"><i class="icon-remove"></i><span class="sr">${_("Close")}</span></a>
+            <p><input class="download-csv" type="button" name="dump_student_list" value="${_("Download Student list as a CSV")}" data-endpoint="${section_data['get_students_opened_subsection_url']}" data-csv="true"></p>
           	<div class="metrics-overlay-content"></div>
           </div>
         </div>
@@ -68,24 +66,36 @@
                 $('.metrics-left .stacked-bar').on("click",function () {
                 	var module_id = $('rect', this).attr('id');
                 	var metrics_overlay = $(this).closest('.metrics-left').siblings('.metrics-overlay');
+                	
+                	//Set module_id attribute on metrics_overlay
+                	metrics_overlay.data("module-id", module_id);
+                	
+                	var header = $(this).closest('.metrics-left').siblings('.metrics-tooltip').text();
+                	
+                    var overlay_content = '<p><h3>' + header + '</h3></p>';
+	                $('.metrics-overlay-content', metrics_overlay).append(overlay_content);
+                	
+                	var num_students =  header.substr(0, header.indexOf(' '));
+                	if (num_students < 251) {
 
-                    $.ajax({
-                      url: "${reverse('get_students_opened_subsection')}",
-                      type: "GET",
-                      data: {module_id: module_id},
-                      dataType: "json",
-                      
-                      success: function(response) {
-                      	var overlay_content = '<p>' + 'Name' + " " + 'Username' + '</p>';
-                      	$('.metrics-overlay-content', metrics_overlay).append(overlay_content);
-                      	
-                      	$.each( response.results, function( index, value ){
-                      	  overlay_content = '<p>' + value['name'] + " " + value['username'] + '</p>';
-                          $('.metrics-overlay-content', metrics_overlay).append(overlay_content);
-                        });
-                      	metrics_overlay.show();
-                      },
-                    })
+	                  $.ajax({
+	                    url: "${section_data['get_students_opened_subsection_url']}",
+	                    type: "GET",
+	                    data: {module_id: module_id},
+	                    dataType: "json",
+	                      
+	                    success: function(response) {
+	                      overlay_content = '<p><strong>' + 'Name' + " " + 'Username' + '</strong></p>';
+	                      $('.metrics-overlay-content', metrics_overlay).append(overlay_content);
+	                      	
+	                      $.each( response.results, function( index, value ){
+	                      	overlay_content = '<p>' + value['name'] + " " + value['username'] + '</p>';
+	                        $('.metrics-overlay-content', metrics_overlay).append(overlay_content);
+	                      });
+	                    },
+	                  })
+                    }
+                    metrics_overlay.show();
                 });
               }, 5000);
             }
@@ -106,10 +116,23 @@
 	   		}
 	   	});
 	   	
-	   	$('.metrics-overlay .close-button').click(function() {
+	   	$('.metrics-overlay .close-button').click(function(event) {
         	event.preventDefault();
+            $('.metrics-overlay-content').empty();
         	$(this).parent().hide();
         });
+        
+        $('.metrics-overlay .download-csv').click(function(event) {
+       
+           var module_id = $(this).closest('.metrics-overlay').data("module-id");       
+           var tooltip = $(this).closest('.metrics-container').children('.metrics-tooltip').text();
+           var attributes = '?module_id=' + module_id + '&tooltip=' + tooltip + '&csv=true';
+           var url = $(this).data("endpoint");
+           url += attributes;
+           
+           return location.href = url;
+        });
+ 
       </script>
 
   %endif

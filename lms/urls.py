@@ -384,7 +384,7 @@ if settings.FEATURES.get('CLASS_DASHBOARD'):
         url(r'^courses/(?P<course_id>[^/]+/[^/]+/[^/]+)/problem_grade_distribution/(?P<section>\d+)$',
             'class_dashboard.views.section_problem_grade_distrib', name="section_problem_grade_distrib"),
 
-        # Ajax to compute students opening a sub-section
+        # For listing students that opened a sub-section
         url(r'^get_students_opened_subsection$',
             'class_dashboard.dashboard_data.get_students_opened_subsection', name="get_students_opened_subsection"),
     )
