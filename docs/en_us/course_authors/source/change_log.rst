@@ -9,7 +9,10 @@ Change Log
    :header-rows: 1
 
    * - Date
-     - Change  
+     - Change
+   * - 04/08/14
+     - Updated the chapter :ref:`Working with HTML Components` to reflect the
+       new HTML editor.
    * - 04/03/14
      - Updated the :ref:`Adding Pages to a Course` chapter to reflect ability to
        :ref:`Show or Hide the Course Wiki Page`.
