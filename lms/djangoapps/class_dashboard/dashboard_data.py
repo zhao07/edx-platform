@@ -2,6 +2,7 @@
 Computes the data to display on the Instructor Dashboard
 """
 from util.json_request import JsonResponse
+from django.http import HttpResponse
 
 from courseware import models
 from django.db.models import Count
@@ -10,6 +11,7 @@ from django.utils.translation import ugettext as _
 from xmodule.course_module import CourseDescriptor
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.inheritance import own_metadata
+from analytics.csvs import create_csv_response
 
 
 def get_problem_grade_distribution(course_id):
@@ -402,31 +404,52 @@ def get_array_section_has_problem(course_id):
 
     return b_section_has_problem
 
-def get_students_opened_subsection(request):
+
+def get_students_opened_subsection(request, csv=False):
     """
     Get a list of students that opened a particular subsection.
-    Returns a dict of students' name, username.
+    Returns either a dict of students' name, username.
+     or a header array and array of arrays of students names, usernames for csv download.
     """
     module_id = request.GET.get('module_id')
-    
+    csv = request.GET.get('csv')
+
     # Query for "opened a subsection" students
     students = models.StudentModule.objects.select_related('student').filter(
         module_state_key__exact=module_id,
         module_type__exact='sequential',
     ).values('student__username', 'student__profile__name'
     ).order_by('student__profile__name')
-     
-    results = []
-    for student in students:
-        
-        results.append({
-            'name': student['student__profile__name'],
-            'username': student['student__username'],
-        })
-        
-    response_payload = {
-        'results': results,
-    }
-    
-    return JsonResponse(response_payload)
 
+    results = []
+    if not csv:
+        for student in students:
+            results.append({
+                'name': student['student__profile__name'],
+                'username': student['student__username'],
+            })
+    
+        response_payload = {
+            'results': results,
+        }
+        return JsonResponse(response_payload)
+    else:
+        tooltip = request.GET.get('tooltip')
+        filename = sanitise_filename(tooltip)
+        
+        header = ['Name', 'Username']
+        for student in students:
+            results.append([student['student__profile__name'], student['student__username']])
+        
+        response = create_csv_response(filename, header, results)
+        return response
+
+def sanitise_filename(filename):
+    """
+    Utility function
+    """
+    filename = filename[filename.index('S'):]
+    filename = filename.replace (" ", "_")
+    filename = filename.encode('ascii')
+    filename = filename[0:25] + '.csv'
+    return filename

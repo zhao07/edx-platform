@@ -242,7 +242,6 @@ def _section_metrics(course_id, access):
         'access': access,
         'sub_section_display_name': get_section_display_name(course_id),
         'section_has_problem': get_array_section_has_problem(course_id),
-#        'ajax_url': reverse('get_students_opened_subsection'),
-#        'module_id': 1234,
+        'get_students_opened_subsection_url': reverse('get_students_opened_subsection'),
     }
     return section_data
