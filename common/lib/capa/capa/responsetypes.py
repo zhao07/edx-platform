@@ -840,7 +840,7 @@ class MultipleChoiceResponse(LoncapaResponse):
         Fails with LoncapaProblemError if called on a response that is not masking.
         """
         if not self.has_mask():
-            raise LoncapaProblemError("unmasked_name called on response that is not masked")
+            raise LoncapaProblemError("unmask_name called on response that is not masked")
         return self._mask_dict[name]
 
     def unmask_order(self):
@@ -984,7 +984,7 @@ class MultipleChoiceResponse(LoncapaResponse):
         Returns a tuple with 2 items:
             1. the solution_id corresponding with the chosen correct answer
             2. (subset) list of choice nodes with num-1 incorrect and 1 correct
-        
+
         Raises an error if the number of correct or incorrect choices is 0.
         """
 
@@ -1004,7 +1004,7 @@ class MultipleChoiceResponse(LoncapaResponse):
         # IDEA: perhaps this sort semantic-lint constraint should be generalized to all multichoice
         # not just down in this corner when answer-pool is used.
         # Or perhaps in the overall author workflow, these errors are unhelpful and
-        # should be removed.
+        # should all be removed.
         if len(correct_choices) < 1 or len(incorrect_choices) < 1:
             raise LoncapaProblemError("Choicegroup must include at least 1 correct and 1 incorrect choice")
 

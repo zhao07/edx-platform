@@ -245,7 +245,7 @@ class XModuleQuizAttemptsDelayTest(unittest.TestCase):
         num_attempts = 99
         # Regular create_and_check should fail
         with self.assertRaises(xmodule.exceptions.NotFoundError):
-            (module, result) = self.create_and_check(
+            (module, unused_result) = self.create_and_check(
                 num_attempts=num_attempts,
                 last_submission_time=datetime.datetime(2013, 12, 6, 0, 17, 36),
                 submission_wait_seconds=180,
@@ -253,7 +253,7 @@ class XModuleQuizAttemptsDelayTest(unittest.TestCase):
             )
 
         # Now try it without the check_problem
-        (module, result) = self.create_and_check(
+        (module, unused_result) = self.create_and_check(
             num_attempts=num_attempts,
             last_submission_time=datetime.datetime(2013, 12, 6, 0, 17, 36),
             submission_wait_seconds=180,

@@ -1051,13 +1051,13 @@ class CapaMixin(CapaFields):
             if display != "":
                 display += " "
             # translators: "minute" refers to a minute of time
-            display += _("{minute} minute", "{minute} minutes", minutes).format(minute=minutes)
+            display += _("{num_minute} minute", "{num_minute} minutes", minutes).format(num_minute=minutes)
         # Taking care to make "0 seconds" instead of "" for 0 time
         if seconds > 0 or (hours == 0 and minutes == 0):
             if display != "":
                 display += " "
             # translators: "second" refers to a second of time
-            display += _("{second} second", "{second} seconds", seconds).format(second=seconds)
+            display += _("{num_second} second", "{num_second} seconds", seconds).format(num_second=seconds)
         return display
 
     def get_submission_metadata_safe(self, answers, correct_map):

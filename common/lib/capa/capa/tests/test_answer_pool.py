@@ -10,11 +10,12 @@ from capa.responsetypes import LoncapaProblemError
 
 
 class CapaAnswerPoolTest(unittest.TestCase):
+    """Capa Answer Pool Test"""
     def setUp(self):
         super(CapaAnswerPoolTest, self).setUp()
         self.system = test_capa_system()
 
-
+    # XML problem setup used by a few tests.
     common_question_xml = textwrap.dedent("""
         <problem>
 
@@ -46,11 +47,9 @@ class CapaAnswerPoolTest(unittest.TestCase):
             </div>
             </solution>
         </solutionset>
-
     </problem>
-
     """)
-        
+
     def test_answer_pool_4_choices_1_multiplechoiceresponse_seed1(self):
         problem = new_loncapa_problem(self.common_question_xml, seed=723)
         the_html = problem.get_html()
@@ -110,7 +109,6 @@ class CapaAnswerPoolTest(unittest.TestCase):
             </solutionset>
 
         </problem>
-
         """)
 
         problem = new_loncapa_problem(xml_str)
@@ -157,7 +155,6 @@ class CapaAnswerPoolTest(unittest.TestCase):
             </solutionset>
 
         </problem>
-
         """)
 
         problem = new_loncapa_problem(xml_str)
@@ -202,7 +199,6 @@ class CapaAnswerPoolTest(unittest.TestCase):
             </solutionset>
 
         </problem>
-
         """)
 
         with self.assertRaisesRegexp(LoncapaProblemError, "answer-pool"):
@@ -277,7 +273,6 @@ class CapaAnswerPoolTest(unittest.TestCase):
             </solutionset>
 
         </problem>
-
         """)
 
         problem = new_loncapa_problem(xml_str, seed=723)
@@ -351,7 +346,6 @@ class CapaAnswerPoolTest(unittest.TestCase):
             </solutionset>
 
         </problem>
-
         """)
         problem = new_loncapa_problem(xml_str)
         the_html = problem.get_html()
@@ -436,7 +430,6 @@ class CapaAnswerPoolTest(unittest.TestCase):
             </solutionset>
 
         </problem>
-
         """)
         problem = new_loncapa_problem(xml_str, seed=9)
         the_html = problem.get_html()
@@ -538,7 +531,6 @@ class CapaAnswerPoolTest(unittest.TestCase):
             </multiplechoiceresponse>
 
         </problem>
-
         """)
 
         problem = new_loncapa_problem(xml_str, seed=723)
@@ -605,7 +597,6 @@ class CapaAnswerPoolTest(unittest.TestCase):
             </solutionset>
 
         </problem>
-
         """)
 
         problem = new_loncapa_problem(xml_str, seed=723)
@@ -651,7 +642,6 @@ class CapaAnswerPoolTest(unittest.TestCase):
             </solution>
 
         </problem>
-
         """)
 
         problem = new_loncapa_problem(xml_str, seed=723)
