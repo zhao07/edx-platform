@@ -728,8 +728,8 @@ oauth_consumer_key="", oauth_signature="frVp4JuvT1mVXlxktiAUjQ7%2F1cw%3D"'}
         Note that user_module SHOULD be bound to user
         """
         user_module.publish_proxy(user_module, {'event_name': 'grade_delete'}, custom_user=user)
-        del user_module.module_score
-        del user_module.score_comment
+        user_module.module_score = LTIModule.module_score.default
+        user_module.score_comment = LTIModule.module_score.default
 
     @classmethod
     def set_user_module_score(cls, user, user_module, score, max_score, comment=""):
