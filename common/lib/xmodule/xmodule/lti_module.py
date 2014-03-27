@@ -310,7 +310,7 @@ class LTIModule(LTIFields, XModule):
 
         This parameter is required.
         """
-        return unicode(urllib.quote("{}/{}".format(self.id, self.system.hostname)))
+        return unicode(urllib.quote("{}-{}".format(self.system.hostname, self.location.name)))
 
     def get_lis_result_sourcedid(self):
         """
