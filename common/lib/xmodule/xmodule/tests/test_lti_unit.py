@@ -59,9 +59,9 @@ class LTIModuleTest(LogicTest):
 
         self.user_id = self.xmodule.runtime.anonymous_student_id
         self.lti_id = self.xmodule.lti_id
-        self.module_id = '//MITx/999/lti/'
+        self.location_name = 'test_location_name'
 
-        sourcedId = u':'.join(urllib.quote(i) for i in (self.lti_id, self.module_id, self.user_id))
+        sourcedId = u':'.join(urllib.quote(i) for i in (self.lti_id, self.location_name, self.user_id))
 
         self.DEFAULTS = {
             'sourcedId': sourcedId,
@@ -255,18 +255,18 @@ class LTIModuleTest(LogicTest):
         self.assertEqual(real_outcome_service_url, expected_outcome_service_url)
 
     def test_resource_link_id(self):
-        with patch('xmodule.lti_module.LTIModule.id', new_callable=PropertyMock) as mock_id:
-            mock_id.return_value = self.module_id
-            expected_resource_link_id = unicode(urllib.quote('{}/{}'.format(self.module_id, self.system.hostname)))
+        with patch('xmodule.lti_module.LTIModule.location', new_callable=PropertyMock) as mock_location:
+            self.xmodule.location.name = self.location_name
+            expected_resource_link_id = unicode(urllib.quote('{}-{}'.format(self.system.hostname, self.location_name)))
             real_resource_link_id = self.xmodule.get_resource_link_id()
             self.assertEqual(real_resource_link_id, expected_resource_link_id)
 
     def test_lis_result_sourcedid(self):
-        with patch('xmodule.lti_module.LTIModule.id', new_callable=PropertyMock) as mock_id:
-            mock_id.return_value = self.module_id
+        with patch('xmodule.lti_module.LTIModule.location', new_callable=PropertyMock) as mock_location:
+            self.xmodule.location.name = self.location_name
             expected_sourcedId = u':'.join(urllib.quote(i) for i in (
                 self.lti_id,
-                '{}/{}'.format(self.module_id, self.system.hostname),
+                urllib.quote('{}-{}'.format(self.system.hostname, self.location_name)),
                 self.user_id
             ))
             real_lis_result_sourcedid = self.xmodule.get_lis_result_sourcedid()
