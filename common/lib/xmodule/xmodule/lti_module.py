@@ -338,7 +338,9 @@ class LTIModule(LTIFields, XModule):
     @property
     def context_id(self):
         """
-        Return opaque identifier that uniquely identifies the context (e.g., a course)
+        Return context_id.
+
+        context_id is an opaque identifier that uniquely identifies the context (e.g., a course)
         that contains the link being launched.
         """
         return self.course_id
