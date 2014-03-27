@@ -579,6 +579,12 @@ section.instructor-dashboard-content-2 {
 			width: 100%;
 		}
 	  }
+          
+          svg {
+            .stacked-bar {
+              cursor: pointer;
+            }
+          }
 	
 	  .metrics-tooltip {
 	    width: 250px;
@@ -595,15 +601,44 @@ section.instructor-dashboard-content-2 {
 	    background-color: rgba(255,255,255, .75); 
 	    display: none;
 	    
-	    .metrics-overlay-content {
-	    	position: relative;
-	    	display: block;
-	    	height: 90%;
-	    	width: 90%;
-	    	margin: 5%;
-	    	background-color: #fff;
-	    	border: 1px solid #000;
-	    	border-radius: 25px;
+	    .metrics-overlay-content-wrapper {
+              position: relative;
+              display: block;
+              height: 75%;
+              width: 85%;
+              margin: 5%;
+              background-color: #fff;
+              border: 1px solid #000;
+              border-radius: 25px;
+              padding: 2.5%;
+              
+              .metrics-overlay-title {
+                margin-bottom: 25px;
+                font-weight: bold;
+              }
+              .metrics-overlay-content {
+                width: 100%;
+                
+                .header {
+                  background-color: #ddd;
+                }
+                th, td {
+                  padding: 10px;
+                }
+              }
+              
+              .download-csv {
+                position: absolute;
+                right: 2%;
+                bottom: 2%;
+              }
+              
+              .close-button {
+                position: absolute;
+                right: 1.5%;
+                top: 2%;
+                font-size: 2em;
+              }
 	    }
 	  }
 	

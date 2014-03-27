@@ -26,9 +26,11 @@
             <h3>${_("Grade Distribution per Problem")}</h3>
           </div>
           <div class="metrics-overlay">
-          	<a class="close-button" href="#"><i class="icon-remove"></i><span class="sr">${_("Close")}</span></a>
-            <p><input class="download-csv" type="button" name="dump_student_list" value="${_("Download Student list as a CSV")}" data-endpoint="${section_data['get_students_opened_subsection_url']}" data-csv="true"></p>
-          	<div class="metrics-overlay-content"></div>
+		<div class="metrics-overlay-content-wrapper">
+			<table class="metrics-overlay-content"></table>
+			<input class="download-csv" type="button" name="dump_student_list" value="${_("Download Student list as a CSV")}" data-endpoint="${section_data['get_students_opened_subsection_url']}" data-csv="true">
+			<a class="close-button" href="#"><i class="icon-remove"></i><span class="sr">Close</span></a>
+		</div>
           </div>
         </div>
     %endfor
@@ -36,92 +38,90 @@
       	$(function () {
       		var firstLoad = true;
 
-            loadGraphs = function() {
-              $('#graph_load').show();
-              $('#graph_reload').hide();
-              $('.loading').remove();
+		loadGraphs = function() {
+			$('#graph_load').show();
+			$('#graph_reload').hide();
+			$('.loading').remove();
 
-              var nothingText = "${_('There are no problems in this section.')}";
-              var loadingText = "${_('Loading...')}";
-      		  var nothingP = '<p class="nothing">' + nothingText  + '</p>';
-              var loading = '<p class="loading"><i class="icon-spinner icon-spin icon-large"></i>' + loadingText + '</p>';
+			var nothingText = "${_('There are no problems in this section.')}";
+			var loadingText = "${_('Loading...')}";
+			var nothingP = '<p class="nothing">' + nothingText  + '</p>';
+			var loading = '<p class="loading"><i class="icon-spinner icon-spin icon-large"></i>' + loadingText + '</p>';
 
-              $('.metrics-left').each(function() {
-                $(this).append(loading);
-              });
-              $('.metrics-right p.nothing').remove();
-              $('.metrics-right').each(function() {
-                if ($(this).data('section-has-problem') === "False") {
-                  $(this).append(nothingP);
-                } else {
-                  $(this).append(loading);
-                }
-              });
-              $('.metrics-left svg, .metrics-right svg').remove();
+			$('.metrics-left').each(function() {
+				$(this).append(loading);
+			});
+			$('.metrics-right p.nothing').remove();
+			$('.metrics-right').each(function() {
+				if ($(this).data('section-has-problem') === "False") {
+					$(this).append(nothingP);
+				} else {
+					$(this).append(loading);
+				}
+			});
+			$('.metrics-left svg, .metrics-right svg').remove();
 
-              ${all_section_metrics.body("metric_opened_","metric_grade_","metric_attempts_","metric_tooltip_",course.id)}
+			${all_section_metrics.body("metric_opened_","metric_grade_","metric_attempts_","metric_tooltip_",course.id)}
 
-              setTimeout(function() {
-                $('#graph_load, #graph_reload').toggle();
-                $('.metrics-left .stacked-bar').on("click",function () {
-                	var module_id = $('rect', this).attr('id');
-                	var metrics_overlay = $(this).closest('.metrics-left').siblings('.metrics-overlay');
-                	
-                	//Set module_id attribute on metrics_overlay
-                	metrics_overlay.data("module-id", module_id);
-                	
-                	var header = $(this).closest('.metrics-left').siblings('.metrics-tooltip').text();
-                	
-                    var overlay_content = '<p><h3>' + header + '</h3></p>';
-	                $('.metrics-overlay-content', metrics_overlay).append(overlay_content);
-                	
-                	var num_students =  header.substr(0, header.indexOf(' '));
-                	if (num_students < 251) {
-
-	                  $.ajax({
-	                    url: "${section_data['get_students_opened_subsection_url']}",
-	                    type: "GET",
-	                    data: {module_id: module_id},
-	                    dataType: "json",
-	                      
-	                    success: function(response) {
-	                      overlay_content = '<p><strong>' + 'Name' + " " + 'Username' + '</strong></p>';
-	                      $('.metrics-overlay-content', metrics_overlay).append(overlay_content);
-	                      	
-	                      $.each( response.results, function( index, value ){
-	                      	overlay_content = '<p>' + value['name'] + " " + value['username'] + '</p>';
-	                        $('.metrics-overlay-content', metrics_overlay).append(overlay_content);
-	                      });
-	                    },
-	                  })
-                    }
-                    metrics_overlay.show();
-                });
-              }, 5000);
-            }
+			setTimeout(function() {
+				$('#graph_load, #graph_reload').toggle();
+				$('.metrics-left .stacked-bar').on("click",function () {
+					var module_id = $('rect', this).attr('id');
+					var metrics_overlay = $(this).closest('.metrics-left').siblings('.metrics-overlay');
+					
+					//Set module_id attribute on metrics_overlay
+					metrics_overlay.data("module-id", module_id);
+					
+					var header = $(this).closest('.metrics-left').siblings('.metrics-tooltip').text();
+					
+					var overlay_content = '<h3 class="metrics-overlay-title">' + header + '</h3>';
+					$('.metrics-overlay-content', metrics_overlay).prepend(overlay_content);
+					
+					var num_students =  header.substr(0, header.indexOf(' '));
+					if (num_students < 251) {
+		
+						$.ajax({
+							url: "${section_data['get_students_opened_subsection_url']}",
+							type: "GET",
+							data: {module_id: module_id},
+							dataType: "json",
+							  
+							success: function(response) {
+								overlay_content = '<tr class="header"><th>Name</th><th>Username</th></tr>';
+								$('.metrics-overlay-content', metrics_overlay).append(overlay_content);
+								  
+								$.each( response.results, function( index, value ){
+									overlay_content = '<tr><td>' + value['name'] + "</td><td>" + value['username'] + '</td></tr>';
+									$('.metrics-overlay-content', metrics_overlay).append(overlay_content);
+								});
+							},
+						})
+					}
+					metrics_overlay.show();
+				});
+			}, 5000);
+		}
 
          	$('.instructor-nav a').click(function () {
-				if ($(this).data('section') === "metrics" && firstLoad) {
-	      			loadGraphs();
-	      			firstLoad = false;
-	      		}
-	   		});
-
-            $('#graph_reload').click(function () {
-                loadGraphs();
-	   		});
-
-	   		if (window.location.hash === "#view-metrics") {
-	   			$('.instructor-nav a[data-section="metrics"]').click();
-	   		}
+			if ($(this).data('section') === "metrics" && firstLoad) {
+				loadGraphs();
+				firstLoad = false;
+			}
 	   	});
-	   	
-	   	$('.metrics-overlay .close-button').click(function(event) {
-        	event.preventDefault();
-            $('.metrics-overlay-content').empty();
-        	$(this).parent().hide();
-        });
-        
+
+		$('#graph_reload').click(function () {
+			loadGraphs();
+		});
+
+		if (window.location.hash === "#view-metrics") {
+			$('.instructor-nav a[data-section="metrics"]').click();
+		}
+	});
+	$('.metrics-overlay .close-button').click(function(event) {
+		event.preventDefault();
+		$('.metrics-overlay-content').empty();
+		$(this).closest(".metrics-overlay").hide();
+	});
         $('.metrics-overlay .download-csv').click(function(event) {
        
            var module_id = $(this).closest('.metrics-overlay').data("module-id");       
