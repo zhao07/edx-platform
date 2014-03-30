@@ -41,8 +41,11 @@
     <label for="auto-enroll">${_("Auto Enroll")}</label>
     <div class="hint auto-enroll-hint">
       <span class="hint-caret"></span>
-      <p> ${_("If this option is <em>checked</em>, users who have not yet registered for {platform_name} will be automatically enrolled.").format(platform_name=settings.PLATFORM_NAME)}
-          ${_("If this option is left <em>unchecked</em>, users who have not yet registered for {platform_name} will not be enrolled, but will be allowed to enroll once they make an account.").format(platform_name=settings.PLATFORM_NAME)}</p>
+      <p>
+	${_("If this option is <em>checked</em>, users who have not yet registered for {platform_name} will be automatically enrolled.").format(platform_name=settings.PLATFORM_NAME)}
+        ${_("If this option is left <em>unchecked</em>, users who have not yet registered for {platform_name} will not be enrolled, but will be allowed to enroll once they make an account.").format(platform_name=settings.PLATFORM_NAME)}
+	${_("This option is only valid when clicking 'Enroll'.")}
+      </p>
     </div>
   </div>
 
@@ -80,7 +83,10 @@
     <label for="auto-enroll-beta">${_("Auto Enroll")}</label>
     <div class="hint auto-enroll-beta-hint">
       <span class="hint-caret"></span>
-      <p> ${_("If this option is <em>checked</em>, users who have not enrolled in your course will be automatically enrolled.").format(platform_name=settings.PLATFORM_NAME)}</p>
+      <p>
+	${_("If this option is <em>checked</em>, users who have not yet enrolled in your course will be automatically enrolled.").format(platform_name=settings.PLATFORM_NAME)}
+	${_("This option is only valid when clicking 'Add beta testers'.")}
+      </p>
     </div>
   </div>
 
