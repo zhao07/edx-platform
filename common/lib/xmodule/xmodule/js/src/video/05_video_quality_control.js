@@ -37,7 +37,7 @@ function () {
     function _makeFunctionsPublic(state) {
         var methodsDict = {
             onQualityChange: onQualityChange,
-            qualitiesAreAvailable: qualitiesAreAvailable,
+            showQualityControl: showQualityControl,
             toggleQuality: toggleQuality
         };
 
@@ -53,7 +53,7 @@ function () {
         state.videoQualityControl.el = state.el.find('a.quality-control');
 
         state.videoQualityControl.el.show();
-        state.videoQualityControl.quality = null;
+        state.videoQualityControl.quality = 'large';
     }
 
     // function _bindHandlers(state)
@@ -69,10 +69,10 @@ function () {
     // The magic private function that makes them available and sets up their context is makeFunctionsPublic().
     // ***************************************************************
 
-    function qualitiesAreAvailable() {
-        // HD qualities are avaible, enable the HD control.
+    function showQualityControl() {
+        // Show HD control only if HD qualities are available.
         if (this.config.hasHDQualities) {
-            this.videoQualityControl.el.removeClass('hidden');
+            this.videoQualityControl.el.removeClass('is-hidden');
         }
     }
 
@@ -99,18 +99,16 @@ function () {
     // This function toggles the quality of video only if HD qualities are
     // available.
     function toggleQuality(event) {
-        var newQuality, value = this.videoQualityControl.quality;
+        var newQuality, value = this.videoQualityControl.quality,
+            isHD = _.contains(this.config.availableHDQualities, value);
 
         event.preventDefault();
 
-        // The LD and HD qualities are ordered from highest to lowest quality
-        // like the array that player.getAvailableQualityLevels() returns.
+        // HD qualities are ordered from highest to lowest quality like
+        // the array that player.getAvailableQualityLevels() returns.
         if (this.config.hasHDQualities) {
-            if (_.contains(this.config.availableLDQualities, value)) {
-                newQuality = _.first(this.config.availableHDQualities);
-            } else {
-                newQuality = _.first(this.config.availableLDQualities);
-            }
+            newQuality = isHD ? 'large'
+                              : _.first(this.config.availableHDQualities);
             this.trigger('videoPlayer.handlePlaybackQualityChange', newQuality);
         }
     }

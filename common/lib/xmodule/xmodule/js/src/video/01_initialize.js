@@ -520,9 +520,8 @@ function (VideoPlayer, VideoStorage) {
             element: element,
             fadeOutTimeout:     1400,
             captionsFreezeTime: 10000,
-            // Available LD and HD qualities will only be accessible once the
-            // video has been played once, via player.getAvailableQualityLevels.
-            availableLDQualities: [],
+            // Available HD qualities will only be accessible once the video has
+            // been played once, via player.getAvailableQualityLevels.
             availableHDQualities: [],
             hasHDQualities: false
         });

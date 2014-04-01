@@ -473,10 +473,9 @@ function (HTML5Video, Resizer) {
         this.config.hasHDQualities =
             this.config.availableHDQualities.length > 0;
 
-        this.config.availableLDQualities =
-             _.intersection(qualities, ['large', 'medium', 'small']);
-
-        this.trigger('videoQualityControl.qualitiesAreAvailable');
+        if (this.config.hasHDQualities) {
+            this.trigger('videoQualityControl.showQualityControl');
+        }
     }
 
     function onPause() {
