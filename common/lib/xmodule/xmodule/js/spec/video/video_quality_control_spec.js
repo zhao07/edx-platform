@@ -28,12 +28,12 @@
                 runs(function () {
                     var container = state.videoControl.secondaryControlsEl;
 
-                    expect(container).toContain('a.quality_control');
+                    expect(container).toContain('a.quality-control');
                 });
             });
 
             it('add ARIA attributes to quality control', function () {
-                var qualityControl = $('a.quality_control');
+                var qualityControl = $('a.quality-control');
 
                 expect(qualityControl).toHaveAttrs({
                     'role': 'button',
@@ -45,7 +45,7 @@
             it('bind the quality control', function () {
                 var handler = state.videoQualityControl.toggleQuality;
 
-                expect($('a.quality_control')).toHandleWith('click', handler);
+                expect($('a.quality-control')).toHandleWith('click', handler);
             });
         });
     });
