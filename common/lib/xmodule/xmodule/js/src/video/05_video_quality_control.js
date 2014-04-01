@@ -72,8 +72,7 @@ function () {
     function qualitiesAreAvailable() {
         // HD qualities are avaible, enable the HD control.
         if (this.config.hasHDQualities) {
-            this.videoQualityControl.el.removeClass('is-disabled')
-                                       .attr('href', '#');
+            this.videoQualityControl.el.removeClass('hidden');
         }
     }
 

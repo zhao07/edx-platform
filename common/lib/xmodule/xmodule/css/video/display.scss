@@ -537,7 +537,6 @@ div.video {
           @extend %video-button;
           background: url(../images/hd.png) center no-repeat;
           border-left: none;
-          // display: none;
           float: left;
           padding: 0 11px;
           width: 30px;
@@ -548,10 +547,8 @@ div.video {
             text-decoration: none;
           }
 
-          &.is-disabled {
-            background-color: #999;
-            text-decoration: none;
-            cursor: default;
+          &.hidden {
+            display: none !important;
           }
         }
 
