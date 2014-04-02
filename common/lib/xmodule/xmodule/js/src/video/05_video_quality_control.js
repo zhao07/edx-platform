@@ -69,18 +69,17 @@ function () {
     // The magic private function that makes them available and sets up their context is makeFunctionsPublic().
     // ***************************************************************
 
+    // This function will only be called if HD qualities are available. It will
+    // then show the HD control.
     function showQualityControl() {
-        // Show HD control only if HD qualities are available.
-        if (this.config.hasHDQualities) {
-            this.videoQualityControl.el.removeClass('is-hidden');
-        }
+        this.videoQualityControl.el.removeClass('is-hidden');
     }
 
     function onQualityChange(value) {
         var controlStateStr;
         this.videoQualityControl.quality = value;
 
-        if (_.indexOf(this.config.availableHDQualities, value) !== -1) {
+        if (_.contains(this.config.availableHDQualities, value)) {
             controlStateStr = gettext('HD on');
             this.videoQualityControl.el
                                     .addClass('active')
@@ -104,13 +103,8 @@ function () {
 
         event.preventDefault();
 
-        // HD qualities are ordered from highest to lowest quality like
-        // the array that player.getAvailableQualityLevels() returns.
-        if (this.config.hasHDQualities) {
-            newQuality = isHD ? 'large'
-                              : _.first(this.config.availableHDQualities);
-            this.trigger('videoPlayer.handlePlaybackQualityChange', newQuality);
-        }
+        newQuality = isHD ? 'large' : 'highres';
+        this.trigger('videoPlayer.handlePlaybackQualityChange', newQuality);
     }
 
 });

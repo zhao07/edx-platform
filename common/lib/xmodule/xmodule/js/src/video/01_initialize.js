@@ -522,8 +522,7 @@ function (VideoPlayer, VideoStorage) {
             captionsFreezeTime: 10000,
             // Available HD qualities will only be accessible once the video has
             // been played once, via player.getAvailableQualityLevels.
-            availableHDQualities: [],
-            hasHDQualities: false
+            availableHDQualities: []
         });
 
         if (this.config.endTime < this.config.startTime) {

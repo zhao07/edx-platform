@@ -470,10 +470,8 @@ function (HTML5Video, Resizer) {
         this.config.availableHDQualities =
             _.intersection(qualities, ['highres', 'hd1080', 'hd720']);
 
-        this.config.hasHDQualities =
-            this.config.availableHDQualities.length > 0;
-
-        if (this.config.hasHDQualities) {
+        // HD qualities are available, show video quality control.
+        if (this.config.availableHDQualities.length > 0) {
             this.trigger('videoQualityControl.showQualityControl');
         }
     }
