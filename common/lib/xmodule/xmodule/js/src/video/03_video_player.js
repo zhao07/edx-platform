@@ -467,8 +467,9 @@ function (HTML5Video, Resizer) {
     function onFetchAvailableQualities() {
         var qualities = this.videoPlayer.player.getAvailableQualityLevels();
 
-        this.config.availableHDQualities =
-            _.intersection(qualities, ['highres', 'hd1080', 'hd720']);
+        this.config.availableHDQualities = _.intersection(
+            qualities, ['highres', 'hd1080', 'hd720']
+        );
 
         // HD qualities are available, show video quality control.
         if (this.config.availableHDQualities.length > 0) {
