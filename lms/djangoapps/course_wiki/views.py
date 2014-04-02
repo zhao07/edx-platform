@@ -89,12 +89,14 @@ def proxy_view(request, course_id=None, wiki_path=None):
             is_staff = has_access(request.user, course, 'staff')
             if not (is_enrolled or is_staff):
                 return redirect('about_course', course_id)
+        # set the course onto here so that the wiki template can show the course navigation
+        request.course = course
 
     function, new_args, new_kwargs = WIKI_URL.resolve(wiki_path)
     # _transform_url is a hack in django-wiki for modifying all urls
     # in the namespace. we want to replace /wiki/123 with /course/foo/bar/wiki/123
     if _transform_url:
-        wiki_reverse._transform_url = lambda url: url  # pylint: disable=W0212
+        wiki_reverse._transform_url = _transform_url  # pylint: disable=W0212
     try:
         return function(request, *new_args, **new_kwargs)
     finally:
