@@ -74,6 +74,12 @@ function () {
             return this.video.duration;
         };
 
+        // With this function, an error will be thrown when
+        // onFetchAvailableQualities is called during first play of video.
+        Player.prototype.getAvailableQualityLevels = function () {
+            return [];
+        };
+
         Player.prototype.setPlaybackRate = function (value) {
             var newSpeed;
 
