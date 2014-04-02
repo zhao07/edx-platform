@@ -45,9 +45,10 @@ Studio, or derived from data that you define in Studio.
   labeled **Course Run**.
 
 * **Course Display Name**: Specified in Studio when you create the course. In
-  Studio, this field is labeled  **Course Name**. For courses that are not yet
-  live, this name can be changed in Studio: select **Settings** > **Advanced
-  Settings** and scroll down to the Policy Key labeled **display_name**. 
+  Studio, this field is labeled  **Course Name**. This name can be changed in
+  Studio (not recommended if your course is live): select **Settings** >
+  **Advanced Settings** and scroll down to the Policy Key labeled
+  **display_name**.
 
   The illustration that follows shows the information collected by Studio for
   a new course side-by-side with the same information in the **Basic Course
@@ -58,17 +59,17 @@ Studio, or derived from data that you define in Studio.
    :width: 800
 
 * **Has the course started**: Derived from the **Course Start Date** and the
-  current date. For courses that are not yet live, this date can be changed in
-  Studio: select **Settings** > **Schedule & Details**.
+  current date. This date can be changed in Studio (not recommended if your
+  course is live): select **Settings** > **Schedule & Details**.
 
 * **Has the course ended**: Derived from the **Course End Date** and the
-  current date. For courses that are not yet live, this date can be changed in
-  Studio: select **Settings** > **Schedule & Details**.
+  current date. This date can be changed in Studio (not recommended if your
+  course is live): select **Settings** > **Schedule & Details**.
 
 * **Grade Cutoffs**: Specified in Studio when you define the cutoff for a
   failing grade. Students who earn exactly the cutoff value pass the course.
-  For courses that are not yet live, grading can be changed in Studio: select
-  **Settings** > **Grading**.
+  Grading can be changed in Studio (not recommended if your course is live):
+  select **Settings** > **Grading**.
 
 
 .. You also use the Instructor Dashboard to set up the staff for your course, enroll students and access student data, and initiate, review, and adjust grades.
