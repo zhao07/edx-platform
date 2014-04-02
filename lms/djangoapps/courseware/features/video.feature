@@ -89,6 +89,7 @@ Feature: LMS Video component
 
   # 10
   Scenario: Video component stores speed correctly when each video is in separate sequence
+    Given I enable auto screenshots
     Given I am registered for the course "test_course"
     And it has a video "A" in "Youtube" mode in position "1" of sequential
     And a video "B" in "Youtube" mode in position "2" of sequential
@@ -96,6 +97,7 @@ Feature: LMS Video component
     And I open the section with videos
     And I select the "2.0" speed on video "A"
     And I select the "0.50" speed on video "B"
+    Given I disable auto screenshots
     When I open video "C"
     Then video "C" should start playing at speed "0.75"
     When I open video "A"
@@ -103,6 +105,7 @@ Feature: LMS Video component
     And I reload the page
     When I open video "A"
     Then video "A" should start playing at speed "2.0"
+    Given I enable auto screenshots
     And I select the "1.0" speed on video "A"
     When I open video "B"
     Then video "B" should start playing at speed "0.50"

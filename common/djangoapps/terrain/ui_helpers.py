@@ -13,7 +13,8 @@ import platform
 # it to get the correct value
 import lettuce.django
 
-
+from logging import getLogger
+from django.conf import settings
 from textwrap import dedent
 from urllib import quote_plus
 from selenium.common.exceptions import (
@@ -24,6 +25,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from nose.tools import assert_true  # pylint: disable=E0611
 
+LOGGER = getLogger(__name__)
 
 REQUIREJS_WAIT = {
     # Settings - Schedule & Details
@@ -619,3 +621,13 @@ def disable_jquery_animations():
 
     # Disable jQuery animations
     world.browser.execute_script("jQuery.fx.off = true;")
+
+
+@world.absorb
+def capture_screenshot(image_name):
+    output_dir = '{}/log/auto_screenshots'.format(settings.TEST_ROOT)
+    image_name = '{}/{}.png'.format(output_dir, image_name.replace(' ', '_'))
+    try:
+        world.browser.driver.save_screenshot(image_name)
+    except WebDriverException:
+        LOGGER.error("Could not capture a screenshot '{}'".format(image_name))

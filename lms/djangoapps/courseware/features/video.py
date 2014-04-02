@@ -102,6 +102,7 @@ class RequestHandlerWithSessionId(object):
             return True
         return False
 
+
 def get_metadata(parent_location, player_mode, data, display_name='Video'):
     kwargs = {
         'parent_location': parent_location,
@@ -300,6 +301,17 @@ def parse_time_str(time_str):
 def find_caption_line_by_data_index(index):
     SELECTOR = ".subtitles > li[data-index='{index}']".format(index=index)
     return world.css_find(SELECTOR).first
+
+
+@step('I (.*) auto screenshots$')
+def enable_screenshots_for_all_steps(_step, action):
+    action=action.strip()
+    if action == 'enable':
+        world.auto_capture_screenshots['enabled'] = True
+    elif action == 'disable':
+        world.auto_capture_screenshots['enabled'] = False
+    else:
+        raise ValueError('Parameter `action` should be one of "enable" or "disable".')
 
 
 @step('youtube stub server (.*) YouTube API')
@@ -610,4 +622,3 @@ def click_on_the_caption(_step, index, expected_time):
     find_caption_line_by_data_index(int(index)).click()
     actual_time = elapsed_time()
     assert int(expected_time) == actual_time
-

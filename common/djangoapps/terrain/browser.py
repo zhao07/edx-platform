@@ -163,6 +163,26 @@ def reset_data(scenario):
     world.absorb({}, 'scenario_dict')
 
 
+@before.each_scenario
+def configure_screenshots(scenario):
+    # Name of current scenario:
+    #     scenario
+    #
+    # Number of current scenario:
+    #     scenario.feature.scenarios.index(scenario)
+    #
+    # Total number of scenarios:
+    #     len(scenario.feature.scenarios)
+    #
+    # NOTE: Scenario numbering starts at 0.
+
+    world.auto_capture_screenshots = {
+        # By default, screenshots will not be created for each scenario.
+        'enabled': False,
+        'scenario_num': scenario.feature.scenarios.index(scenario) + 1,
+    }
+
+
 @after.each_scenario
 def clear_data(scenario):
     world.spew('scenario_dict')
@@ -196,6 +216,30 @@ def screenshot_on_error(scenario):
             world.browser.driver.save_screenshot(image_name)
         except WebDriverException:
             LOGGER.error('Could not capture a screenshot')
+
+
+def capture_screenshot_for_step(step, when):
+    if world.auto_capture_screenshots['enabled']:
+        scenario_num = world.auto_capture_screenshots['scenario_num']
+        step_num = step.scenario.steps.index(step) + 1
+        step_func_name = step.defined_at.function.func_name
+
+        image_name = "{0:03d}".format(scenario_num) + "__" + \
+            "{0:03d}".format(step_num) + "__" + \
+            step_func_name + "__" + \
+            when
+
+        world.capture_screenshot(image_name)
+
+
+@before.each_step
+def before_each_step(step):
+    capture_screenshot_for_step(step, 'BEFORE')
+
+
+@after.each_step
+def after_each_step(step):
+    capture_screenshot_for_step(step, 'AFTER')
 
 
 @after.harvest
