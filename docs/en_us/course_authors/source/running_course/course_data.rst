@@ -27,9 +27,9 @@ To view course data:
     .. image:: ../Images/Instructor_Dash_Course_Info.png
      :alt: The basic course informationn section of the Instructor Dashboard 
 
-****************************************
-Sources of the Basic Course Information
-****************************************
+*************************************************
+Sources in Studio of the Basic Course Information
+*************************************************
 
 The course data that displays on the Instructor Dashboard is defined in
 Studio, or derived from data that you define in Studio.
@@ -47,7 +47,7 @@ Studio, or derived from data that you define in Studio.
 * **Course Display Name**: Specified in Studio when you create the course. In
   Studio, this field is labeled  **Course Name**. This name can be changed in
   Studio (not recommended if your course is live): select **Settings** >
-  **Advanced Settings** and scroll down to the Policy Key labeled
+  **Advanced Settings** and scroll down to the policy key labeled
   **display_name**.
 
   The illustration that follows shows the information collected by Studio for

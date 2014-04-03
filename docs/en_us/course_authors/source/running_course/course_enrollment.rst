@@ -138,7 +138,7 @@ course. See :ref:`Student Data`.
 .. _unenroll_student:
 
 *********************************
-Unenroll Students From a Course
+Unenroll Students from a Course
 *********************************
 
 You can remove students from a course by unenrolling them. To prevent students
