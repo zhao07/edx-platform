@@ -58,21 +58,23 @@ supplying their email addresses. After the **Enrollment End Date** for a
 course students can no longer enroll themselves; however, you can still
 explicitly enroll students.
 
-When you enroll students, you have options to:
+When you enroll people in a course you have these options:
 
-* **Auto Enroll**. Enrolls any student who already has a registered user
-  account in the course immediately. Students who are not registered are
-  enrolled as soon as they register and activate a user account for the same
-  email address. As a result, students do not need to complete the explicit
-  course enrollment step.
+* **Auto Enroll**. When you choose this option, the people who you enroll do
+  not need to complete an explicit course enrollment step. Of the list of
+  email addresses that you supply, those that correspond to a registered user
+  account are immediately enrolled in the course. Email addresses on the list
+  that do not match a registered user account are enrolled as soon as the
+  account is registered and activated.
 
-* **Notify students by email**. The email message includes the name of the
-  course, a link to the registration page, and a reminder to use the same
-  email address to register that you supplied for the student. Whether you
+* **Notify students by email**. When you choose this option, an email message
+  is automatically sent to each of the email addresses that you supply. The
+  message includes the name of the course, a link to the registration page,
+  and a reminder to use that same email address to register. Whether you
   choose to send a notification or not, enrolled students see your course on
-  their dashboard when they log in.
+  their dashboards when they log in.
 
-  An example of the email message that students receive when you select this
+  An example of the email message that enrollees receive when you select this
   option follows.
 
   .. image:: ../Images/Course_Enrollment_Email.png

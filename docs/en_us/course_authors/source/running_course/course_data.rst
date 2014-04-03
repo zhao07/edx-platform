@@ -25,7 +25,7 @@ To view course data:
    information about the course.
 
     .. image:: ../Images/Instructor_Dash_Course_Info.png
-     :alt: The basic course informationn section of the Instructor Dashboard 
+     :alt: The basic course information section of the Instructor Dashboard 
 
 *************************************************
 Sources in Studio of the Basic Course Information
