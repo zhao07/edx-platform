@@ -75,7 +75,7 @@ function () {
         };
 
         // With this function, an error will be thrown when
-        // onFetchAvailableQualities is called during first play of video.
+        // fetchAvailableQualities is called during first play of video.
         Player.prototype.getAvailableQualityLevels = function () {
             return [];
         };

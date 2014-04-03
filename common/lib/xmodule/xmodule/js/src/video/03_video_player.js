@@ -22,7 +22,6 @@ function (HTML5Video, Resizer) {
             log: log,
             onCaptionSeek: onSeek,
             onEnded: onEnded,
-            onFetchAvailableQualities: _.once(onFetchAvailableQualities),
             onPause: onPause,
             onPlay: onPlay,
             onPlaybackQualityChange: onPlaybackQualityChange,
@@ -464,19 +463,6 @@ function (HTML5Video, Resizer) {
         this.el.trigger('ended', arguments);
     }
 
-    function onFetchAvailableQualities() {
-        var qualities = this.videoPlayer.player.getAvailableQualityLevels();
-
-        this.config.availableHDQualities = _.intersection(
-            qualities, ['highres', 'hd1080', 'hd720']
-        );
-
-        // HD qualities are available, show video quality control.
-        if (this.config.availableHDQualities.length > 0) {
-            this.trigger('videoQualityControl.showQualityControl');
-        }
-    }
-
     function onPause() {
         this.videoPlayer.log(
             'pause_video',
@@ -515,6 +501,8 @@ function (HTML5Video, Resizer) {
         }
 
         this.trigger('videoControl.play', null);
+
+        this.trigger('videoQualityControl.fetchAvailableQualities', null);
 
         this.trigger('videoProgressSlider.notifyThroughHandleEnd', {
             end: false
@@ -659,9 +647,6 @@ function (HTML5Video, Resizer) {
                 this.videoPlayer.onUnstarted();
                 break;
             case this.videoPlayer.PlayerState.PLAYING:
-                // onFetchAvailableQualities can only be called once as _.once
-                // has been used.
-                this.videoPlayer.onFetchAvailableQualities();
                 this.videoPlayer.onPlay();
                 break;
             case this.videoPlayer.PlayerState.PAUSED:

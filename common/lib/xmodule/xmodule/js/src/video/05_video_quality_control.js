@@ -36,6 +36,7 @@ function () {
     //     get the 'state' object as a context.
     function _makeFunctionsPublic(state) {
         var methodsDict = {
+            fetchAvailableQualities: _.once(fetchAvailableQualities),
             onQualityChange: onQualityChange,
             showQualityControl: showQualityControl,
             toggleQuality: toggleQuality
@@ -73,6 +74,20 @@ function () {
     // then show the HD control.
     function showQualityControl() {
         this.videoQualityControl.el.removeClass('is-hidden');
+    }
+
+    // This function can only be called once as _.once has been used.
+    function fetchAvailableQualities() {
+        var qualities = this.videoPlayer.player.getAvailableQualityLevels();
+
+        this.config.availableHDQualities = _.intersection(
+            qualities, ['highres', 'hd1080', 'hd720']
+        );
+
+        // HD qualities are available, show video quality control.
+        if (this.config.availableHDQualities.length > 0) {
+            this.trigger('videoQualityControl.showQualityControl');
+        }
     }
 
     function onQualityChange(value) {
