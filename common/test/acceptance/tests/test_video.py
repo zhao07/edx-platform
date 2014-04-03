@@ -459,9 +459,6 @@ class VideoTestF(UniqueCourseTest):
         self.course_info_page.visit()
         self.tab_nav.go_to_tab('Courseware')
 
-        import sys
-        print >> sys.stderr, 'Now at Courseware Tab'
-
         self.video.wait_for_video_player()
 
         # make sure captions are opened
@@ -521,6 +518,8 @@ class VideoTestG(UniqueCourseTest):
         self.course_info_page.visit()
         self.tab_nav.go_to_tab('Courseware')
 
+        self.video.wait_for_video_player()
+
         # make sure captions are opened
         self.video.set_captions_visibility_state('opened')
 
@@ -536,6 +535,8 @@ class VideoTestG(UniqueCourseTest):
         # go to video
         self.course_info_page.visit()
         self.tab_nav.go_to_tab('Courseware')
+
+        self.video.wait_for_video_player()
 
         # make sure captions are opened
         self.video.set_captions_visibility_state('opened')
@@ -591,6 +592,8 @@ class VideoTestH(UniqueCourseTest):
         self.course_info_page.visit()
         self.tab_nav.go_to_tab('Courseware')
 
+        self.video.wait_for_video_player()
+
         # make sure captions are opened
         self.video.set_captions_visibility_state('opened')
 
@@ -641,6 +644,8 @@ class VideoTestI(UniqueCourseTest):
         # go to video
         self.course_info_page.visit()
         self.tab_nav.go_to_tab('Courseware')
+
+        self.video.wait_for_video_player()
 
         # make sure captions are opened
         self.video.set_captions_visibility_state('opened')
@@ -721,6 +726,8 @@ class VideoTestJ(UniqueCourseTest):
         self.course_info_page.visit()
         self.tab_nav.go_to_tab('Courseware')
 
+        self.video.wait_for_video_player()
+
         # check if we can download transcript in "srt" format that has text "00:00:00,270"
         self.assertTrue(self.video.can_we_download_transcript('srt', '00:00:00,270'))
 
@@ -791,6 +798,8 @@ class VideoTestK(UniqueCourseTest):
         # go to video
         self.course_info_page.visit()
         self.tab_nav.go_to_tab('Courseware')
+
+        self.video.wait_for_video_player()
 
         # make sure captions are opened
         self.video.set_captions_visibility_state('opened')
