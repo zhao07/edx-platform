@@ -74,8 +74,15 @@ function () {
             return this.video.duration;
         };
 
-        // With this function, an error will be thrown when
-        // fetchAvailableQualities is called during first play of video.
+        /*
+         * @desc Mimics YouTube's API getAvailableQualityLevels function.
+                 Without it, an error will be thrown when
+                 fetchAvailableQualities is called during first play of video.
+         *
+         * @returns {array} Empty array
+         *
+         * @public
+         */
         Player.prototype.getAvailableQualityLevels = function () {
             return [];
         };

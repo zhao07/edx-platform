@@ -502,8 +502,6 @@ function (HTML5Video, Resizer) {
 
         this.trigger('videoControl.play', null);
 
-        this.trigger('videoQualityControl.fetchAvailableQualities', null);
-
         this.trigger('videoProgressSlider.notifyThroughHandleEnd', {
             end: false
         });

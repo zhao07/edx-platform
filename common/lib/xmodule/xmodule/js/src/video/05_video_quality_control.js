@@ -36,7 +36,7 @@ function () {
     //     get the 'state' object as a context.
     function _makeFunctionsPublic(state) {
         var methodsDict = {
-            fetchAvailableQualities: _.once(fetchAvailableQualities),
+            fetchAvailableQualities: fetchAvailableQualities,
             onQualityChange: onQualityChange,
             showQualityControl: showQualityControl,
             toggleQuality: toggleQuality
@@ -61,7 +61,12 @@ function () {
     //
     //     Bind any necessary function callbacks to DOM events (click, mousemove, etc.).
     function _bindHandlers(state) {
-        state.videoQualityControl.el.on('click', state.videoQualityControl.toggleQuality);
+        state.videoQualityControl.el.on('click',
+            state.videoQualityControl.toggleQuality
+        );
+        state.el.on('play',
+            _.once(state.videoQualityControl.fetchAvailableQualities)
+        );
     }
 
     // ***************************************************************
@@ -70,13 +75,24 @@ function () {
     // The magic private function that makes them available and sets up their context is makeFunctionsPublic().
     // ***************************************************************
 
-    // This function will only be called if HD qualities are available. It will
-    // then show the HD control.
+    /*
+     * @desc Shows quality control. This function will only be called if HD
+     *       qualities are available.
+     *
+     * @public
+     */
     function showQualityControl() {
         this.videoQualityControl.el.removeClass('is-hidden');
     }
 
     // This function can only be called once as _.once has been used.
+    /*
+     * @desc Get the available qualities from YouTube API. Possible values are:
+             ['highres', 'hd1080', 'hd720', 'large', 'medium', 'small'].
+             HD are: ['highres', 'hd1080', 'hd720'].
+     *
+     * @public
+     */
     function fetchAvailableQualities() {
         var qualities = this.videoPlayer.player.getAvailableQualityLevels();
 
