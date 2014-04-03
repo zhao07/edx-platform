@@ -69,7 +69,7 @@ define(["js/views/baseview", "underscore", "underscore.string", "jquery", "gette
                     that.model.set(options);
                 }
             });
-            $(".wrapper-view").after(view.show().el);
+            view.show();
         }
     });
 

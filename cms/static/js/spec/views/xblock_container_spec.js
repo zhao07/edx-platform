@@ -80,7 +80,7 @@ define(["jquery", "js/spec_helpers/create_sinon", "js/spec_helpers/edit_helpers"
                         html: mockXBlockEditorHtml,
                         "resources": []
                     });
-                    expect($('.wrapper-modal-window')).toHaveClass('is-shown');
+                    expect(edit_helpers.isShowingModal()).toBeTruthy();
                 });
             });
         });

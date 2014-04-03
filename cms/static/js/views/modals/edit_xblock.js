@@ -9,11 +9,16 @@ define(["jquery", "underscore", "gettext", "js/views/modals/base_modal",
         var EditXBlockModal = BaseModal.extend({
             events : {
                 "click .action-save": "save",
-                "click .action-cancel": "cancel",
                 "click .action-modes a": "changeMode"
             },
 
+            options: $.extend({}, BaseModal.prototype.options, {
+                modalName: 'edit-xblock'
+            }),
+
             initialize: function() {
+                BaseModal.prototype.initialize.call(this);
+                this.events = _.extend({}, BaseModal.prototype.events, this.events);
                 this.template = _.template($("#edit-xblock-modal-tpl").text());
                 this.editorModeButtonTemplate = _.template($("#editor-mode-button-tpl").text());
             },
@@ -27,6 +32,7 @@ define(["jquery", "underscore", "gettext", "js/views/modals/base_modal",
             edit: function(xblockElement, rootXBlockInfo, options) {
                 this.xblockElement = xblockElement;
                 this.xblockInfo = this.findXBlockInfo(xblockElement, rootXBlockInfo);
+                this.options.modalType = this.xblockInfo.get('category');
                 this.editOptions = options;
                 this.render();
                 this.show();
@@ -35,10 +41,10 @@ define(["jquery", "underscore", "gettext", "js/views/modals/base_modal",
                 this.displayXBlock();
             },
 
-            render: function() {
-                this.$el.html(this.template({
+            getContentHtml: function() {
+                return this.template({
                     xblockInfo: this.xblockInfo
-                }));
+                });
             },
 
             displayXBlock: function() {
@@ -107,11 +113,6 @@ define(["jquery", "underscore", "gettext", "js/views/modals/base_modal",
                     buttonSelector = '.' + mode + '-button';
                     this.$(buttonSelector).addClass('is-set');
                 }
-            },
-
-            cancel: function(event) {
-                event.preventDefault();
-                this.hide();
             },
 
             save: function(event) {

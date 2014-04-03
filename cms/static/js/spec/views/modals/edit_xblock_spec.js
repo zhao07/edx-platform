@@ -44,9 +44,9 @@ define(["jquery", "underscore", "js/spec_helpers/create_sinon", "js/spec_helpers
                 it('can show itself', function() {
                     var requests = create_sinon.requests(this);
                     modal = showModal(requests, mockXBlockEditorHtml);
-                    expect(modal.$('.wrapper-modal-window')).toHaveClass('is-shown');
+                    expect(edit_helpers.isShowingModal(modal)).toBeTruthy();
                     edit_helpers.cancelModal(modal);
-                    expect(modal.$('.wrapper-modal-window')).not.toHaveClass('is-shown');
+                    expect(edit_helpers.isShowingModal(modal)).toBeFalsy();
                 });
 
                 it('shows the correct title', function() {
@@ -79,9 +79,9 @@ define(["jquery", "underscore", "js/spec_helpers/create_sinon", "js/spec_helpers
                 it('can render itself', function() {
                     var requests = create_sinon.requests(this);
                     modal = showModal(requests, mockXModuleEditorHtml);
-                    expect(modal.$('.wrapper-modal-window')).toHaveClass('is-shown');
+                    expect(edit_helpers.isShowingModal(modal)).toBeTruthy();
                     edit_helpers.cancelModal(modal);
-                    expect(modal.$('.wrapper-modal-window')).not.toHaveClass('is-shown');
+                    expect(edit_helpers.isShowingModal(modal)).toBeFalsy();
                 });
 
                 it('shows the correct title', function() {
