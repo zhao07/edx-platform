@@ -387,6 +387,10 @@ if settings.FEATURES.get('CLASS_DASHBOARD'):
         # For listing students that opened a sub-section
         url(r'^get_students_opened_subsection$',
             'class_dashboard.dashboard_data.get_students_opened_subsection', name="get_students_opened_subsection"),
+
+        # For listing of students' grade per problem
+        url(r'^get_students_problem_grades$',
+            'class_dashboard.dashboard_data.get_students_problem_grades', name="get_students_problem_grades"),
     )
 
 if settings.DEBUG or settings.FEATURES.get('ENABLE_DJANGO_ADMIN_SITE'):

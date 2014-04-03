@@ -196,6 +196,7 @@ def get_d3_problem_grade_distrib(course_id):
                                     'color': percent,
                                     'value': count_grade,
                                     'tooltip': tooltip,
+                                    'module_url': child.location.url(),
                                 })
 
                         problem = {
@@ -254,7 +255,7 @@ def get_d3_sequential_open_distrib(course_id):
                 'color': 0,
                 'value': num_students,
                 'tooltip': tooltip,
-                'subsection_url': subsection.location.url(),
+                'module_url': subsection.location.url(),
             })
             subsection = {
                 'xValue': "SS {0}".format(c_subsection),
@@ -428,27 +429,78 @@ def get_students_opened_subsection(request, csv=False):
                 'name': student['student__profile__name'],
                 'username': student['student__username'],
             })
-    
+
         response_payload = {
             'results': results,
         }
         return JsonResponse(response_payload)
     else:
         tooltip = request.GET.get('tooltip')
-        filename = sanitise_filename(tooltip)
-        
+        filename = sanitise_filename(tooltip[tooltip.index('S'):])
+
         header = ['Name', 'Username']
         for student in students:
             results.append([student['student__profile__name'], student['student__username']])
-        
+
         response = create_csv_response(filename, header, results)
         return response
+
+
+def get_students_problem_grades(request, csv=False):
+    """
+    Get a list of students and grades for a particular subsection.
+    Returns either a dict of students' name, username, grade, percent
+     or a header array and array of arrays of students names, usernames, grades, percents for csv download.
+    """
+    module_id = request.GET.get('module_id')
+    csv = request.GET.get('csv')
+
+    # Query for "opened a subsection" students
+    students = models.StudentModule.objects.select_related('student').filter(
+        module_state_key__exact=module_id,
+        module_type__exact='problem',
+        grade__isnull=False,
+    ).values('student__username', 'student__profile__name', 'grade', 'max_grade'
+    ).order_by('student__profile__name')
+
+    results = []
+    if not csv:
+        for student in students:
+            student_dict = {
+                'name': student['student__profile__name'],
+                'username': student['student__username'],
+                'grade': student['grade'],
+            }
+
+            student_dict['percent'] = 0
+            if student['max_grade'] > 0:
+                student_dict['percent'] = round(student['grade'] * 100 / student['max_grade'])
+            results.append(student_dict)
+
+        response_payload = {
+            'results': results,
+        }
+        return JsonResponse(response_payload)
+    else:
+        tooltip = request.GET.get('tooltip')
+        filename = sanitise_filename(tooltip[:tooltip.index('-')])
+
+        header = ['Name', 'Username', 'Grade', 'Percent']
+        for student in students:
+
+            percent = 0
+            if student['max_grade'] > 0:
+                percent = round(student['grade'] * 100 /student['max_grade'])
+            results.append([student['student__profile__name'], student['student__username'], student['grade'], percent])
+
+        response = create_csv_response(filename, header, results)
+        return response
+
 
 def sanitise_filename(filename):
     """
     Utility function
     """
-    filename = filename[filename.index('S'):]
     filename = filename.replace (" ", "_")
     filename = filename.encode('ascii')
     filename = filename[0:25] + '.csv'

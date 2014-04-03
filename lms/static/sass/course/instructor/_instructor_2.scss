@@ -604,7 +604,7 @@ section.instructor-dashboard-content-2 {
 	    .metrics-overlay-content-wrapper {
               position: relative;
               display: block;
-              height: 75%;
+              height: 475px;
               width: 85%;
               margin: 5%;
               background-color: #fff;
@@ -617,18 +617,25 @@ section.instructor-dashboard-content-2 {
                 font-weight: bold;
               }
               .metrics-overlay-content {
-                width: 100%;
-                
-                .header {
-                  background-color: #ddd;
+              	width: 100%;
+                height: 400px;
+                overflow: auto;
+              
+                table {
+                  width: 100%;
+                  
+                  .header {
+                    background-color: #ddd;
+                  }
+                  th, td {
+                    padding: 10px;
+                  }
                 }
-                th, td {
-                  padding: 10px;
-                }
-              }
+	          }
               
               .download-csv {
                 position: absolute;
+                display: none;
                 right: 2%;
                 bottom: 2%;
               }
