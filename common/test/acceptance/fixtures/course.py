@@ -61,7 +61,14 @@ class StudioApiFixture(object):
         }
 
 
-class XBlockFixtureDesc(object):
+class XBlockFixtureError(Exception):
+    """
+    Error occurred while installing an XBlock fixture.
+    """
+    pass
+
+
+class XBlockFixtureDesc(StudioApiFixture):
     """
     Description of an XBlock, used to configure a course fixture.
     """
@@ -109,6 +116,65 @@ class XBlockFixtureDesc(object):
             'graderType': self.grader_type,
             'publish': self.publish
         })
+
+    def install(self):
+        """
+        Create the XBlock and its children. This is not idempotent; invoking
+        this multiple times will add multiple identical XBlock instances.
+        """
+        create_payload = {
+            'category': self.category,
+            'display_name': self.display_name,
+        }
+
+        # TODO: can this happen?
+        if self.parent_locator is not None:
+            create_payload['parent_locator'] = self.parent_locator
+
+        # Create the new XBlock
+        response = self.session.post(
+            STUDIO_BASE_URL + '/xblock',
+            data=json.dumps(create_payload),
+            headers=self.headers,
+        )
+
+        if not response.ok:
+            msg = "Could not create {0}.  Status was {1}".format(self, response.status_code)
+            raise XBlockFixtureError(msg)
+
+        # TODO: how can this fail?
+        try:
+            self.locator = response.json().get('locator')
+
+        except ValueError:
+            raise XBlockFixtureError("Could not decode JSON from '{0}'".format(response.content))
+
+        # Configure the XBlock
+        response = self.session.post(
+            STUDIO_BASE_URL + '/xblock/' + self.locator,
+            data=self.serialize(),
+            headers=self.headers,
+        )
+
+        if response.ok:
+            for child in self.children:
+                child.parent_locator = self.locator
+                child.install()
+
+            response = self.session.put(
+                "{}/xblock/{}".format(STUDIO_BASE_URL, self.locator),
+                data=json.dumps({'publish': 'make_public'}),
+                headers=self.headers,
+            )
+
+            if not response.ok:
+                msg = "Could not publish {}.  Status was {}".format(self.locator, response.status_code)
+                raise XBlockFixtureError(msg)
+
+        else:
+            raise XBlockFixtureError(
+                "Could not update {0}.  Status code: {1}".format(
+                    self, response.status_code))
 
     def __str__(self):
         """
@@ -200,6 +266,8 @@ class CourseFixture(StudioApiFixture):
         Returns the course fixture to allow chaining.
         """
         self._children.extend(args)
+        for arg in args:
+            arg.parent_locator = self._course_loc
         return self
 
     def add_update(self, update):
@@ -227,7 +295,8 @@ class CourseFixture(StudioApiFixture):
         self._install_course_updates()
         self._install_course_handouts()
         self._configure_course()
-        self._create_xblock_children(self._course_loc, self._children)
+        for child in self._children:
+            child.install()
 
     @property
     def _course_loc(self):
@@ -358,75 +427,6 @@ class CourseFixture(StudioApiFixture):
                 raise CourseFixtureError(
                     "Could not add update to course: {0}.  Status was {1}".format(
                         update, response.status_code))
-
-    def _create_xblock_children(self, parent_loc, xblock_descriptions):
-        """
-        Recursively create XBlock children.
-        """
-        for desc in xblock_descriptions:
-            loc = self._create_xblock(parent_loc, desc)
-            self._create_xblock_children(loc, desc.children)
-
-        self._publish_xblock(parent_loc)
-
-    def _create_xblock(self, parent_loc, xblock_desc):
-        """
-        Create an XBlock with `parent_loc` (the location of the parent block)
-        and `xblock_desc` (an `XBlockFixtureDesc` instance).
-        """
-        create_payload = {
-            'category': xblock_desc.category,
-            'display_name': xblock_desc.display_name,
-        }
-
-        if parent_loc is not None:
-            create_payload['parent_locator'] = parent_loc
-
-        # Create the new XBlock
-        response = self.session.post(
-            STUDIO_BASE_URL + '/xblock',
-            data=json.dumps(create_payload),
-            headers=self.headers,
-        )
-
-        if not response.ok:
-            msg = "Could not create {0}.  Status was {1}".format(xblock_desc, response.status_code)
-            raise CourseFixtureError(msg)
-
-        try:
-            loc = response.json().get('locator')
-
-        except ValueError:
-            raise CourseFixtureError("Could not decode JSON from '{0}'".format(response.content))
-
-        # Configure the XBlock
-        response = self.session.post(
-            STUDIO_BASE_URL + '/xblock/' + loc,
-            data=xblock_desc.serialize(),
-            headers=self.headers,
-        )
-
-        if response.ok:
-            return loc
-        else:
-            raise CourseFixtureError(
-                "Could not update {0}.  Status code: {1}".format(
-                    xblock_desc, response.status_code))
-
-    def _publish_xblock(self, locator):
-        """
-        Publish the xblock at `locator`.
-        """
-        # Create the new XBlock
-        response = self.session.put(
-            "{}/xblock/{}".format(STUDIO_BASE_URL, locator),
-            data=json.dumps({'publish': 'make_public'}),
-            headers=self.headers,
-        )
-
-        if not response.ok:
-            msg = "Could not publish {}.  Status was {}".format(locator, response.status_code)
-            raise CourseFixtureError(msg)
 
     def _encode_post_dict(self, post_dict):
         """
