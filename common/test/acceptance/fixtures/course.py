@@ -7,6 +7,7 @@ import datetime
 from textwrap import dedent
 from collections import namedtuple
 import requests
+from path import path
 from lazy import lazy
 from . import STUDIO_BASE_URL
 
@@ -375,18 +376,7 @@ class CourseFixture(StudioApiFixture):
 
     def _upload_assets(self):
         url = STUDIO_BASE_URL + self._assets_url
-        # i4x://edX/Open_DemoX/video/d8c0501f4f2f4e6e8a4a345310475e48
 
-        #c_id = self._course_dict['number']
-        #c_org = self._course_dict['org']
-
-
-        #url = STUDIO_BASE_URL + '/xblock/i4x:;_;_edX;_Open_DemoX;_video;_d8c0501f4f2f4e6e8a4a345310475e48/handler/studio_transcript/translation/zh'
-
-        #url = STUDIO_BASE_URL + '/xblock/i4x:;_;_' + c_org + ';_' + c_id + ';_video;_' + c_id + '/handler/studio_transcript/translation/zh'
-
-
-        from path import path
         test_dir = path(__file__).abspath().dirname().dirname().dirname()
 
         for asset_name in self._assets:
@@ -449,49 +439,6 @@ class CourseFixture(StudioApiFixture):
 
         except ValueError:
             raise CourseFixtureError("Could not decode JSON from '{0}'".format(response.content))
-
-        import sys
-        print >> sys.stderr, 'loc: ', loc
-
-        # if xblock_desc.category == 'video':
-        #     self._upload_video_transcripts(loc)
-
-
-
-        # if xblock_desc.category == 'video':
-        #     #from nose.tools import set_trace; set_trace()
-        #     url = STUDIO_BASE_URL + '/transcripts/upload'
-        #
-        #     srt_filename = 'chinese_transcripts.srt'
-        #     from path import path
-        #     test_dir = path(__file__).abspath().dirname().dirname().dirname()
-        #
-        #     # I have a "subs_OEoXaMPEzfM.srt.sjson" transcript file in assets
-        #
-        #     #  I have a "subs_b7xgknqkQk8.srt.sjson" transcript file in assets
-        #
-        #     srt_path = test_dir + '/data/uploads/' + srt_filename
-        #     locator = loc
-        #
-        #     video_name = 'edX-FA12-cware-1_100'
-        #     video_list = [{'mode': 'html5', 'video': 'chinese_transcripts', 'type': 'mp4'}]
-        #     data = {'locator': locator, 'video_list': json.dumps(video_list)}
-        #     fd = open(srt_path)
-        #     files = {'transcript-file': (srt_filename, fd)}
-        #     headers = {
-        #         'Accept': 'application/json',
-        #         'X-CSRFToken': self.session_cookies.get('csrftoken', '')
-        #     }
-        #
-        #     upload_response = self.session.post(url, data=data, files=files, headers=headers)
-        #
-        #     if upload_response.ok:
-        #         import sys
-        #         print >> sys.stderr, 'Transcript Upload Response: ', upload_response.content
-        #     else:
-        #         raise CourseFixtureError('Could not upload transcript. Status code: {0}'.
-        #                                  format(xblock_desc, upload_response.status_code))
-
 
         # Configure the XBlock
         response = self.session.post(

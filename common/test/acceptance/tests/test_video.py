@@ -425,7 +425,6 @@ class VideoTestF(UniqueCourseTest):
             self.course_info['run'], self.course_info['display_name']
         )
 
-
         metadata = {
             'youtube_id_1_0': '',
             'youtube_id_0_75': '',
@@ -460,13 +459,17 @@ class VideoTestF(UniqueCourseTest):
         self.course_info_page.visit()
         self.tab_nav.go_to_tab('Courseware')
 
-        from nose.tools import set_trace; set_trace()
+        import sys
+        print >> sys.stderr, 'Now at Courseware Tab'
+
+        self.video.wait_for_video_player()
 
         # make sure captions are opened
         self.video.set_captions_visibility_state('opened')
 
         # check if we see "好 各位同学" text in the captions
-        self.assertIn("好 各位同学", self.video.captions_text)
+        unicode_text = "好 各位同学".decode('utf-8')
+        self.assertIn(unicode_text, self.video.captions_text)
 
 
 class VideoTestG(UniqueCourseTest):
@@ -495,6 +498,8 @@ class VideoTestG(UniqueCourseTest):
             'html5_sources': HTML5_SOURCES,
             'sub': 'OEoXaMPEzfM'
         }
+
+        course_fix.add_asset('subs_OEoXaMPEzfM.srt.sjson')
 
         course_fix.add_children(
             XBlockFixtureDesc('chapter', 'Test Chapter').add_children(
@@ -564,6 +569,8 @@ class VideoTestH(UniqueCourseTest):
             'transcripts': {'zh': 'chinese_transcripts.srt'}
         }
 
+        course_fix.add_asset('chinese_transcripts.srt')
+
         course_fix.add_children(
             XBlockFixtureDesc('chapter', 'Test Chapter').add_children(
                 XBlockFixtureDesc('sequential', 'Test Section').add_children(
@@ -612,6 +619,8 @@ class VideoTestI(UniqueCourseTest):
         metadata = {
             'sub': 'OEoXaMPEzfM'
         }
+
+        course_fix.add_asset('subs_OEoXaMPEzfM.srt.sjson')
 
         course_fix.add_children(
             XBlockFixtureDesc('chapter', 'Test Chapter').add_children(
@@ -672,6 +681,8 @@ class VideoTestJ(UniqueCourseTest):
             'sub': 'OEoXaMPEzfM',
             'download_track': True
         }
+
+        course_fix.add_asset('subs_OEoXaMPEzfM.srt.sjson')
 
         youtube_c_metadata = {
             'track': 'http://example.org/',
@@ -754,6 +765,9 @@ class VideoTestK(UniqueCourseTest):
             'youtube_id_1_5': 'b7xgknqkQk8',
             'sub': 'OEoXaMPEzfM'
         }
+
+        course_fix.add_asset('subs_OEoXaMPEzfM.srt.sjson')
+        course_fix.add_asset('subs_b7xgknqkQk8.srt.sjson')
 
         course_fix.add_children(
             XBlockFixtureDesc('chapter', 'Test Chapter').add_children(

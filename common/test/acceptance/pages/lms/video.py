@@ -232,7 +232,7 @@ class VideoPage(PageObject):
         self.browser.set_window_dimensions(300, 600)
         real, expected = self.browser.get_window_size()
 
-        width = round(100 * real['width']/expected['width']) == wrapper_width
+        width = round(100 * real['width'] / expected['width']) == wrapper_width
 
         self.browser.set_window_dimensions(600, 300)
         real, expected = self.browser.get_window_size()
@@ -252,7 +252,7 @@ class VideoPage(PageObject):
         """
         kwargs = dict()
 
-        session_id = [{i['name']:i['value']} for i in self.browser.cookies.all() if i['name'] == u'sessionid']
+        session_id = [{i['name']: i['value']} for i in self.browser.cookies.all() if i['name'] == u'sessionid']
         if session_id:
             kwargs.update({
                 'cookies': session_id[0]
@@ -343,3 +343,11 @@ class VideoPage(PageObject):
         if duration_in_seconds == self.duration:
             return True
         return False
+
+    def wait_for_video_player(self):
+        """
+        Wait until Video Player Rendered Completely.
+        """
+        video_player_css = 'section.video-controls'
+        EmptyPromise(lambda: self.q(css=video_player_css).visible, "Video Player Rendering Failed",
+                     try_limit=10).fulfill()
