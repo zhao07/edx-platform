@@ -64,6 +64,8 @@ class VideoTestA(UniqueCourseTest):
         self.course_info_page.visit()
         self.tab_nav.go_to_tab('Courseware')
 
+        self.video.wait_for_video_player()
+
         # check if video has rendered in "Youtube" mode
         self.assertTrue(self.video.is_video_rendered('youtube'))
 
@@ -96,6 +98,8 @@ class VideoTestA(UniqueCourseTest):
         self.course_info_page.visit()
         self.tab_nav.go_to_tab('Courseware')
 
+        self.video.wait_for_video_player()
+
         # check if video has rendered in "Youtube" mode
         self.assertTrue(self.video.is_video_rendered('youtube'))
 
@@ -109,10 +113,12 @@ class VideoTestA(UniqueCourseTest):
         self.course_info_page.visit()
         self.tab_nav.go_to_tab('Courseware')
 
+        self.video.wait_for_video_player()
+
         # click video button "fullscreen"
         self.video.click_player_button('fullscreen')
 
-        # check if is video aligned correctly without enabled transcript
+        # check if video aligned correctly without enabled transcript
         self.assertTrue(self.video.is_aligned(False))
 
 
@@ -158,6 +164,8 @@ class VideoTestB(UniqueCourseTest):
         self.course_info_page.visit()
         self.tab_nav.go_to_tab('Courseware')
 
+        self.video.wait_for_video_player()
+
         # check if video has rendered in "Youtube" mode
         self.assertTrue(self.video.is_video_rendered('youtube'))
 
@@ -171,7 +179,9 @@ class VideoTestB(UniqueCourseTest):
         self.course_info_page.visit()
         self.tab_nav.go_to_tab('Courseware')
 
-        # check if video has rendered in "Youtube" mode
+        self.video.wait_for_video_player()
+
+        # check if video has rendered in "html5" mode
         self.assertTrue(self.video.is_video_rendered('html5'))
 
 
@@ -236,6 +246,8 @@ class VideoTestC(UniqueCourseTest):
         self.course_info_page.visit()
         self.tab_nav.go_to_tab('Courseware')
 
+        self.video.wait_for_video_player()
+
         # check if the video has autoplay mode disabled
         self.assertFalse(self.video.is_autoplay_enabled)
 
@@ -259,6 +271,10 @@ class VideoTestD(UniqueCourseTest):
         )
 
         metadata = {
+            'youtube_id_1_0': '',
+            'youtube_id_0_75': '',
+            'youtube_id_1_25': '',
+            'youtube_id_1_5': '',
             'html5_sources': HTML5_SOURCES_INCORRECT
         }
 
@@ -282,6 +298,8 @@ class VideoTestD(UniqueCourseTest):
         self.course_info_page.visit()
         self.tab_nav.go_to_tab('Courseware')
 
+        self.video.wait_for_video_player()
+
         # check if video has rendered in "youtube" mode
         self.assertTrue(self.video.is_video_rendered('youtube'))
 
@@ -294,6 +312,8 @@ class VideoTestD(UniqueCourseTest):
         # Navigate to a video
         self.course_info_page.visit()
         self.tab_nav.go_to_tab('Courseware')
+
+        self.video.wait_for_video_player()
 
         # check if error message is shown
         self.assertTrue(self.video.is_error_message_shown)
@@ -361,16 +381,20 @@ class VideoTestE(UniqueCourseTest):
         self.course_info_page.visit()
         self.tab_nav.go_to_tab('Courseware')
 
+        self.video.wait_for_video_player()
+
         # select the "2.0" speed on video "A"
         self.course_nav.go_to_sequential('A')
         self.video.change_speed('2.0')
 
         # select the "0.50" speed on video "B"
         self.course_nav.go_to_sequential('B')
-        self.video.change_speed('2.0')
+        self.video.change_speed('0.50')
 
         # open video "C"
         self.course_nav.go_to_sequential('C')
+
+        #self.video.wait_for_video_player()
 
         # check if video "C" should start playing at speed "0.75"
         self.assertEqual(self.video.get_video_speed, '0.75x')
@@ -381,9 +405,13 @@ class VideoTestE(UniqueCourseTest):
         # check if video "A" should start playing at speed "2.0"
         self.assertEqual(self.video.get_video_speed, '2.0x')
 
+        # from nose.tools import set_trace; set_trace()
+
         # reload the page
         self.course_info_page.visit()
         self.tab_nav.go_to_tab('Courseware')
+
+        self.video.wait_for_video_player()
 
         # open video "A"
         self.course_nav.go_to_sequential('A')
@@ -434,10 +462,8 @@ class VideoTestF(UniqueCourseTest):
             'transcripts': {'zh': 'chinese_transcripts.srt'}
         }
 
-        # from nose.tools import set_trace; set_trace()
         course_fix.add_asset('chinese_transcripts.srt')
 
-        # from nose.tools import set_trace; set_trace()
         course_fix.add_children(
             XBlockFixtureDesc('chapter', 'Test Chapter').add_children(
                 XBlockFixtureDesc('sequential', 'Test Section').add_children(
@@ -536,6 +562,8 @@ class VideoTestG(UniqueCourseTest):
         self.course_info_page.visit()
         self.tab_nav.go_to_tab('Courseware')
 
+        # from nose.tools import set_trace; set_trace()
+
         self.video.wait_for_video_player()
 
         # make sure captions are opened
@@ -598,7 +626,8 @@ class VideoTestH(UniqueCourseTest):
         self.video.set_captions_visibility_state('opened')
 
         # check if we see "好 各位同学" text in the captions
-        self.assertIn("好 各位同学", self.video.captions_text)
+        unicode_text = "好 各位同学".decode('utf-8')
+        self.assertIn(unicode_text, self.video.captions_text)
 
 
 class VideoTestI(UniqueCourseTest):
@@ -749,6 +778,7 @@ class VideoTestJ(UniqueCourseTest):
         # menu "download_transcript" doesn't exist
         self.assertFalse(self.video.is_menu_exist('download_transcript'))
 
+
 class VideoTestK(UniqueCourseTest):
 
     def setUp(self):
@@ -819,3 +849,534 @@ class VideoTestK(UniqueCourseTest):
 
         # check if duration is "1:00"
         self.assertTrue(self.video.is_duration_matches('1:00'))
+
+
+class VideoTestL(UniqueCourseTest):
+
+    def setUp(self):
+        """
+        Initialize pages and install a course fixture.
+        """
+        super(VideoTestL, self).setUp()
+
+        self.video = VideoPage(self.browser)
+        self.tab_nav = TabNavPage(self.browser)
+        self.course_nav = CourseNavPage(self.browser)
+        self.course_info_page = CourseInfoPage(self.browser, self.course_id)
+
+        # Install a course fixture with a video component
+        course_fix = CourseFixture(
+            self.course_info['org'], self.course_info['number'],
+            self.course_info['run'], self.course_info['display_name']
+        )
+
+        youtube_metadata = {
+            'download_track': True,
+            'transcripts': {'zh': 'chinese_transcripts.srt'},
+            'sub': 'OEoXaMPEzfM'
+        }
+
+        course_fix.add_asset('chinese_transcripts.srt')
+        course_fix.add_asset('subs_OEoXaMPEzfM.srt.sjson')
+
+        course_fix.add_children(
+            XBlockFixtureDesc('chapter', 'Test Chapter').add_children(
+                XBlockFixtureDesc('sequential', 'Test Section').add_children(
+                    XBlockFixtureDesc('vertical', 'Test Vertical-0').add_children(
+                        XBlockFixtureDesc('video', 'Video', metadata=youtube_metadata)
+        )))).install()
+
+        # Auto-auth register for the course
+        AutoAuthPage(self.browser, course_id=self.course_id).visit()
+
+    def test_download_button_works_correctly_non_english_transcript_youtube_mode(self):
+        """
+        Tests that Download button works correctly for non-english transcript in Youtube mode of Video component
+        Given
+              I have a "chinese_transcripts.srt" transcript file in assets
+              I have a "subs_OEoXaMPEzfM.srt.sjson" transcript file in assets
+              And it has a video in "Youtube" mode:
+        """
+
+        # go to video
+        self.course_info_page.visit()
+        self.tab_nav.go_to_tab('Courseware')
+
+        self.video.wait_for_video_player()
+
+        # check if "Hi, welcome to Edx." text in the captions
+        self.assertIn('Hi, welcome to Edx.', self.video.captions_text)
+
+        # check if we can download transcript in "srt" format that has text "Hi, welcome to Edx."
+        self.assertTrue(self.video.can_we_download_transcript('srt', 'Hi, welcome to Edx.'))
+
+        # select language with code "zh"
+        self.assertTrue(self.video.select_language('zh'))
+
+        # check if we see "好 各位同学" text in the captions
+        unicode_text = "好 各位同学".decode('utf-8')
+        self.assertIn(unicode_text, self.video.captions_text)
+
+        # check if we can download transcript in "srt" format that has text "好 各位同学"
+        unicode_text = "好 各位同学".decode('utf-8')
+        self.assertTrue(self.video.can_we_download_transcript('srt', unicode_text))
+
+
+class VideoTestM(UniqueCourseTest):
+
+    def setUp(self):
+        """
+        Initialize pages and install a course fixture.
+        """
+        super(VideoTestM, self).setUp()
+
+        self.video = VideoPage(self.browser)
+        self.tab_nav = TabNavPage(self.browser)
+        self.course_nav = CourseNavPage(self.browser)
+        self.course_info_page = CourseInfoPage(self.browser, self.course_id)
+
+        # Install a course fixture with a video component
+        course_fix = CourseFixture(
+            self.course_info['org'], self.course_info['number'],
+            self.course_info['run'], self.course_info['display_name']
+        )
+
+        youtube_metadata = {
+            'youtube_id_1_0': '',
+            'youtube_id_0_75': '',
+            'youtube_id_1_25': '',
+            'youtube_id_1_5': '',
+            'html5_sources': HTML5_SOURCES,
+            'download_track': True,
+            'transcripts': {'zh': 'chinese_transcripts.srt'},
+            'sub': 'OEoXaMPEzfM'
+        }
+
+        course_fix.add_asset('chinese_transcripts.srt')
+        course_fix.add_asset('subs_b7xgknqkQk8.srt.sjson')
+
+        course_fix.add_children(
+            XBlockFixtureDesc('chapter', 'Test Chapter').add_children(
+                XBlockFixtureDesc('sequential', 'Test Section').add_children(
+                    XBlockFixtureDesc('vertical', 'Test Vertical-0').add_children(
+                        XBlockFixtureDesc('video', 'Video', metadata=youtube_metadata)
+        )))).install()
+
+        # Auto-auth register for the course
+        AutoAuthPage(self.browser, course_id=self.course_id).visit()
+
+    def test_download_button_works_correctly_non_english_transcript_html5_mode(self):
+        """
+        Tests that Download button works correctly for non-english transcript in html5 mode of Video component
+        Given
+              I have a "chinese_transcripts.srt" transcript file in assets
+              I have a "subs_OEoXaMPEzfM.srt.sjson" transcript file in assets
+              And it has a video in "html5" mode:
+        """
+
+        # go to video
+        self.course_info_page.visit()
+        self.tab_nav.go_to_tab('Courseware')
+
+        self.video.wait_for_video_player()
+
+        # check if "Hi, welcome to Edx." text in the captions
+        self.assertIn('Hi, welcome to Edx.', self.video.captions_text)
+
+        # check if we can download transcript in "srt" format that has text "Hi, welcome to Edx."
+        self.assertTrue(self.video.can_we_download_transcript('srt', 'Hi, welcome to Edx.'))
+
+        # select language with code "zh"
+        self.assertTrue(self.video.select_language('zh'))
+
+        # check if we see "好 各位同学" text in the captions
+        unicode_text = "好 各位同学".decode('utf-8')
+        self.assertIn(unicode_text, self.video.captions_text)
+
+        #Then I can download transcript in "srt" format that has text "好 各位同学"
+        unicode_text = "好 各位同学".decode('utf-8')
+        self.assertTrue(self.video.can_we_download_transcript('srt', unicode_text))
+
+
+class VideoTestN(UniqueCourseTest):
+
+    def setUp(self):
+        """
+        Initialize pages and install a course fixture.
+        """
+        super(VideoTestN, self).setUp()
+
+        self.video = VideoPage(self.browser)
+        self.tab_nav = TabNavPage(self.browser)
+        self.course_nav = CourseNavPage(self.browser)
+        self.course_info_page = CourseInfoPage(self.browser, self.course_id)
+
+        # Install a course fixture with a video component
+        course_fix = CourseFixture(
+            self.course_info['org'], self.course_info['number'],
+            self.course_info['run'], self.course_info['display_name']
+        )
+
+        youtube_metadata = {
+            'youtube_id_1_0': '',
+            'youtube_id_0_75': '',
+            'youtube_id_1_25': '',
+            'youtube_id_1_5': '',
+            'html5_sources': HTML5_SOURCES,
+            'download_track': True,
+            'transcripts': {'zh': 'chinese_transcripts.srt'}
+        }
+
+        course_fix.add_asset('chinese_transcripts.srt')
+
+        course_fix.add_children(
+            XBlockFixtureDesc('chapter', 'Test Chapter').add_children(
+                XBlockFixtureDesc('sequential', 'Test Section').add_children(
+                    XBlockFixtureDesc('vertical', 'Test Vertical-0').add_children(
+                        XBlockFixtureDesc('video', 'Video', metadata=youtube_metadata)
+        )))).install()
+
+        # Auto-auth register for the course
+        AutoAuthPage(self.browser, course_id=self.course_id).visit()
+
+    def test_download_button_works_correctly_without_english_transcript_html5_mode(self):
+        """
+        Tests that Download button works correctly for without transcript in html5 mode of Video component
+        Given
+              I have a "chinese_transcripts.srt" transcript file in assets
+              And it has a video in "html5" mode:
+        """
+
+        # go to video
+        self.course_info_page.visit()
+        self.tab_nav.go_to_tab('Courseware')
+
+        self.video.wait_for_video_player()
+
+        # check if we see "好 各位同学" text in the captions
+        unicode_text = "好 各位同学".decode('utf-8')
+        self.assertIn(unicode_text, self.video.captions_text)
+
+        # check if we can download transcript in "srt" format that has text "好 各位同学"
+        unicode_text = "好 各位同学".decode('utf-8')
+        self.assertTrue(self.video.can_we_download_transcript('srt', unicode_text))
+
+
+class VideoTestO(UniqueCourseTest):
+
+    def setUp(self):
+        """
+        Initialize pages and install a course fixture.
+        """
+        super(VideoTestO, self).setUp()
+
+        self.video = VideoPage(self.browser)
+        self.tab_nav = TabNavPage(self.browser)
+        self.course_nav = CourseNavPage(self.browser)
+        self.course_info_page = CourseInfoPage(self.browser, self.course_id)
+
+        # Install a course fixture with a video component
+        course_fix = CourseFixture(
+            self.course_info['org'], self.course_info['number'],
+            self.course_info['run'], self.course_info['display_name']
+        )
+
+        youtube_metadata = {
+            'download_track': True,
+            'transcripts': {'zh': 'chinese_transcripts.srt'}
+        }
+
+        course_fix.add_asset('chinese_transcripts.srt')
+
+        course_fix.add_children(
+            XBlockFixtureDesc('chapter', 'Test Chapter').add_children(
+                XBlockFixtureDesc('sequential', 'Test Section').add_children(
+                    XBlockFixtureDesc('vertical', 'Test Vertical-0').add_children(
+                        XBlockFixtureDesc('video', 'Video', metadata=youtube_metadata)
+        )))).install()
+
+        # Auto-auth register for the course
+        AutoAuthPage(self.browser, course_id=self.course_id).visit()
+
+    def test_download_button_works_correctly_without_english_transcript_youtube_mode(self):
+        """
+        Tests that Download button works correctly for without transcript in youtube mode of Video component
+        Given
+              I have a "chinese_transcripts.srt" transcript file in assets
+              And it has a video in "youtube" mode:
+        """
+
+        # go to video
+        self.course_info_page.visit()
+        self.tab_nav.go_to_tab('Courseware')
+
+        self.video.wait_for_video_player()
+
+        # check if we see "好 各位同学" text in the captions
+        unicode_text = "好 各位同学".decode('utf-8')
+        self.assertIn(unicode_text, self.video.captions_text)
+
+        # check if we can download transcript in "srt" format that has text "好 各位同学"
+        unicode_text = "好 各位同学".decode('utf-8')
+        self.assertTrue(self.video.can_we_download_transcript('srt', unicode_text))
+
+
+class VideoTestP(UniqueCourseTest):
+
+    def setUp(self):
+        """
+        Initialize pages and install a course fixture.
+        """
+        super(VideoTestP, self).setUp()
+
+        self.video = VideoPage(self.browser)
+        self.tab_nav = TabNavPage(self.browser)
+        self.course_nav = CourseNavPage(self.browser)
+        self.course_info_page = CourseInfoPage(self.browser, self.course_id)
+
+        # Install a course fixture with a video component
+        course_fix = CourseFixture(
+            self.course_info['org'], self.course_info['number'],
+            self.course_info['run'], self.course_info['display_name']
+        )
+
+        a_metadata = {
+            'sub': 'OEoXaMPEzfM',
+            'html5_sources': HTML5_SOURCES
+        }
+
+        b_metadata = {
+            'sub': 'b7xgknqkQk8',
+            'html5_sources': HTML5_SOURCES
+        }
+
+        c_metadata = {
+            'transcripts': {'zh': 'chinese_transcripts.srt'},
+            'html5_sources': HTML5_SOURCES
+        }
+
+        d_metadata = {
+            'html5_sources': HTML5_SOURCES
+        }
+
+        course_fix.add_asset('subs_OEoXaMPEzfM.srt.sjson')
+        course_fix.add_asset('subs_b7xgknqkQk8.srt.sjson')
+        course_fix.add_asset('chinese_transcripts.srt')
+
+        course_fix.add_children(
+            XBlockFixtureDesc('chapter', 'Test Chapter').add_children(
+                XBlockFixtureDesc('sequential', 'Test Section').add_children(
+                    XBlockFixtureDesc('vertical', 'Test Vertical-0').add_children(
+                        XBlockFixtureDesc('video', 'A', metadata=a_metadata),
+                        XBlockFixtureDesc('video', 'B', metadata=b_metadata)
+
+        ),
+                    XBlockFixtureDesc('vertical', 'Test Vertical-1').add_children(
+                        XBlockFixtureDesc('video', 'B', metadata=c_metadata)
+        ),
+                    XBlockFixtureDesc('vertical', 'Test Vertical-2').add_children(
+                        XBlockFixtureDesc('video', 'C', metadata=d_metadata)
+        )
+
+                ))).install()
+
+        # Auto-auth register for the course
+        AutoAuthPage(self.browser, course_id=self.course_id).visit()
+
+    def test_video_includes_transcript_for_non_youtube_countries(self):
+        """
+        Tests that each video in each sub-section includes a transcript for non-Youtube countries.
+        Given
+            youtube server is up and response time is 2 seconds
+            a "subs_OEoXaMPEzfM.srt.sjson" transcript file in assets
+            a "subs_b7xgknqkQk8.srt.sjson" transcript file in assets
+            a "chinese_transcripts.srt" transcript file in assets
+            it has videos "A, B" in "Youtube_HTML5" mode in position "1" of sequential
+            a video "C" in "Youtube_HTML5" mode in position "2" of sequential
+            a video "D" in "Youtube_HTML5" mode in position "3" of sequential
+        """
+
+        # go to video
+        self.course_info_page.visit()
+        self.tab_nav.go_to_tab('Courseware')
+
+        self.video.wait_for_video_player()
+
+        # check if videos have rendered in "HTML5" mode
+        self.video.videos_rendered('html5')
+
+        # check if we see text in the captions
+        text_list = ['Hi, welcome to Edx.', 'Equal transcripts']
+        self.assertTrue(self.video.check_text_in_captions(text_list))
+
+        # open video "C"
+        self.course_nav.go_to_sequential('C')
+
+        # check if video has rendered in "HTML5" mode
+        self.video.is_video_rendered('html5')
+
+        # make sure captions are opened
+        self.video.set_captions_visibility_state('opened')
+
+        # check if we see "好 各位同学" text in the captions
+        unicode_text = "好 各位同学".decode('utf-8')
+        self.assertIn(unicode_text, self.video.captions_text)
+
+        # open video "D"
+        self.course_nav.go_to_sequential('D')
+
+        # check if video has rendered in "HTML5" mode
+        self.video.is_video_rendered('html5')
+
+        # the video does not show the captions
+        self.assertFalse(self.video.captions_visible_state)
+
+
+class VideoTestQ(UniqueCourseTest):
+
+    def setUp(self):
+        """
+        Initialize pages and install a course fixture.
+        """
+        super(VideoTestQ, self).setUp()
+
+        self.video = VideoPage(self.browser)
+        self.tab_nav = TabNavPage(self.browser)
+        self.course_nav = CourseNavPage(self.browser)
+        self.course_info_page = CourseInfoPage(self.browser, self.course_id)
+
+        # Install a course fixture with a video component
+        course_fix = CourseFixture(
+            self.course_info['org'], self.course_info['number'],
+            self.course_info['run'], self.course_info['display_name']
+        )
+
+        b_metadata = {
+            'html5_sources': HTML5_SOURCES
+        }
+
+        course_fix.add_children(
+            XBlockFixtureDesc('chapter', 'Test Chapter').add_children(
+                XBlockFixtureDesc('sequential', 'Test Section').add_children(
+                    XBlockFixtureDesc('vertical', 'Test Vertical-0').add_children(
+                        XBlockFixtureDesc('video', 'A'),
+                        XBlockFixtureDesc('video', 'B', metadata=b_metadata),
+                        XBlockFixtureDesc('video', 'C'),
+                        XBlockFixtureDesc('video', 'D')
+
+        ),
+                    XBlockFixtureDesc('vertical', 'Test Vertical-1').add_children(
+                        XBlockFixtureDesc('video', 'E'),
+                        XBlockFixtureDesc('video', 'F'),
+                        XBlockFixtureDesc('video', 'G')
+        )
+
+                ))).install()
+
+        # Auto-auth register for the course
+        AutoAuthPage(self.browser, course_id=self.course_id).visit()
+
+    def test_multiple_videos_in_sequentials_load_and_work(self):
+        """
+        Tests that Multiple videos in sequentials all load and work, switching between sequentials
+        Given
+            And it has a video "A" in "Youtube" mode in position "1" of sequential
+            And a video "B" in "HTML5" mode in position "1" of sequential
+            And a video "C" in "Youtube" mode in position "1" of sequential
+            And a video "D" in "Youtube" mode in position "1" of sequential
+            And a video "E" in "Youtube" mode in position "2" of sequential
+            And a video "F" in "Youtube" mode in position "2" of sequential
+            And a video "G" in "Youtube" mode in position "2" of sequential
+        """
+
+        # go to video
+        self.course_info_page.visit()
+        self.tab_nav.go_to_tab('Courseware')
+
+        self.video.wait_for_video_player()
+
+        # check if video "A" should start playing at speed "1.0"
+        self.assertEqual(self.video.get_video_speed, '1.0x')
+
+        # select the "2.0" speed on video "B"
+        self.course_nav.go_to_sequential('B')
+        self.video.change_speed('2.0')
+
+        # select the "2.0" speed on video "C"
+        self.course_nav.go_to_sequential('C')
+        self.video.change_speed('2.0')
+
+        # select the "2.0" speed on video "D"
+        self.course_nav.go_to_sequential('D')
+        self.video.change_speed('2.0')
+
+        # open video "E"
+        self.course_nav.go_to_sequential('E')
+
+        # check if video "E" should start playing at speed "2.0"
+        self.assertEqual(self.video.get_video_speed, '2.0x')
+
+        # select the "1.0" speed on video "F"
+        self.course_nav.go_to_sequential('F')
+        self.video.change_speed('1.0')
+
+        # select the "1.0" speed on video "G"
+        self.course_nav.go_to_sequential('G')
+        self.video.change_speed('1.0')
+
+        # open video "A"
+        self.course_nav.go_to_sequential('A')
+
+        # check if video "A" should start playing at speed "2.0"
+        self.video.change_speed('2.0')
+
+
+class VideoTestR(UniqueCourseTest):
+
+    def setUp(self):
+        """
+        Initialize pages and install a course fixture.
+        """
+        super(VideoTestR, self).setUp()
+
+        self.video = VideoPage(self.browser)
+        self.tab_nav = TabNavPage(self.browser)
+        self.course_nav = CourseNavPage(self.browser)
+        self.course_info_page = CourseInfoPage(self.browser, self.course_id)
+
+        # Install a course fixture with a video component
+        course_fix = CourseFixture(
+            self.course_info['org'], self.course_info['number'],
+            self.course_info['run'], self.course_info['display_name']
+        )
+
+        course_fix.add_asset('subs_OEoXaMPEzfM.srt.sjson')
+
+        course_fix.add_children(
+            XBlockFixtureDesc('chapter', 'Test Chapter').add_children(
+                XBlockFixtureDesc('sequential', 'Test Section').add_children(
+                    XBlockFixtureDesc('vertical', 'Test Vertical-0').add_children(
+                        XBlockFixtureDesc('video', 'Video')
+        )))).install()
+
+        # Auto-auth register for the course
+        AutoAuthPage(self.browser, course_id=self.course_id).visit()
+
+    def test_cc_button_works_correctly_transcripts_and_sub_fields_empty(self):
+        """
+        Tests that CC button works correctly if transcripts and sub fields are empty, but transcript file exists in
+        assets (Youtube mode of Video component)
+        Given I have a "subs_OEoXaMPEzfM.srt.sjson" transcript file in assets And it has a video in "Youtube" mode
+        """
+
+        # go to video
+        self.course_info_page.visit()
+        self.tab_nav.go_to_tab('Courseware')
+
+        self.video.wait_for_video_player()
+
+        # make sure captions are opened
+        self.video.set_captions_visibility_state('opened')
+
+        # check if we see "Hi, welcome to Edx." text in the captions
+        self.assertIn('Hi, welcome to Edx.', self.video.captions_text)

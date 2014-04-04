@@ -2,10 +2,11 @@
 Video player in the courseware.
 """
 
+import sys
 import time
 import requests
 from bok_choy.page_object import PageObject
-from bok_choy.promise import EmptyPromise
+from bok_choy.promise import EmptyPromise, Promise
 from bok_choy.javascript import wait_for_js, js_defined
 
 
@@ -217,7 +218,17 @@ class VideoPage(PageObject):
         Extract captions text.
         :return: str
         """
-        return self.q(css='body').text[0]
+        def _captions_text():
+            is_present = self.q(css='.subtitles').present
+            result = None
+
+            if is_present:
+                result = self.q(css='.subtitles').text[0]
+
+            return is_present, result
+
+        return Promise(_captions_text, 'Captions Text').fulfill()
+
 
     def is_aligned(self, is_transcript_visible):
         """
@@ -229,18 +240,18 @@ class VideoPage(PageObject):
         wrapper_width = 75 if is_transcript_visible else 100
         initial = self.browser.get_window_size()
 
-        self.browser.set_window_dimensions(300, 600)
+        self.browser.set_window_size(300, 600)
         real, expected = self.browser.get_window_size()
 
         width = round(100 * real['width'] / expected['width']) == wrapper_width
 
-        self.browser.set_window_dimensions(600, 300)
+        self.browser.set_window_size(600, 300)
         real, expected = self.browser.get_window_size()
 
         height = abs(expected['height'] - real['height']) <= 5
 
         # Restore initial window size
-        self.browser.set_window_dimensions(
+        self.browser.set_window_size(
             initial['width'], initial['height']
         )
 
@@ -252,7 +263,7 @@ class VideoPage(PageObject):
         """
         kwargs = dict()
 
-        session_id = [{i['name']: i['value']} for i in self.browser.cookies.all() if i['name'] == u'sessionid']
+        session_id = [{i['name']: i['value']} for i in self.browser.get_cookies() if i['name'] == u'sessionid']
         if session_id:
             kwargs.update({
                 'cookies': session_id[0]
@@ -287,7 +298,7 @@ class VideoPage(PageObject):
         if formats[transcript_format] not in headers.get('content-type', ''):
             return False
 
-        if text_to_search.encode('utf-8') not in content:
+        if text_to_search not in content:
             return False
 
         return True
@@ -344,10 +355,103 @@ class VideoPage(PageObject):
             return True
         return False
 
+    def select_language(self, code):
+        """
+        Select captions for language `code`
+        :param code: str, two character language code like `en`, `zh`
+        :return: bool, True for Success, False for Failure or BrokenPromise
+        """
+
+        def _is_ajax_finished():
+            return self.browser.execute_script("return jQuery.active") == 0
+
+        EmptyPromise(_is_ajax_finished, "Page load Failed.").fulfill()
+
+        selector = VIDEO_MENUS["language"] + ' li[data-lang-code="{code}"]'.format(code=code)
+
+        self.q(css=VIDEO_BUTTONS["CC"]).results[0].mouse_over()
+        self.q(css=selector).first.click()
+
+        if 'active' not in self.q(css=selector).results[0].get_attribute('class'):
+            return False
+
+        if len(self.q(css=VIDEO_MENUS["language"] + ' li.active').results) != 1:
+            return False
+
+        # Make sure that all ajax requests that affects the display of captions are finished.
+        # For example, request to get new translation etc.
+        def _is_ajax_finished():
+            return self.browser.execute_script("return jQuery.active") == 0
+
+        EmptyPromise(_is_ajax_finished, "Captions Display Finished.").fulfill()
+
+        EmptyPromise(lambda: self.q(css='.subtitles').visible, 'Subtitles Visible.').fulfill()
+
+        return True
+
     def wait_for_video_player(self):
         """
         Wait until Video Player Rendered Completely.
         """
-        video_player_css = 'section.video-controls'
-        EmptyPromise(lambda: self.q(css=video_player_css).visible, "Video Player Rendering Failed",
-                     try_limit=10).fulfill()
+        video_player_init = '.video-wrapper .spinner'
+
+        def _is_player_initialized():
+            spinner = self.q(css=video_player_init).attrs('aria-hidden')
+            print >> sys.stderr, 'aria >> ', spinner
+            return spinner[0] == 'true'
+
+        EmptyPromise(_is_player_initialized, "Video Player Initialization Failed",
+                     try_limit=20, try_interval=30).fulfill()
+
+    def videos_rendered(self, mode):
+        """
+        Check if all videos are rendered in `mode` mode
+        :param mode: str `html5` or `youtube`
+        :return: bool
+        """
+        modes = {
+            'html5': 'video',
+            'youtube': 'iframe'
+        }
+        html_tag = modes[mode]
+
+        actual = len(self.q(css='.video {0}'.format(html_tag)).results)
+        expected = len(self.q(css='.xmodule_VideoModule').results)
+
+        if actual != expected:
+            return False
+
+        return self.q(css='.speed_link').present
+
+    @property
+    def captions_visible_state(self):
+        """
+        Check if captions are shown or not
+        :return: bool, False if captions are hidden, True otherwise
+        """
+        captions_state = self.q(css='div.video.closed').present
+
+        if captions_state is True:  # video does not show the captions
+            return False
+        else:
+            return True
+
+    def check_text_in_captions(self, text_list):
+        """
+        Check for each text in `text_list` if the text is present in captions for video present at
+        index text_list.index(text)
+        :param text_list: list containing string items
+
+        """
+        captions = self.q(css='.subtitles').text
+
+        if len(text_list) != len(captions):
+            return False
+
+        for index, text in enumerate(text_list):
+            if text not in captions:
+                return False
+
+        return True
+
+
