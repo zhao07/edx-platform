@@ -994,8 +994,6 @@ class CapaMixin(CapaFields):
         """
         # Do the unmask translates on a copy of event_info,
         # avoiding problems where an event_info is unmasked twice.
-        import ipdb
-        ipdb.set_trace()
         event_unmasked = copy.deepcopy(event_info)
         self.unmask_event(event_unmasked)
         self.runtime.track_function(title, event_unmasked)
@@ -1053,7 +1051,7 @@ class CapaMixin(CapaFields):
         seconds = sub_hour % 60
         display = ""
         if hours > 0:
-            display += _("{hour} hour", "{hour} hours", hours).format(hour=hours)
+            display += _("{num_hour} hour", "{num_hour} hours", hours).format(num_hour=hours)
         if minutes > 0:
             if display != "":
                 display += " "
