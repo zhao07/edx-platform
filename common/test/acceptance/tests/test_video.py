@@ -54,6 +54,7 @@ class VideoTestA(UniqueCourseTest):
         # Auto-auth register for the course
         AutoAuthPage(self.browser, course_id=self.course_id).visit()
 
+    @skip('flaky')
     def test_video_component_stores_position_correctly(self):
         """
         Tests that Video component stores position correctly when page is reloaded Given the course has a
@@ -103,6 +104,7 @@ class VideoTestA(UniqueCourseTest):
         # check if video has rendered in "Youtube" mode
         self.assertTrue(self.video.is_video_rendered('youtube'))
 
+    @skip('flaky')
     def test_video_aligned_correctly_if_transcript_hidden_in_full_screen(self):
         """
         Tests that Video is aligned correctly if transcript is hidden in fullscreen mode
@@ -154,6 +156,7 @@ class VideoTestB(UniqueCourseTest):
         # Auto-auth register for the course
         AutoAuthPage(self.browser, course_id=self.course_id).visit()
 
+    @skip('flaky')
     def test_video_component_fully_rendered_in_youtube_with_html5_sources(self):
         """
         Tests that Video component is fully rendered in Youtube mode with HTML5 sources Given the course
@@ -288,6 +291,7 @@ class VideoTestD(UniqueCourseTest):
         # Auto-auth register for the course
         AutoAuthPage(self.browser, course_id=self.course_id).visit()
 
+    @skip('flaky')
     def test_video_component_rendered_in_youtube_with_unsupported_html5_sources(self):
         """
         Tests that Video component is rendered in Youtube mode with HTML5 sources that doesn't supported by browser
@@ -368,6 +372,7 @@ class VideoTestE(UniqueCourseTest):
         # Auto-auth register for the course
         AutoAuthPage(self.browser, course_id=self.course_id).visit()
 
+    @skip('flaky')
     def test_video_component_stores_speed_correctly_for_multiple_videos(self):
         """
         Tests that Video component stores speed correctly when each video is in separate sequence
@@ -475,6 +480,7 @@ class VideoTestF(UniqueCourseTest):
         # Auto-auth register for the course
         AutoAuthPage(self.browser, course_id=self.course_id).visit()
 
+    @skip('flaky')
     def test_cc_button_works_correctly_without_english_transcript_html5_mode(self):
         """
         Tests that CC button works correctly w/o english transcript in HTML5 mode of Video component
@@ -534,6 +540,7 @@ class VideoTestG(UniqueCourseTest):
         # Auto-auth register for the course
         AutoAuthPage(self.browser, course_id=self.course_id).visit()
 
+    @skip('flaky')
     def test_cc_button_works_correctly_only_with_english_transcript(self):
         """
         Tests that CC button works correctly only w/ english transcript in HTML5 mode of Video component
@@ -552,6 +559,7 @@ class VideoTestG(UniqueCourseTest):
         # check if we see "Hi, welcome to Edx." text in the captions
         self.assertIn("Hi, welcome to Edx.", self.video.captions_text)
 
+    @skip('flaky')
     def test_video_aligned_correctly_if_transcript_visible_in_full_screen(self):
         """
         Tests that Video is aligned correctly if transcript is visible in fullscreen mode Given I have a
@@ -664,6 +672,7 @@ class VideoTestI(UniqueCourseTest):
         # Auto-auth register for the course
         AutoAuthPage(self.browser, course_id=self.course_id).visit()
 
+    @skip('flaky')
     def test_video_aligned_correctly_on_transcript_toggle_in_fullscreen(self):
         """
         Tests that Video is aligned correctly on transcript toggle in fullscreen mode Given I have a
@@ -741,6 +750,7 @@ class VideoTestJ(UniqueCourseTest):
         # Auto-auth register for the course
         AutoAuthPage(self.browser, course_id=self.course_id).visit()
 
+    @skip('flaky')
     def test_download_transcript_button_works_correctly(self):
         """
         Tests that Download Transcript button works correctly in Video component
@@ -816,6 +826,7 @@ class VideoTestK(UniqueCourseTest):
         # Auto-auth register for the course
         AutoAuthPage(self.browser, course_id=self.course_id).visit()
 
+    @skip('flaky')
     def test_youtube_video_has_correct_transcript(self):
         """
         Tests that Youtube video has correct transcript if fields for other speeds are filled.
@@ -889,6 +900,7 @@ class VideoTestL(UniqueCourseTest):
         # Auto-auth register for the course
         AutoAuthPage(self.browser, course_id=self.course_id).visit()
 
+    @skip('flaky')
     def test_download_button_works_correctly_non_english_transcript_youtube_mode(self):
         """
         Tests that Download button works correctly for non-english transcript in Youtube mode of Video component
@@ -965,6 +977,7 @@ class VideoTestM(UniqueCourseTest):
         # Auto-auth register for the course
         AutoAuthPage(self.browser, course_id=self.course_id).visit()
 
+    @skip('flaky')
     def test_download_button_works_correctly_non_english_transcript_html5_mode(self):
         """
         Tests that Download button works correctly for non-english transcript in html5 mode of Video component
@@ -1039,6 +1052,7 @@ class VideoTestN(UniqueCourseTest):
         # Auto-auth register for the course
         AutoAuthPage(self.browser, course_id=self.course_id).visit()
 
+    @skip('flaky')
     def test_download_button_works_correctly_without_english_transcript_html5_mode(self):
         """
         Tests that Download button works correctly for without transcript in html5 mode of Video component
@@ -1098,6 +1112,7 @@ class VideoTestO(UniqueCourseTest):
         # Auto-auth register for the course
         AutoAuthPage(self.browser, course_id=self.course_id).visit()
 
+    @skip('flaky')
     def test_download_button_works_correctly_without_english_transcript_youtube_mode(self):
         """
         Tests that Download button works correctly for without transcript in youtube mode of Video component
@@ -1183,6 +1198,7 @@ class VideoTestP(UniqueCourseTest):
         # Auto-auth register for the course
         AutoAuthPage(self.browser, course_id=self.course_id).visit()
 
+    @skip('flaky')
     def test_video_includes_transcript_for_non_youtube_countries(self):
         """
         Tests that each video in each sub-section includes a transcript for non-Youtube countries.
