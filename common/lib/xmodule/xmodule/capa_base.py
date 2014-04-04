@@ -994,6 +994,8 @@ class CapaMixin(CapaFields):
         """
         # Do the unmask translates on a copy of event_info,
         # avoiding problems where an event_info is unmasked twice.
+        import ipdb
+        ipdb.set_trace()
         event_unmasked = copy.deepcopy(event_info)
         self.unmask_event(event_unmasked)
         self.runtime.track_function(title, event_unmasked)
@@ -1020,6 +1022,11 @@ class CapaMixin(CapaFields):
                 answer = event_info.get('state', {}).get('student_answers', {}).get(response.answer_id)
                 if answer is not None:
                     event_info['state']['student_answers'][response.answer_id] = response.unmask_name(answer)
+
+                # Look for old_state/student_answers/id  -- parallel to the above case, happens on reset
+                answer = event_info.get('old_state', {}).get('student_answers', {}).get(response.answer_id)
+                if answer is not None:
+                    event_info['old_state']['student_answers'][response.answer_id] = response.unmask_name(answer)
 
             # Add 'permutation' to event_info for permuted responses.
             permutation_option = None
