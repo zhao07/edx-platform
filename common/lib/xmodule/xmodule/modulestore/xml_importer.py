@@ -6,6 +6,7 @@ import json
 
 from .xml import XMLModuleStore, ImportSystem, ParentTracker
 from xmodule.modulestore import Location
+from xmodule.x_module import XModuleDescriptor
 from xblock.fields import Scope, Reference, ReferenceList, ReferenceValueDict
 from xmodule.contentstore.content import StaticContent
 from .inheritance import own_metadata
@@ -493,6 +494,18 @@ def remap_namespace(module, target_location_namespace):
             org=target_location_namespace.org,
             course=target_location_namespace.course
         )
+
+        # Native XBlocks store the field data in a key-value store
+        # in which one component of the key is the XBlock's location (equivalent to "scope_ids").
+        # Since we've changed the XBlock's location, we need to re-save
+        # all the XBlock's fields so they will be stored using the new location in the key.
+        # However, since XBlocks only save "dirty" fields, we need to first
+        # explicitly set each field to its current value before triggering the save.
+        if not isinstance(module, XModuleDescriptor):
+            for field in module.fields:
+                setattr(module, field, getattr(module, field))
+            module.save()
+
     else:
         #
         # module is a course module
