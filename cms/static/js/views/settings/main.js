@@ -1,5 +1,6 @@
-define(["js/views/validation", "codemirror", "underscore", "jquery", "jquery.ui", "tzAbbr", "js/models/uploads", "js/views/uploads", "jquery.timepicker", "date"],
-    function(ValidatingView, CodeMirror, _, $, ui, tzAbbr, FileUploadModel, FileUploadDialog) {
+define(["js/views/validation", "codemirror", "underscore", "jquery", "jquery.ui", "tzAbbr", "js/models/uploads",
+    "js/views/uploads", "js/utils/change_on_enter", "jquery.timepicker", "date"],
+    function(ValidatingView, CodeMirror, _, $, ui, tzAbbr, FileUploadModel, FileUploadDialog, TriggerChangeEventOnEnter) {
 
 var DetailsView = ValidatingView.extend({
     // Model class is CMS.Models.Settings.CourseDetails
@@ -38,6 +39,7 @@ var DetailsView = ValidatingView.extend({
 
         this.listenTo(this.model, 'invalid', this.handleValidationError);
         this.listenTo(this.model, 'change', this.showNotificationBar);
+        this.$el.find("input:.date").keyup(TriggerChangeEventOnEnter)
         this.selectorToField = _.invert(this.fieldToSelectorMap);
     },
 

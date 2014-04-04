@@ -215,6 +215,21 @@ def set_date_and_time(date_css, desired_date, time_css, desired_time):
     time.sleep(float(1))
 
 
+def set_date_and_time_with_enter(date_css, desired_date, time_css, desired_time):
+    # hit ENTER to save date field
+    element = world.css_find(date_css).first
+    element.fill(desired_date)
+    # pylint: disable=protected-access
+    element._element.send_keys(Keys.ENTER)
+
+    # hit ENTER to save time field
+    element = world.css_find(time_css).first
+    element.fill(desired_time)
+    # pylint: disable=protected-access
+    element._element.send_keys(Keys.ENTER)
+    time.sleep(float(1))
+
+
 @step('I have enabled the (.*) advanced module$')
 def i_enabled_the_advanced_module(step, module):
     step.given('I have opened a new course section in Studio')
