@@ -1413,7 +1413,7 @@ class CapaModuleTest(unittest.TestCase):
     def test_check_unmask(self):
         """
         Check that shuffle unmasking is plumbed through: when check_problem is called,
-        unmasked data should appear in the track_function event_info.
+        unmasked names should appear in the track_function event_info.
         """
         module = CapaFactory.create(xml=self.common_shuffle_xml)
         with patch.object(module.runtime, 'track_function') as mock_track_function:
@@ -1436,24 +1436,39 @@ class CapaModuleTest(unittest.TestCase):
             module.save_problem(get_request_dict)
             mock_call = mock_track_function.mock_calls[0]
             event_info = mock_call[1][1]
-            # Existence of the permutation key is a marker that unmasking happened
+            self.assertEquals(event_info['answers'][CapaFactory.answer_key()], 'choice_2')
+            self.assertIsNotNone(event_info['permutation'][CapaFactory.answer_key()])
+
+    def test_reset_unmask(self):
+        """On problem reset, unmask names should appear track_function."""
+        module = CapaFactory.create(xml=self.common_shuffle_xml)
+        get_request_dict = {CapaFactory.input_key(): 'mask_0'}
+        module.check_problem(get_request_dict)
+        # On reset, 'old_state' should use unmasked names
+        with patch.object(module.runtime, 'track_function') as mock_track_function:
+            module.reset_problem(None)
+            mock_call = mock_track_function.mock_calls[0]
+            event_info = mock_call[1][1]
+            self.assertEquals(mock_call[1][0], 'reset_problem')
+            self.assertEquals(event_info['old_state']['student_answers'][CapaFactory.answer_key()], 'choice_2')
             self.assertIsNotNone(event_info['permutation'][CapaFactory.answer_key()])
 
     def test_rescore_unmask(self):
-        """On problem save, unmasked data should appear on track_function."""
+        """On problem rescore, unmasked names should appear on track_function."""
         module = CapaFactory.create(xml=self.common_shuffle_xml)
-        get_request_dict = {CapaFactory.input_key(): 'mask_1'}
+        get_request_dict = {CapaFactory.input_key(): 'mask_0'}
         module.check_problem(get_request_dict)
-        # Now rescore it, checking the call to track_function
+        # On rescore, state/student_answers should use unmasked names
         with patch.object(module.runtime, 'track_function') as mock_track_function:
             module.rescore_problem()
             mock_call = mock_track_function.mock_calls[0]
             event_info = mock_call[1][1]
             self.assertEquals(mock_call[1][0], 'problem_rescore')
+            self.assertEquals(event_info['state']['student_answers'][CapaFactory.answer_key()], 'choice_2')
             self.assertIsNotNone(event_info['permutation'][CapaFactory.answer_key()])
 
     def test_check_unmask_answerpool(self):
-        """Check unmasking plumb-through for answer-pool."""
+        """Check answer-pool question track_function uses unmasked names"""
         xml = textwrap.dedent("""
             <problem>
             <multiplechoiceresponse>
