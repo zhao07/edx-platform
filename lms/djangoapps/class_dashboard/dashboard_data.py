@@ -2,7 +2,6 @@
 Computes the data to display on the Instructor Dashboard
 """
 from util.json_request import JsonResponse
-from django.http import HttpResponse
 
 from courseware import models
 from django.db.models import Count
@@ -419,8 +418,7 @@ def get_students_opened_subsection(request, csv=False):
     students = models.StudentModule.objects.select_related('student').filter(
         module_state_key__exact=module_id,
         module_type__exact='sequential',
-    ).values('student__username', 'student__profile__name'
-    ).order_by('student__profile__name')
+    ).values('student__username', 'student__profile__name').order_by('student__profile__name')
 
     results = []
     if not csv:
@@ -448,7 +446,7 @@ def get_students_opened_subsection(request, csv=False):
 
 def get_students_problem_grades(request, csv=False):
     """
-    Get a list of students and grades for a particular subsection.
+    Get a list of students and grades for a particular problem.
     Returns either a dict of students' name, username, grade, percent
      or a header array and array of arrays of students names, usernames, grades, percents for csv download.
     """
@@ -460,8 +458,7 @@ def get_students_problem_grades(request, csv=False):
         module_state_key__exact=module_id,
         module_type__exact='problem',
         grade__isnull=False,
-    ).values('student__username', 'student__profile__name', 'grade', 'max_grade'
-    ).order_by('student__profile__name')
+    ).values('student__username', 'student__profile__name', 'grade', 'max_grade').order_by('student__profile__name')
 
     results = []
     if not csv:
@@ -483,14 +480,14 @@ def get_students_problem_grades(request, csv=False):
         return JsonResponse(response_payload)
     else:
         tooltip = request.GET.get('tooltip')
-        filename = sanitise_filename(tooltip[:tooltip.index('-')])
+        filename = sanitise_filename(tooltip[:tooltip.rfind(' - ')])
 
         header = ['Name', 'Username', 'Grade', 'Percent']
         for student in students:
 
             percent = 0
             if student['max_grade'] > 0:
-                percent = round(student['grade'] * 100 /student['max_grade'])
+                percent = round(student['grade'] * 100 / student['max_grade'])
             results.append([student['student__profile__name'], student['student__username'], student['grade'], percent])
 
         response = create_csv_response(filename, header, results)
@@ -501,7 +498,7 @@ def sanitise_filename(filename):
     """
     Utility function
     """
-    filename = filename.replace (" ", "_")
+    filename = filename.replace(" ", "_")
     filename = filename.encode('ascii')
     filename = filename[0:25] + '.csv'
     return filename
