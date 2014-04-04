@@ -6,7 +6,7 @@ import json
 import os
 import time
 import requests
-from nose.tools import assert_less
+from nose.tools import assert_less, assert_equal
 from common import i_am_registered_for_the_course, visit_scenario_item
 from django.utils.translation import ugettext as _
 from django.conf import settings
@@ -251,6 +251,14 @@ def duration():
     return duration
 
 
+def elapsed_time():
+    """
+    Elapsed time of the video, in seconds.
+    """
+    elapsed_time, duration = video_time()
+    return elapsed_time
+
+
 def video_time():
     """
     Return a tuple `(elapsed_time, duration)`, each in seconds.
@@ -459,14 +467,18 @@ def select_language(_step, code):
 @step('I click video button "([^"]*)"$')
 def click_button(_step, button):
     world.css_click(VIDEO_BUTTONS[button])
+    world.wait_for_ajax_complete()
 
 
-@step('I see video starts playing from "([^"]*)" position$')
+@step('I see video slider at "([^"]*)" seconds$')
 def start_playing_video_from_n_seconds(_step, position):
     world.wait_for(
-        func=lambda _: world.css_html('.vidtime')[:4] == position.strip(),
-        timeout=5
+        func=lambda _: elapsed_time() > 0,
+        timeout=30
     )
+
+    actual_position = elapsed_time()
+    assert_equal(actual_position, int(position), "Current position is {}, but should be {}".format(actual_position, position))
 
 
 @step('I see duration "([^"]*)"$')
@@ -482,6 +494,7 @@ def seek_video_to_n_seconds(_step, seconds):
     time = float(seconds.strip())
     jsCode = "$('.video').data('video-player-state').videoPlayer.onSlideSeek({{time: {0:f}}})".format(time)
     world.browser.execute_script(jsCode)
+    _step.given('I see video slider at "{}" seconds'.format(seconds))
 
 
 @step('I have a "([^"]*)" transcript file in assets$')
