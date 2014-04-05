@@ -9,7 +9,7 @@ define(["jquery", "underscore", "js/views/baseview", "xblock/runtime.v1"],
                 this.view = this.options.view;
             },
 
-            render: function() {
+            render: function(callback) {
                 var self = this,
                     view = this.view;
                 return $.ajax({
@@ -25,6 +25,9 @@ define(["jquery", "underscore", "js/views/baseview", "xblock/runtime.v1"],
                             xblock = self.$('.xblock').first();
                             XBlock.initializeBlock(xblock);
                             self.delegateEvents();
+                            if (callback) {
+                                callback();
+                            }
                         });
                     }
                 });
