@@ -392,11 +392,7 @@ class CourseFixture(StudioApiFixture):
 
             upload_response = self.session.post(url, files=files, headers=headers)
 
-            if upload_response.ok:
-                import sys
-                print >> sys.stderr, 'Successfully Uploaded {asset_name} to Assets: {response}'.format(
-                    asset_name=asset_name, response=upload_response.content)
-            else:
+            if not upload_response.ok:
                 raise CourseFixtureError('Could not upload {asset_name}. Status code: {code}'.format(
                     asset_name=asset_name, code=upload_response.status_code))
 
