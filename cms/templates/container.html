@@ -21,87 +21,16 @@ xblock_info = {
 };
 %>
 <script type='text/javascript'>
-    require(["domReady!", "jquery", "underscore", "js/models/xblock_info", "js/views/xblock",
-            "js/utils/module",
-            "js/models/module_info", "coffee/src/views/unit",
+    require(["domReady!", "jquery", "underscore", "js/models/xblock_info", "js/views/container",
             "xmodule", "coffee/src/main", "xblock/cms.runtime.v1",
             "js/views/metadata", "js/collections/metadata"],
-            function(doc, $, _, XBlockInfo, XBlockView, ModuleUtils) {
-                var model,
-                    view;
-                model = new XBlockInfo(${json.dumps(xblock_info) | n});
-                view = new XBlockView({
+            function(doc, $, _, XBlockInfo, ContainerView) {
+                var model = new XBlockInfo(${json.dumps(xblock_info) | n});
+                new ContainerView({
                     el: $('.wrapper-xblock.level-page').first(),
                     model: model,
                     view: 'container_preview'
                 });
-                var reorder = function (newParent) {
-                    console.log('calling reorder for ' + newParent.data('locator'));
-
-                     var children = newParent.find('.wrapper-xblock').filter(function () {
-                         var parent = $(this).parent().closest('.wrapper-xblock');
-                         return parent.data('locator') === newParent.data('locator');
-                    });
-
-                    var childLocators = _.map(
-                        children,
-                        function (child) {
-                            return $(child).data('locator');
-                        }
-                    );
-                    // TODO: dragging a vertical into a vertical did not work (disappeared).
-                    // But I can't reproduce it!
-                    $.ajax({
-                        url: ModuleUtils.getUpdateUrl(newParent.data('locator')),
-                        type: 'PUT',
-                        dataType: 'json',
-                        contentType: 'application/json',
-                        data: JSON.stringify({
-                            children: childLocators
-                        }),
-                        success: function () {
-                            // change data-parent on the element moved.
-                            console.log('SAVED! ' + newParent.data('locator'));
-                        }
-                    });
-
-                };
-                view.render(function () {
-                   var verticalContainer = $(view.el).find('.vertical-container');
-                    verticalContainer.sortable({
-                                handle: '.drag-handle',
-                                update: function (event, ui){
-                                    // When dragging from one ol to another, this method
-                                    // will be called twice (once for each list).
-                                    var itemMoved = ui.item.find('.wrapper-xblock');
-                                            // can use .data('locator') and .data('parent').
-                                    var itemMovedParent = ui.item.closest('.level-nesting');
-
-                                    var parent = $(event.target).closest('.wrapper-xblock');
-                                    if (parent.length > 0) {
-
-                                        reorder(parent);
-                                    }
-                                    else {
-                                        // In here, cancel the operation.
-
-                                        console.log("no new parent found, canceling!");
-                                        verticalContainer.sortable("cancel");
-                                    }
-
-                                },
-                                helper: "clone",
-                                opacity: '0.5',
-                                placeholder: 'component-placeholder',
-                                forcePlaceholderSize: true,
-                                axis: 'y',
-                                items: '> .vertical-element',
-                                connectWith: ".vertical-container"
-
-                            }
-                    );
-                });
-
             });
 </script>
 
